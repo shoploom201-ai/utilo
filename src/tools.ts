@@ -12,6 +12,7 @@ export const tools = [
   { id: 'typing-practice', category: 'study' },
   { id: 'vat-calculator', category: 'tax' },
   { id: 'us-paycheck', category: 'finance' },
+  { id: 'jp-takehome', category: 'finance' },
   { id: 'mortgage', category: 'finance' },
   { id: 'debt-payoff', category: 'finance' },
   { id: 'self-employed-tax', category: 'tax' },

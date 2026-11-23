@@ -1,0 +1,148 @@
+---
+// 일본 급여 실수령액(手取り) 계산기 2026. 계산은 src/lib/jp-takehome.ts, 수치는 src/data/jp-tax-2026.ts
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+import { PREFECTURES, DEFAULT_PREF, JP_YEAR, JP_REVIEWED } from '../data/jp-tax-2026';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['jp-takehome']!;
+const ui = tool.ui;
+const kanji = lang === 'ja' || lang === 'zh-hant';
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card paycheck" id="jp" data-lang={lang} data-labels={JSON.stringify(ui)}>
+  <div class="grid-2">
+    <label>{ui.monthly} (JPY)
+      <input id="j-monthly" type="number" inputmode="numeric" min="0" step="1000" value="300000" />
+    </label>
+    <label>{ui.bonus} (JPY)
+      <input id="j-bonus" type="number" inputmode="numeric" min="0" step="10000" value="0" />
+    </label>
+    <label>{ui.pref}
+      <select id="j-pref">
+        {PREFECTURES.map((p, i) => <option value={i} selected={i === DEFAULT_PREF}>{kanji ? p.ja : `${p.en} (${p.ja})`}</option>)}
+      </select>
+    </label>
+    <label class="check"><input id="j-care" type="checkbox" /> {ui.age40}</label>
+  </div>
+
+  <div class="pay-hero" aria-live="polite">
+    <span class="stat-label">{ui.takeHome} · {ui.perMonth}</span>
+    <strong id="j-net">—</strong>
+    <span class="stat-sub"><span id="j-net-year">—</span> {ui.perYear} · {ui.netRate} <span id="j-rate">—</span></span>
+  </div>
+
+  <div class="pay-bar" id="j-bar" role="img" aria-describedby="j-table"></div>
+  <ul class="pay-legend" id="j-legend"></ul>
+
+  <div class="table-wrap pay-table-wrap">
+    <table id="j-table">
+      <thead><tr><th>{ui.item}</th><th>{ui.perMonth}</th><th>{ui.perYear}</th></tr></thead>
+      <tbody id="j-rows"></tbody>
+    </table>
+  </div>
+
+  <p class="note">{ui.assumptions}</p>
+  <p class="note">{ui.disclaimer} {ui.sourceNote.replace('{year}', String(JP_YEAR)).replace('{date}', JP_REVIEWED)}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script>
+  import { calcJp } from '../lib/jp-takehome';
+
+  const root = document.getElementById('jp') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const money = new Intl.NumberFormat(root.dataset.lang, { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 });
+  const pct = new Intl.NumberFormat(root.dataset.lang, { style: 'percent', maximumFractionDigits: 1 });
+  const KEY = 'kitwise-jp-takehome';
+  const els = { monthly: $<HTMLInputElement>('#j-monthly'), bonus: $<HTMLInputElement>('#j-bonus'), pref: $<HTMLSelectElement>('#j-pref'), care: $<HTMLInputElement>('#j-care') };
+
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+    if (s) {
+      els.monthly.value = String(s.monthly ?? els.monthly.value);
+      els.bonus.value = String(s.bonus ?? els.bonus.value);
+      els.pref.value = String(s.pref ?? els.pref.value);
+      els.care.checked = !!s.care;
+    }
+  } catch {
+    /* 저장 불가 환경 */
+  }
+
+  // 막대 구간: 세전 연봉을 실수령·사회보험·소득세·주민세로 나눔 (그래프 가이드의 검증된 색 순서 1~4)
+  const SEGMENTS = [
+    { key: 'net', label: () => L.net, cls: 's1' },
+    { key: 'social', label: () => L.social, cls: 's2' },
+    { key: 'incomeTax', label: () => L.incomeTax, cls: 's3' },
+    { key: 'residentTax', label: () => L.residentTax, cls: 's4' },
+  ] as const;
+
+  function calc() {
+    const monthly = Math.max(0, Number(els.monthly.value) || 0);
+    const bonus = Math.max(0, Number(els.bonus.value) || 0);
+    const r = calcJp({ monthly, bonus, pref: Number(els.pref.value), care: els.care.checked });
+
+    $<HTMLElement>('#j-net').textContent = money.format(r.monthlyNet);
+    $<HTMLElement>('#j-net-year').textContent = money.format(r.net);
+    $<HTMLElement>('#j-rate').textContent = r.gross > 0 ? pct.format(r.net / r.gross) : '—';
+
+    const values: Record<string, number> = { net: r.net, social: r.social, incomeTax: r.incomeTax, residentTax: r.residentTax };
+    const bar = $<HTMLElement>('#j-bar');
+    const legend = $<HTMLElement>('#j-legend');
+    bar.replaceChildren();
+    legend.replaceChildren();
+    for (const seg of SEGMENTS) {
+      const v = values[seg.key];
+      if (v <= 0 || r.gross <= 0) continue;
+      const share = v / r.gross;
+      const tip = `${seg.label()}: ${money.format(v)} (${pct.format(share)})`;
+      const part = document.createElement('span');
+      part.className = `seg ${seg.cls}`;
+      part.style.flexGrow = String(share);
+      part.title = tip;
+      part.setAttribute('aria-label', tip);
+      part.tabIndex = 0;
+      bar.append(part);
+      const li = document.createElement('li');
+      const sw = document.createElement('span');
+      sw.className = `swatch ${seg.cls}`;
+      li.append(sw, `${seg.label()} `, Object.assign(document.createElement('strong'), { textContent: money.format(v) }), ` · ${pct.format(share)}`);
+      legend.append(li);
+    }
+
+    // 표: 월 = 월급분(상여 제외), 세금은 연액 ÷ 12
+    const rows: [string, number, number, boolean?][] = [
+      [L.gross, monthly, r.gross],
+      [L.health, -r.healthM, -r.health],
+      [L.pension, -r.pensionM, -r.pension],
+      [L.employment, -r.employmentM, -r.employment],
+      [L.incomeTax, -r.incomeTax / 12, -r.incomeTax],
+      [L.residentTax, -r.residentTax / 12, -r.residentTax],
+      [L.net, r.monthlyNet, r.net, true],
+    ];
+    $<HTMLElement>('#j-rows').replaceChildren(
+      ...rows.map(([label, m, y, strong]) => {
+        const tr = document.createElement('tr');
+        if (strong) tr.className = 'total-row';
+        [label, money.format(m), money.format(y)].forEach((txt) => tr.append(Object.assign(document.createElement('td'), { textContent: txt })));
+        return tr;
+      }),
+    );
+
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ monthly, bonus, pref: els.pref.value, care: els.care.checked }));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  }
+
+  root.addEventListener('input', calc);
+  root.addEventListener('change', calc);
+  calc();
+</script>
