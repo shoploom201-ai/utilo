@@ -1,0 +1,176 @@
+---
+// 모기지 계산기: 원금+이자, 재산세, 보험, PMI, HOA 포함 월 납입금 + 계약금 비율별 비교 + 연도별 상환표
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['mortgage'];
+const ui = tool.ui;
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card paycheck mortgage" id="mtg" data-lang={lang} data-labels={JSON.stringify(ui)}>
+  <div class="grid-2">
+    <label>{ui.price}<input id="m-price" type="number" inputmode="decimal" min="0" step="1000" value="400000" /></label>
+    <label>{ui.currency}
+      <select id="m-cur">
+        <option value="USD">USD $</option><option value="CAD">CAD $</option><option value="GBP">GBP £</option>
+        <option value="AUD">AUD $</option><option value="EUR">EUR €</option>
+      </select>
+    </label>
+    <label>{ui.down}<input id="m-down" type="number" inputmode="decimal" min="0" step="1000" value="80000" /></label>
+    <label>{ui.downPct}<input id="m-downpct" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="20" /></label>
+    <label>{ui.rate}<input id="m-rate" type="number" inputmode="decimal" min="0" max="25" step="0.05" value="6.5" /></label>
+    <label>{ui.term}
+      <select id="m-years">
+        <option value="30" selected>30 {ui.yearsUnit}</option><option value="25">25 {ui.yearsUnit}</option>
+        <option value="20">20 {ui.yearsUnit}</option><option value="15">15 {ui.yearsUnit}</option><option value="10">10 {ui.yearsUnit}</option>
+      </select>
+    </label>
+  </div>
+  <details class="settings" open>
+    <summary>{ui.extras}</summary>
+    <div class="grid-2">
+      <label>{ui.taxRate}<input id="m-tax" type="number" inputmode="decimal" min="0" max="10" step="0.05" value="1.1" /></label>
+      <label>{ui.insurance}<input id="m-ins" type="number" inputmode="decimal" min="0" step="100" value="1800" /></label>
+      <label>{ui.pmiRate}<input id="m-pmi" type="number" inputmode="decimal" min="0" max="3" step="0.05" value="0.6" /></label>
+      <label>{ui.hoa}<input id="m-hoa" type="number" inputmode="decimal" min="0" step="10" value="0" /></label>
+    </div>
+  </details>
+
+  <div class="pay-hero" aria-live="polite">
+    <span class="stat-label">{ui.monthly}</span>
+    <strong id="m-monthly">—</strong>
+    <span class="stat-sub">{ui.loanAmt} <span id="m-loan">—</span> · {ui.totalInterest} <span id="m-interest">—</span> · {ui.payoff} <span id="m-payoff">—</span></span>
+    <span class="stat-sub" id="m-pmi-note"></span>
+  </div>
+
+  <div class="pay-bar" id="m-bar" role="img" aria-describedby="m-legend"></div>
+  <ul class="pay-legend" id="m-legend"></ul>
+
+  <h2 class="sub">{ui.compareTitle}</h2>
+  <div class="table-wrap pay-table-wrap">
+    <table>
+      <thead><tr><th>{ui.downCol}</th><th>{ui.monthly}</th><th>{ui.totalInterest}</th><th>PMI</th></tr></thead>
+      <tbody id="m-compare"></tbody>
+    </table>
+  </div>
+
+  <details class="schedule">
+    <summary>{ui.schedule}</summary>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>{ui.year}</th><th>{ui.principal}</th><th>{ui.interest}</th><th>{ui.balance}</th></tr></thead>
+        <tbody id="m-rows"></tbody>
+      </table>
+    </div>
+  </details>
+  <p class="note">{ui.disclaimer}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script>
+  import { calcMortgage } from '../lib/mortgage';
+
+  const root = document.getElementById('mtg') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const lang = root.dataset.lang ?? 'en';
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const KEY = 'kitwise-mortgage';
+  const el = {
+    price: $<HTMLInputElement>('#m-price'), cur: $<HTMLSelectElement>('#m-cur'), down: $<HTMLInputElement>('#m-down'),
+    downpct: $<HTMLInputElement>('#m-downpct'), rate: $<HTMLInputElement>('#m-rate'), years: $<HTMLSelectElement>('#m-years'),
+    tax: $<HTMLInputElement>('#m-tax'), ins: $<HTMLInputElement>('#m-ins'), pmi: $<HTMLInputElement>('#m-pmi'), hoa: $<HTMLInputElement>('#m-hoa'),
+  };
+  const num = (e: HTMLInputElement | HTMLSelectElement) => Math.max(0, Number(e.value) || 0);
+  const pct = new Intl.NumberFormat(lang, { style: 'percent', maximumFractionDigits: 1 });
+
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+    if (s) Object.entries(el).forEach(([k, e]) => s[k] != null && (e.value = String(s[k])));
+  } catch {
+    /* 저장 불가 환경 */
+  }
+
+  // 계약금 금액과 비율은 서로 맞춰 줌
+  el.down.addEventListener('input', () => {
+    const p = num(el.price);
+    el.downpct.value = p ? String(Math.round((num(el.down) / p) * 1000) / 10) : '0';
+  });
+  el.downpct.addEventListener('input', () => (el.down.value = String(Math.round((num(el.price) * num(el.downpct)) / 100))));
+  el.price.addEventListener('input', () => (el.down.value = String(Math.round((num(el.price) * num(el.downpct)) / 100))));
+
+  const SEGMENTS = [
+    { key: 'pi', label: 'pi', cls: 's1' }, { key: 'tax', label: 'tax', cls: 's2' }, { key: 'insurance', label: 'ins', cls: 's3' },
+    { key: 'pmi', label: 'pmi', cls: 's4' }, { key: 'hoa', label: 'hoaL', cls: 's5' },
+  ] as const;
+
+  function calc() {
+    const money = new Intl.NumberFormat(lang, { style: 'currency', currency: el.cur.value, maximumFractionDigits: 0 });
+    const base = { price: num(el.price), rate: num(el.rate), years: num(el.years), taxRate: num(el.tax), insurance: num(el.ins), pmiRate: num(el.pmi), hoa: num(el.hoa) };
+    const r = calcMortgage({ ...base, down: num(el.down) });
+
+    $<HTMLElement>('#m-monthly').textContent = money.format(r.monthly);
+    $<HTMLElement>('#m-loan').textContent = money.format(r.loan);
+    $<HTMLElement>('#m-interest').textContent = money.format(r.totalInterest);
+    const end = new Date();
+    end.setMonth(end.getMonth() + r.months);
+    $<HTMLElement>('#m-payoff').textContent = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'long' }).format(end);
+    $<HTMLElement>('#m-pmi-note').textContent = r.pmi
+      ? L.pmiEnds.replace('{y}', String(Math.floor(r.pmiMonths / 12))).replace('{m}', String(r.pmiMonths % 12)).replace('{total}', money.format(r.totalPmi))
+      : L.noPmi;
+
+    // 월 납입금 구성 막대 + 범례
+    const bar = $<HTMLElement>('#m-bar'), legend = $<HTMLElement>('#m-legend');
+    bar.replaceChildren();
+    legend.replaceChildren();
+    for (const seg of SEGMENTS) {
+      const v = r[seg.key];
+      if (!(v > 0) || !(r.monthly > 0)) continue;
+      const share = v / r.monthly;
+      const tip = `${L[seg.label]}: ${money.format(v)} (${pct.format(share)})`;
+      const part = Object.assign(document.createElement('span'), { className: `seg ${seg.cls}`, title: tip, tabIndex: 0 });
+      part.style.flexGrow = String(share);
+      part.setAttribute('aria-label', tip);
+      bar.append(part);
+      const li = document.createElement('li');
+      li.append(Object.assign(document.createElement('span'), { className: `swatch ${seg.cls}` }), `${L[seg.label]} `, Object.assign(document.createElement('strong'), { textContent: money.format(v) }), ` · ${pct.format(share)}`);
+      legend.append(li);
+    }
+
+    // 계약금 비율별 비교
+    const current = base.price ? num(el.down) / base.price : 0;
+    $<HTMLElement>('#m-compare').replaceChildren(
+      ...[0.035, 0.05, 0.1, 0.15, 0.2, 0.25].map((f) => {
+        const c = calcMortgage({ ...base, down: base.price * f });
+        const tr = document.createElement('tr');
+        if (Math.abs(f - current) < 0.0005) tr.className = 'total-row';
+        [`${pct.format(f)} (${money.format(base.price * f)})`, money.format(c.monthly), money.format(c.totalInterest), c.pmi ? money.format(c.totalPmi) : '—']
+          .forEach((txt) => tr.append(Object.assign(document.createElement('td'), { textContent: txt })));
+        return tr;
+      }),
+    );
+
+    // 연도별 상환표
+    $<HTMLElement>('#m-rows').replaceChildren(
+      ...r.years.map((y) => {
+        const tr = document.createElement('tr');
+        [String(y.year), money.format(y.principal), money.format(y.interest), money.format(y.balance)].forEach((txt) => tr.append(Object.assign(document.createElement('td'), { textContent: txt })));
+        return tr;
+      }),
+    );
+    try {
+      localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(Object.entries(el).map(([k, e]) => [k, e.value]))));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  }
+
+  root.addEventListener('input', calc);
+  root.addEventListener('change', calc);
+  calc();
+</script>

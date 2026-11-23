@@ -167,6 +167,31 @@ const en = {
         { q: 'Does a 401(k) reduce my taxes?', a: 'Pre-tax 401(k) contributions lower your federal and most state income tax, but not Social Security or Medicare tax.' },
       ],
     },
+    mortgage: {
+      name: 'Mortgage Calculator',
+      short: 'Monthly mortgage payment with property tax, insurance, PMI and HOA, plus a down payment comparison.',
+      metaDescription:
+        'Free mortgage calculator: see your full monthly payment including principal, interest, property tax, home insurance, PMI and HOA. Compare 3.5% to 25% down, see when PMI ends and view a yearly amortization schedule.',
+      ui: {
+        price: 'Home price', currency: 'Currency', down: 'Down payment', downPct: 'Down payment (%)', rate: 'Interest rate (%)', term: 'Loan term', yearsUnit: 'years',
+        extras: 'Taxes, insurance & fees', taxRate: 'Property tax (% of price per year)', insurance: 'Home insurance (per year)', pmiRate: 'PMI (% of loan per year)', hoa: 'HOA fee (per month)',
+        monthly: 'Monthly payment', loanAmt: 'Loan', totalInterest: 'Total interest', payoff: 'Paid off',
+        pmiEnds: 'PMI ends after {y} years {m} months (about {total} in total).', noPmi: 'No PMI: you are putting down 20% or more.',
+        pi: 'Principal & interest', tax: 'Property tax', ins: 'Home insurance', pmi: 'PMI', hoaL: 'HOA',
+        compareTitle: 'Compare down payments', downCol: 'Down payment', schedule: 'Yearly amortization schedule', year: 'Year', principal: 'Principal', interest: 'Interest', balance: 'Balance',
+        disclaimer: 'Estimate only. Property tax, insurance and PMI vary by location, lender and credit score; check a loan estimate from your lender.',
+      },
+      howTo: [
+        'Enter the home price, your down payment (amount or %), the interest rate and the loan term.',
+        'Adjust property tax, insurance, PMI and HOA to match the home you are looking at.',
+        'Use the comparison table to see how a bigger down payment changes your monthly payment and total interest.',
+      ],
+      faq: [
+        { q: 'What is PMI?', a: 'Private mortgage insurance protects the lender when you put down less than 20% on a conventional loan. It is removed automatically once your balance reaches 78% of the original home value.' },
+        { q: 'Is a 15-year or 30-year mortgage better?', a: 'A 15-year loan has higher monthly payments but far less total interest. A 30-year loan is easier on your monthly budget but costs more over time.' },
+        { q: 'What is included in a monthly mortgage payment?', a: 'Usually principal and interest plus escrow for property tax and home insurance, and PMI or HOA fees if they apply.' },
+      ],
+    },
     'vat-calculator': {
       name: 'VAT Calculator',
       short: 'Add or remove VAT, GST or consumption tax for 17 countries.',

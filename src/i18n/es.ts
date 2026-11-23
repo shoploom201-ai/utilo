@@ -169,6 +169,31 @@ const es: Dict = {
         { q: '¿El 401(k) reduce mis impuestos?', a: 'Las aportaciones al 401(k) antes de impuestos reducen el impuesto federal y casi todos los estatales, pero no el Seguro Social ni Medicare.' },
       ],
     },
+    mortgage: {
+      name: 'Calculadora de hipoteca en EE. UU.',
+      short: 'Pago mensual de la hipoteca con impuestos, seguro, PMI y HOA, y comparación de enganche.',
+      metaDescription:
+        'Calculadora de hipoteca gratis: calcula el pago mensual completo con capital, intereses, impuesto a la propiedad, seguro de vivienda, PMI y HOA. Compara un enganche del 3,5 % al 25 %, mira cuándo termina el PMI y la tabla de amortización anual.',
+      ui: {
+        price: 'Precio de la vivienda', currency: 'Moneda', down: 'Enganche (pago inicial)', downPct: 'Enganche (%)', rate: 'Tasa de interés (%)', term: 'Plazo', yearsUnit: 'años',
+        extras: 'Impuestos, seguro y cuotas', taxRate: 'Impuesto a la propiedad (% anual del precio)', insurance: 'Seguro de vivienda (al año)', pmiRate: 'PMI (% anual del préstamo)', hoa: 'Cuota HOA (al mes)',
+        monthly: 'Pago mensual', loanAmt: 'Préstamo', totalInterest: 'Intereses totales', payoff: 'Liquidado en',
+        pmiEnds: 'El PMI termina en {y} años y {m} meses (unos {total} en total).', noPmi: 'Sin PMI: tu enganche es del 20 % o más.',
+        pi: 'Capital e intereses', tax: 'Impuesto a la propiedad', ins: 'Seguro de vivienda', pmi: 'PMI', hoaL: 'HOA',
+        compareTitle: 'Compara el enganche', downCol: 'Enganche', schedule: 'Tabla de amortización anual', year: 'Año', principal: 'Capital', interest: 'Intereses', balance: 'Saldo',
+        disclaimer: 'Solo es una estimación. El impuesto, el seguro y el PMI dependen de la zona, el banco y tu historial crediticio; revisa la estimación oficial (Loan Estimate) de tu prestamista.',
+      },
+      howTo: [
+        'Introduce el precio de la vivienda, el enganche (cantidad o %), la tasa de interés y el plazo.',
+        'Ajusta el impuesto a la propiedad, el seguro, el PMI y la cuota HOA según la casa que estás viendo.',
+        'Usa la tabla comparativa para ver cuánto bajan el pago mensual y los intereses con un enganche mayor.',
+      ],
+      faq: [
+        { q: '¿Qué es el PMI?', a: 'Es un seguro hipotecario privado que protege al banco cuando das menos del 20 % de enganche en un préstamo convencional. Se cancela automáticamente cuando el saldo llega al 78 % del valor original.' },
+        { q: '¿Es mejor una hipoteca a 15 o a 30 años?', a: 'A 15 años pagas más cada mes pero muchos menos intereses en total. A 30 años el pago mensual es menor, pero el costo total es mayor.' },
+        { q: '¿Qué incluye el pago mensual de la hipoteca?', a: 'Normalmente capital e intereses, más el impuesto a la propiedad y el seguro de vivienda (escrow), y el PMI o la cuota HOA si aplican.' },
+      ],
+    },
     'vat-calculator': {
       name: 'Calculadora de IVA',
       short: 'Suma o quita el IVA, GST o impuesto al consumo en 17 países.',
