@@ -1,0 +1,139 @@
+---
+// 미국 프리랜서(1099) 세금 계산기 2026. 계산은 src/lib/selfemployed.ts
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+import { STATES } from '../data/us-tax-2026';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['self-employed-tax'];
+const ui = tool.ui;
+const states = Object.entries(STATES).map(([code, s]) => ({ code, name: s.name })).sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card paycheck se-tax" id="se" data-lang={lang} data-labels={JSON.stringify(ui)}>
+  <div class="grid-2">
+    <label>{ui.income} (USD)<input id="se-income" type="number" inputmode="decimal" min="0" step="100" value="100000" /></label>
+    <label>{ui.expenses} (USD)<input id="se-exp" type="number" inputmode="decimal" min="0" step="100" value="20000" /></label>
+    <label>{ui.state}
+      <select id="se-state">{states.map((s) => <option value={s.code} selected={s.code === 'CA'}>{s.name}</option>)}</select>
+    </label>
+    <label>{ui.filing}
+      <select id="se-filing">
+        <option value="single">{ui.single}</option><option value="mfj">{ui.mfj}</option><option value="hoh">{ui.hoh}</option>
+      </select>
+    </label>
+    <label>{ui.wages} (USD)<input id="se-wages" type="number" inputmode="decimal" min="0" step="1000" value="0" /></label>
+  </div>
+
+  <div class="pay-hero" aria-live="polite">
+    <span class="stat-label">{ui.setAside}</span>
+    <strong id="se-pct">—</strong>
+    <span class="stat-sub">{ui.quarterly} <b id="se-q">—</b> · {ui.takeHome} <b id="se-net">—</b></span>
+  </div>
+
+  <div class="pay-bar" id="se-bar" role="img" aria-describedby="se-legend"></div>
+  <ul class="pay-legend" id="se-legend"></ul>
+
+  <div class="table-wrap pay-table-wrap">
+    <table><tbody id="se-rows"></tbody></table>
+  </div>
+
+  <h2 class="sub">{ui.dueTitle}</h2>
+  <div class="table-wrap pay-table-wrap">
+    <table>
+      <thead><tr><th>{ui.quarter}</th><th>{ui.dueDate}</th><th>{ui.amount}</th></tr></thead>
+      <tbody id="se-due"></tbody>
+    </table>
+  </div>
+  <p class="note" id="se-qbi-note"></p>
+  <p class="note">{ui.disclaimer}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script>
+  import { calcSelfEmployed, QUARTERLY_DUE_2026 } from '../lib/selfemployed';
+  import type { Filing } from '../data/us-tax-2026';
+
+  const root = document.getElementById('se') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const lang = root.dataset.lang ?? 'en';
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const money = new Intl.NumberFormat(lang, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const pct = new Intl.NumberFormat(lang, { style: 'percent', maximumFractionDigits: 1 });
+  const dateFmt = new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+  const KEY = 'kitwise-se-tax';
+  const el = {
+    income: $<HTMLInputElement>('#se-income'), exp: $<HTMLInputElement>('#se-exp'), state: $<HTMLSelectElement>('#se-state'),
+    filing: $<HTMLSelectElement>('#se-filing'), wages: $<HTMLInputElement>('#se-wages'),
+  };
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+    if (s) Object.entries(el).forEach(([k, e]) => s[k] != null && (e.value = String(s[k])));
+  } catch {
+    /* 저장 불가 환경 */
+  }
+  const num = (e: HTMLInputElement) => Math.max(0, Number(e.value) || 0);
+  const row = (cells: string[], cls = '') => {
+    const tr = document.createElement('tr');
+    if (cls) tr.className = cls;
+    cells.forEach((c) => tr.append(Object.assign(document.createElement('td'), { textContent: c })));
+    return tr;
+  };
+
+  function calc() {
+    const income = num(el.income);
+    const r = calcSelfEmployed({ income, expenses: num(el.exp), filing: el.filing.value as Filing, state: el.state.value, wages: num(el.wages) });
+    $<HTMLElement>('#se-pct').textContent = pct.format(r.setAsidePct);
+    $<HTMLElement>('#se-q').textContent = money.format(r.quarterly);
+    $<HTMLElement>('#se-net').textContent = money.format(r.net);
+
+    // 순이익을 세후 수입과 세금으로 나눈 막대
+    const parts = [
+      { v: r.net, label: L.takeHome, cls: 's1' }, { v: r.seTax, label: L.seTax, cls: 's2' },
+      { v: r.federal, label: L.federal, cls: 's3' }, { v: r.state, label: L.stateTax, cls: 's4' },
+    ];
+    const bar = $<HTMLElement>('#se-bar'), legend = $<HTMLElement>('#se-legend');
+    bar.replaceChildren();
+    legend.replaceChildren();
+    for (const p of parts) {
+      if (!(p.v > 0) || !(r.profit > 0)) continue;
+      const share = p.v / r.profit;
+      const tip = `${p.label}: ${money.format(p.v)} (${pct.format(share)})`;
+      const seg = Object.assign(document.createElement('span'), { className: `seg ${p.cls}`, title: tip, tabIndex: 0 });
+      seg.style.flexGrow = String(share);
+      seg.setAttribute('aria-label', tip);
+      bar.append(seg);
+      const li = document.createElement('li');
+      li.append(Object.assign(document.createElement('span'), { className: `swatch ${p.cls}` }), `${p.label} `, Object.assign(document.createElement('strong'), { textContent: money.format(p.v) }), ` · ${pct.format(share)}`);
+      legend.append(li);
+    }
+
+    $<HTMLElement>('#se-rows').replaceChildren(
+      row([L.income, money.format(income)]),
+      row([L.expenses, money.format(-num(el.exp))]),
+      row([L.profit, money.format(r.profit)], 'total-row'),
+      row([L.seTax, money.format(-r.seTax)]),
+      row([L.federal, money.format(-r.federal)]),
+      row([L.stateTax, money.format(-r.state)]),
+      row([L.takeHome, money.format(r.net)], 'total-row'),
+    );
+    $<HTMLElement>('#se-due').replaceChildren(
+      ...QUARTERLY_DUE_2026.map((dt, i) => row([`Q${i + 1}`, dateFmt.format(new Date(dt + 'T00:00:00Z')), money.format(r.quarterly)])),
+    );
+    $<HTMLElement>('#se-qbi-note').textContent =
+      L.qbiNote.replace('{qbi}', money.format(r.qbiDeduction)) + (r.qbiLimited ? ` ${L.qbiLimited}` : '');
+    try {
+      localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(Object.entries(el).map(([k, e]) => [k, e.value]))));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  }
+  root.addEventListener('input', calc);
+  root.addEventListener('change', calc);
+  calc();
+</script>

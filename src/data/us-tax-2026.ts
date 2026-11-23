@@ -17,6 +17,16 @@ export const FEDERAL: Record<Filing, { std: number; brackets: [number, number][]
 
 export const FICA = { ssRate: 0.062, ssWageBase: 184500, medicareRate: 0.0145, addlMedicareRate: 0.009, addlMedicareThreshold: { single: 200000, mfj: 250000, hoh: 200000 } as Record<Filing, number> };
 
+// 자영업 소득 공제(QBI, Sec. 199A) 2026: 기준 금액과 공제가 줄어드는 구간 (OBBBA로 구간 확대)
+// 출처: Rev. Proc. 2025-32 §4.26 인용 자료 (nationaltaxtools, countrytaxcalc, Credit Karma 일치)
+export const QBI = {
+  rate: 0.2,
+  threshold: { single: 201750, mfj: 403500, hoh: 201750 } as Record<Filing, number>,
+  phaseIn: { single: 75000, mfj: 150000, hoh: 75000 } as Record<Filing, number>,
+  minDeduction: 400, // QBI 1,000달러 이상이면 최소 400달러 공제 (2026년부터)
+  minQbiForMinimum: 1000,
+};
+
 type Br = [number, number][];
 export interface StateTax { name: string; s: Br; m: Br; sd: [number, number]; pe: [number, number]; peCredit?: boolean; sdCredit?: boolean; local?: boolean }
 

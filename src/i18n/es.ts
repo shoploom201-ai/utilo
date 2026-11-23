@@ -223,6 +223,32 @@ const es: Dict = {
         { q: '¿Por qué tarda tanto pagar solo el mínimo?', a: 'El pago mínimo cubre sobre todo intereses, así que el saldo baja muy despacio. Pagar un poco más cada mes puede ahorrarte años.' },
       ],
     },
+    'self-employed-tax': {
+      name: 'Calculadora de impuestos para autónomos en EE. UU. 2026',
+      short: 'Calcula tus impuestos 1099, los pagos trimestrales y cuánto apartar de cada cobro.',
+      metaDescription:
+        'Calculadora de impuestos de trabajo por cuenta propia 2026 para freelancers y contratistas 1099: impuesto de autoempleo (15,3 %), impuesto federal con la deducción QBI, impuesto estatal en los 50 estados, pagos trimestrales estimados y fechas límite.',
+      ui: {
+        income: 'Ingresos 1099 / freelance', expenses: 'Gastos del negocio', state: 'Estado', filing: 'Estado civil tributario',
+        single: 'Soltero (Single)', mfj: 'Casado, declaración conjunta', hoh: 'Cabeza de familia', wages: 'Otros salarios W-2 (si los hay)',
+        setAside: 'Aparta de cada cobro', quarterly: 'Pago trimestral', takeHome: 'Beneficio neto',
+        seTax: 'Impuesto de autoempleo', federal: 'Impuesto federal', stateTax: 'Impuesto estatal', profit: 'Beneficio',
+        dueTitle: 'Pagos estimados de 2026 (formulario 1040-ES)', quarter: 'Trimestre', dueDate: 'Fecha límite', amount: 'Importe',
+        qbiNote: 'Incluye una deducción por ingresos de negocio calificados (QBI) de {qbi}.',
+        qbiLimited: 'Tus ingresos superan el límite de la QBI, así que la deducción se reduce (supone que no tienes empleados ni bienes del negocio).',
+        disclaimer: 'Solo es una estimación: usa la deducción estándar y no incluye seguro médico, aportes de jubilación ni créditos. Si también tienes un empleo W-2, se supone que tu empresa retiene ese impuesto.',
+      },
+      howTo: [
+        'Introduce tus ingresos freelance o 1099 del año y tus gastos del negocio.',
+        'Elige tu estado y tu estado civil tributario. Si además tienes un empleo, añade tus salarios W-2.',
+        'Aparta el porcentaje indicado de cada cobro y paga el importe trimestral antes de cada fecha límite.',
+      ],
+      faq: [
+        { q: '¿Qué es el impuesto de autoempleo?', a: 'Es el Seguro Social y Medicare de quien trabaja por su cuenta: el 15,3 % del 92,35 % de tu beneficio, porque no hay empresa que pague la mitad. Puedes deducir la mitad de tus ingresos.' },
+        { q: '¿Tengo que pagar impuestos trimestrales?', a: 'Normalmente sí, si esperas deber 1.000 dólares o más en el año. Pagar tarde o de menos puede generar una multa.' },
+        { q: '¿Qué es la deducción QBI?', a: 'Muchos freelancers pueden deducir hasta el 20 % de sus ingresos de negocio calificados. Por encima del límite de ingresos la deducción se reduce, sobre todo en servicios profesionales.' },
+      ],
+    },
     'vat-calculator': {
       name: 'Calculadora de IVA',
       short: 'Suma o quita el IVA, GST o impuesto al consumo en 17 países.',

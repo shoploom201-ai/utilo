@@ -14,6 +14,7 @@ export const tools = [
   { id: 'us-paycheck', category: 'finance' },
   { id: 'mortgage', category: 'finance' },
   { id: 'debt-payoff', category: 'finance' },
+  { id: 'self-employed-tax', category: 'tax' },
   { id: 'loan-calculator', category: 'finance' },
   { id: 'compound-interest-calculator', category: 'finance' },
   { id: 'image-compressor', category: 'image' },

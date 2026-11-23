@@ -221,6 +221,32 @@ const en = {
         { q: 'Why does paying only the minimum take so long?', a: 'Minimum payments mostly cover interest, so the balance shrinks slowly. Paying even a little extra each month can cut years off.' },
       ],
     },
+    'self-employed-tax': {
+      name: 'Self-Employment Tax Calculator 2026',
+      short: 'Estimate 1099 taxes, quarterly payments and how much of every payment to set aside.',
+      metaDescription:
+        'Free 2026 self-employment tax calculator for freelancers and 1099 contractors: self-employment tax (15.3%), federal income tax with the QBI deduction, state tax for all 50 states, quarterly estimated payments and due dates.',
+      ui: {
+        income: '1099 / freelance income', expenses: 'Business expenses', state: 'State', filing: 'Filing status',
+        single: 'Single', mfj: 'Married filing jointly', hoh: 'Head of household', wages: 'Other W-2 wages (if any)',
+        setAside: 'Set aside from every payment', quarterly: 'Quarterly payment', takeHome: 'Take-home profit',
+        seTax: 'Self-employment tax', federal: 'Federal income tax', stateTax: 'State income tax', profit: 'Net profit',
+        dueTitle: '2026 estimated tax payments (Form 1040-ES)', quarter: 'Quarter', dueDate: 'Due date', amount: 'Amount',
+        qbiNote: 'Includes a qualified business income (QBI) deduction of {qbi}.',
+        qbiLimited: 'Your income is above the QBI threshold, so the deduction is reduced (assumes no employees or business property).',
+        disclaimer: 'Estimate only: uses the standard deduction and does not include health insurance, retirement contributions or credits. If you also have a W-2 job, tax on those wages is assumed to be withheld by your employer.',
+      },
+      howTo: [
+        'Enter your freelance or 1099 income for the year and your business expenses.',
+        'Choose your state and filing status. If you also have a regular job, enter those W-2 wages.',
+        'Set aside the shown percentage of every payment and pay the quarterly amount by each due date.',
+      ],
+      faq: [
+        { q: 'What is self-employment tax?', a: 'It is Social Security and Medicare tax for people who work for themselves: 15.3% of 92.35% of your net profit, because there is no employer to pay half. You can deduct half of it from your income.' },
+        { q: 'Do I have to pay quarterly estimated taxes?', a: 'Usually yes, if you expect to owe $1,000 or more for the year. Paying late or too little can lead to an underpayment penalty.' },
+        { q: 'What is the QBI deduction?', a: 'Many freelancers can deduct up to 20% of their qualified business income. Above the income threshold the deduction is reduced, especially for service businesses.' },
+      ],
+    },
     'vat-calculator': {
       name: 'VAT Calculator',
       short: 'Add or remove VAT, GST or consumption tax for 17 countries.',
