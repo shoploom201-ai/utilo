@@ -9,7 +9,7 @@ const es: Dict = {
   home: {
     title: 'Calculadoras de impuestos y herramientas de imagen gratis',
     intro: 'Herramientas rápidas y privadas para el día a día. Sin registro ni subidas: todo se procesa en tu dispositivo.',
-    categories: { puzzle: 'Puzzles y juegos mentales', study: 'Concentración y estudio', tax: 'Calculadoras de impuestos', finance: 'Calculadoras financieras', image: 'Herramientas de imagen' },
+    categories: { music: 'Práctica musical', puzzle: 'Puzzles y juegos mentales', study: 'Concentración y estudio', tax: 'Calculadoras de impuestos', finance: 'Calculadoras financieras', image: 'Herramientas de imagen' },
   },
   common: {
     privacyNote: 'Todo funciona dentro de tu navegador. Tus cifras y archivos nunca salen de tu dispositivo.',
@@ -92,6 +92,54 @@ const es: Dict = {
         { q: '¿Cómo se juega al sudoku?', a: 'Coloca los números del 1 al 9 de modo que cada fila, columna y caja de 3×3 los tenga todos una sola vez. Todos los sudokus de aquí tienen una única solución.' },
         { q: '¿Qué es el sudoku de hoy?', a: 'Cada día se crea un sudoku nuevo por dificultad, igual para todos los jugadores. Resuélvelo varios días seguidos para aumentar tu racha.' },
         { q: '¿Usar pistas afecta a mi récord?', a: 'Las pistas te ayudan a seguir, pero un sudoku resuelto con pistas no cuenta para tu mejor tiempo.' },
+      ],
+    },
+    metronome: {
+      name: 'Metrónomo online',
+      short: 'Metrónomo preciso con tap tempo, compases y subdivisiones.',
+      metaDescription:
+        'Metrónomo online gratis: elige cualquier tempo de 20 a 300 BPM, usa tap tempo, compases de 2/4, 3/4, 4/4 o 6/8, corcheas o tresillos y acento en el primer tiempo. Registra tu tiempo de práctica diario.',
+      ui: {
+        today: 'Practicado hoy', streak: 'Racha', min: 'min', days: 'días',
+        start: 'Empezar', stop: 'Parar', tap: 'Tap tempo', signature: 'Compás', subdivision: 'Subdivisión',
+        sub1: 'Negras', sub2: 'Corcheas', sub3: 'Tresillos', sub4: 'Semicorcheas',
+        sound: 'Sonido', soundClick: 'Clic', soundWood: 'Bloque de madera', soundBeep: 'Pitido', accent: 'Acentuar el primer tiempo', volume: 'Volumen',
+        shortcut: 'Atajos: Espacio = empezar/parar, ↑ ↓ = cambiar tempo (Mayús = ±5), T = tap tempo.',
+      },
+      howTo: [
+        'Ajusta el tempo con el deslizador o los botones + y −, o pulsa «Tap tempo» al ritmo de una canción.',
+        'Elige el compás y, si quieres, una subdivisión como corcheas o tresillos.',
+        'Pulsa Empezar y toca a la vez. Empieza despacio y sube el tempo cuando toques limpio.',
+      ],
+      faq: [
+        { q: '¿Qué significa BPM?', a: 'Pulsaciones por minuto. 60 BPM es un pulso por segundo; 120 BPM son dos pulsos por segundo.' },
+        { q: '¿Cómo funciona el tap tempo?', a: 'Pulsa el botón al menos dos veces al ritmo de la música y el metrónomo calcula el BPM con la media de los intervalos.' },
+        { q: '¿Es preciso este metrónomo?', a: 'Sí. Los clics se programan por adelantado con el reloj de audio, así que el pulso se mantiene estable aunque la página esté ocupada.' },
+      ],
+    },
+    tuner: {
+      name: 'Afinador de guitarra',
+      short: 'Afina tu guitarra, bajo, ukelele o violín con el micrófono.',
+      metaDescription:
+        'Afinador online gratis: afina guitarra, bajo, ukelele y violín con el micrófono, o usa el modo cromático para cualquier instrumento. Aguja en cents, La4 ajustable y notas de referencia. No se graba nada.',
+      ui: {
+        instrument: 'Instrumento', guitar: 'Guitarra (estándar Mi La Re Sol Si Mi)', bass: 'Bajo (Mi La Re Sol)', ukulele: 'Ukelele (Sol Do Mi La)', violin: 'Violín (Sol Re La Mi)', chromatic: 'Cromático (cualquier nota)',
+        reference: 'Referencia La4 (Hz)', playRef: 'Toca una cuerda en pantalla para oír su nota de referencia.',
+        start: 'Iniciar afinador', stop: 'Parar', idle: 'Pulsa Iniciar y permite el acceso al micrófono.', listening: 'Escuchando… toca una cuerda.',
+        inTune: 'Afinada ✓', tooLow: 'Baja — tensa la cuerda ↑', tooHigh: 'Alta — afloja la cuerda ↓',
+        noMic: 'El acceso al micrófono está bloqueado. Permítelo en los ajustes del navegador y vuelve a intentarlo.',
+        noMicSupport: 'Este navegador no puede usar el micrófono. Prueba con Chrome, Edge, Safari o Firefox.',
+        privacy: 'El sonido del micrófono se analiza solo en este dispositivo. Nunca se graba ni se envía.',
+      },
+      howTo: [
+        'Elige tu instrumento, pulsa «Iniciar afinador» y permite el acceso al micrófono.',
+        'Toca una cuerda al aire. El afinador muestra la cuerda más cercana y cuánto se desvía en cents.',
+        'Gira la clavija hasta que la aguja quede en el centro y la pantalla se ponga verde.',
+      ],
+      faq: [
+        { q: '¿Cuál es la afinación estándar de la guitarra?', a: 'De la cuerda más gruesa a la más fina: Mi2, La2, Re3, Sol3, Si3, Mi4.' },
+        { q: '¿Qué son los cents?', a: 'Un cent es la centésima parte de un semitono. Con una desviación de unos ±5 cents, casi todo el mundo oye la nota afinada.' },
+        { q: '¿Por qué no reacciona el afinador?', a: 'Comprueba que el navegador tenga permiso para usar el micrófono, toca una sola cuerda con claridad y reduce el ruido de fondo.' },
       ],
     },
     'vat-calculator': {
@@ -324,6 +372,7 @@ const es: Dict = {
         'Puedes desactivar la publicidad personalizada en https://www.google.com/settings/ads y obtener más información en https://policies.google.com/technologies/ads.',
         'Nuestro proveedor de alojamiento puede registrar información técnica básica, como la dirección IP y el tipo de navegador, por motivos de seguridad.',
         'Al reproducir una emisora, el audio llega directamente desde la cadena, que recibe información básica de conexión como tu dirección IP. Tu registro de escucha y tus favoritas se guardan solo en tu navegador.',
+        'El afinador usa el micrófono solo mientras está activado. El sonido se analiza en tu dispositivo y nunca se graba ni se envía.',
         'Si tienes preguntas sobre esta política, escríbenos a {email}.',
       ],
     },

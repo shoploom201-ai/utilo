@@ -217,6 +217,40 @@ h2.sub { font-size: 1.05rem; margin: .5rem 0 0; }
 .center-check { justify-content: center; }
 @media (max-width: 480px) { .tool-btn span { display: none; } .tool-btn { font-size: 1.15rem; padding: .55rem 1rem; } }
 
+/* ---------- 메트로놈 ---------- */
+.metro, .tuner { display: grid; gap: 1rem; }
+.metro-stats { grid-template-columns: repeat(2, 1fr); }
+.bpm-row { display: flex; align-items: center; justify-content: center; gap: 1.25rem; }
+.round-btn { width: 3.25rem; height: 3.25rem; border-radius: 50%; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1.6rem; cursor: pointer; }
+.bpm-display { display: grid; text-align: center; min-width: 8rem; }
+.bpm-display strong { font-size: clamp(3rem, 12vw, 4.5rem); line-height: 1; font-variant-numeric: tabular-nums; }
+.bpm-display span { color: var(--muted); }
+#m-slider { width: 100%; accent-color: var(--accent); }
+.beats { display: flex; justify-content: center; gap: .75rem; min-height: 1.5rem; }
+.beat-dot { width: 1.25rem; height: 1.25rem; border-radius: 50%; background: var(--border); transition: transform .06s, background .06s; }
+.beat-dot.first { box-shadow: 0 0 0 2px var(--accent) inset; }
+.beat-dot.on { background: var(--accent); transform: scale(1.35); }
+.beat-dot.first.on { background: var(--bad); box-shadow: none; }
+@media (prefers-reduced-motion: reduce) { .beat-dot { transition: none; } .beat-dot.on { transform: none; } }
+
+/* ---------- 튜너 ---------- */
+.strings { display: flex; justify-content: center; gap: .5rem; flex-wrap: wrap; }
+.string-btn { font: inherit; min-width: 3.5rem; padding: .5rem .75rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; display: grid; gap: .1rem; }
+.string-btn small { color: var(--muted); font-size: .75rem; }
+.string-btn.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.tuner-display { padding: 1.25rem; border-radius: var(--radius); background: var(--bg); display: grid; gap: .75rem; text-align: center; }
+.tu-note strong { display: block; font-size: clamp(3.5rem, 16vw, 5rem); line-height: 1; }
+.tu-note span { color: var(--muted); }
+.meter-scale { display: flex; justify-content: space-between; font-size: .75rem; color: var(--muted); }
+.meter-track { position: relative; height: 2.5rem; border-radius: 8px; background: linear-gradient(90deg, color-mix(in srgb, var(--bad) 25%, transparent), transparent 40%, transparent 60%, color-mix(in srgb, var(--bad) 25%, transparent)); border: 1px solid var(--border); }
+.meter-zone { position: absolute; left: 45%; width: 10%; top: 0; bottom: 0; background: color-mix(in srgb, var(--good) 25%, transparent); }
+.needle { position: absolute; left: 50%; top: -4px; bottom: -4px; width: 4px; margin-left: -2px; border-radius: 2px; background: var(--text); transition: left .12s ease-out; }
+.tu-readout { color: var(--muted); font-variant-numeric: tabular-nums; }
+.tu-status { margin: 0; font-weight: 700; font-size: 1.05rem; }
+.tuner.in-tune .tu-note strong, .tuner.in-tune .tu-status { color: var(--good); }
+.tuner.in-tune .needle { background: var(--good); }
+.tuner.quiet .tu-note strong, .tuner.quiet .needle { opacity: .35; }
+
 .schedule summary { cursor: pointer; font-weight: 600; }
 .table-wrap { max-height: 420px; overflow: auto; margin-top: .75rem; border: 1px solid var(--border); border-radius: 8px; }
 .table-wrap table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }

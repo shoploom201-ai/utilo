@@ -1,0 +1,246 @@
+---
+// 악기 튜너: 마이크 소리를 기기 안에서만 분석해 음 높이를 보여 줍니다 (녹음·전송 없음).
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['tuner'];
+const ui = tool.ui;
+// 나라별 음 이름 관습: 스페인어권은 Do Re Mi, 한국·일본은 영문 + 계이름 병기
+const SOLFEGE: Partial<Record<Locale, string[]>> = {
+  ko: ['도', '도♯', '레', '레♯', '미', '파', '파♯', '솔', '솔♯', '라', '라♯', '시'],
+  ja: ['ド', 'ド♯', 'レ', 'レ♯', 'ミ', 'ファ', 'ファ♯', 'ソ', 'ソ♯', 'ラ', 'ラ♯', 'シ'],
+  es: ['Do', 'Do♯', 'Re', 'Re♯', 'Mi', 'Fa', 'Fa♯', 'Sol', 'Sol♯', 'La', 'La♯', 'Si'],
+};
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card tuner" id="tuner" data-labels={JSON.stringify(ui)} data-solfege={JSON.stringify(SOLFEGE[lang] ?? null)} data-solfege-first={lang === 'es' ? '1' : '0'}>
+  <div class="grid-2">
+    <label>{ui.instrument}
+      <select id="tu-inst">
+        <option value="guitar">{ui.guitar}</option>
+        <option value="bass">{ui.bass}</option>
+        <option value="ukulele">{ui.ukulele}</option>
+        <option value="violin">{ui.violin}</option>
+        <option value="chromatic">{ui.chromatic}</option>
+      </select>
+    </label>
+    <label>{ui.reference}
+      <input id="tu-a4" type="number" min="430" max="450" step="1" value="440" />
+    </label>
+  </div>
+
+  <div class="strings" id="tu-strings"></div>
+  <p class="note center">{ui.playRef}</p>
+
+  <div class="tuner-display" id="tu-display">
+    <div class="tu-note"><strong id="tu-name">—</strong><span id="tu-sub"></span></div>
+    <div class="meter" aria-hidden="true">
+      <div class="meter-scale"><span>-50</span><span>0</span><span>+50</span></div>
+      <div class="meter-track"><div class="meter-zone"></div><div class="needle" id="tu-needle"></div></div>
+    </div>
+    <div class="tu-readout"><span id="tu-cents">0</span> cents · <span id="tu-freq">0.0</span> Hz</div>
+    <p class="tu-status" id="tu-status" aria-live="polite">{ui.idle}</p>
+  </div>
+
+  <div class="timer-actions">
+    <button type="button" class="btn big" id="tu-start">🎤 {ui.start}</button>
+  </div>
+  <p class="note">{ui.privacy}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script>
+  import { detectPitch, toNote, midiToFreq } from '../lib/pitch';
+
+  const root = document.getElementById('tuner') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const SOL = JSON.parse(root.dataset.solfege ?? 'null') as string[] | null;
+  const solFirst = root.dataset.solfegeFirst === '1';
+  const LETTERS = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const SET_KEY = 'kitwise-tuner-settings';
+
+  // 개방현 (MIDI 번호, 낮은 줄부터) 과 찾을 최저 주파수
+  const PRESETS: Record<string, { strings: number[]; minFreq: number }> = {
+    guitar: { strings: [40, 45, 50, 55, 59, 64], minFreq: 65 },
+    bass: { strings: [28, 33, 38, 43], minFreq: 35 },
+    ukulele: { strings: [67, 60, 64, 69], minFreq: 200 },
+    violin: { strings: [55, 62, 69, 76], minFreq: 170 },
+    chromatic: { strings: [], minFreq: 40 },
+  };
+
+  let settings = { inst: 'guitar', a4: 440 };
+  try {
+    settings = { ...settings, ...JSON.parse(localStorage.getItem(SET_KEY) ?? '{}') };
+  } catch {
+    /* 저장 불가 환경 */
+  }
+  const saveSettings = () => {
+    try {
+      localStorage.setItem(SET_KEY, JSON.stringify(settings));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  };
+
+  const instEl = $<HTMLSelectElement>('#tu-inst');
+  const a4El = $<HTMLInputElement>('#tu-a4');
+  const startBtn = $<HTMLButtonElement>('#tu-start');
+  const statusEl = $<HTMLElement>('#tu-status');
+  instEl.value = settings.inst;
+  a4El.value = String(settings.a4);
+
+  const noteLabel = (midi: number) => {
+    const pc = ((midi % 12) + 12) % 12;
+    const oct = Math.floor(midi / 12) - 1;
+    return { main: solFirst && SOL ? SOL[pc] : LETTERS[pc], sub: SOL ? (solFirst ? `${LETTERS[pc]}${oct}` : `${SOL[pc]} · ${oct}`) : String(oct), short: `${LETTERS[pc]}${oct}` };
+  };
+
+  function renderStrings() {
+    const p = PRESETS[settings.inst];
+    $<HTMLElement>('#tu-strings').replaceChildren(
+      ...p.strings.map((m) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'string-btn';
+        b.dataset.midi = String(m);
+        const n = noteLabel(m);
+        b.innerHTML = '';
+        const strong = document.createElement('strong');
+        strong.textContent = solFirst && SOL ? n.main : n.short;
+        b.append(strong);
+        if (SOL && !solFirst) {
+          const s = document.createElement('small');
+          s.textContent = SOL[((m % 12) + 12) % 12];
+          b.append(s);
+        }
+        b.title = L.playRef;
+        return b;
+      }),
+    );
+  }
+
+  // 기준음 재생 (마이크 없이도 귀로 맞출 수 있게)
+  let refCtx: AudioContext | null = null;
+  function playRef(midi: number) {
+    refCtx ??= new AudioContext();
+    if (refCtx.state === 'suspended') refCtx.resume();
+    const o = refCtx.createOscillator();
+    const g = refCtx.createGain();
+    o.type = 'triangle';
+    o.frequency.value = midiToFreq(midi, settings.a4);
+    const t0 = refCtx.currentTime;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.4, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 2.2);
+    o.connect(g).connect(refCtx.destination);
+    o.start(t0);
+    o.stop(t0 + 2.3);
+  }
+
+  // ---------------- 마이크 분석 ----------------
+  let stream: MediaStream | null = null;
+  let ctx: AudioContext | null = null;
+  let timer = 0;
+  let recent: number[] = [];
+  let lastHeard = 0;
+
+  function show(freq: number) {
+    const preset = PRESETS[settings.inst];
+    let target: number;
+    if (preset.strings.length) {
+      // 가장 가까운 줄을 기준으로 맞춤
+      const mf = 69 + 12 * Math.log2(freq / settings.a4);
+      target = preset.strings.reduce((a, b) => (Math.abs(b - mf) < Math.abs(a - mf) ? b : a));
+    } else target = toNote(freq, settings.a4).midi;
+    const cents = Math.round(1200 * Math.log2(freq / midiToFreq(target, settings.a4)));
+    const n = noteLabel(target);
+    $<HTMLElement>('#tu-name').textContent = n.main;
+    $<HTMLElement>('#tu-sub').textContent = n.sub;
+    $<HTMLElement>('#tu-cents').textContent = (cents > 0 ? '+' : '') + cents;
+    $<HTMLElement>('#tu-freq').textContent = freq.toFixed(1);
+    const clamped = Math.max(-50, Math.min(50, cents));
+    $<HTMLElement>('#tu-needle').style.left = `${50 + clamped}%`;
+    const inTune = Math.abs(cents) <= 5;
+    root.classList.toggle('in-tune', inTune);
+    statusEl.textContent = inTune ? L.inTune : cents < 0 ? L.tooLow : L.tooHigh;
+    root.querySelectorAll<HTMLElement>('.string-btn').forEach((b) => b.classList.toggle('active', Number(b.dataset.midi) === target));
+  }
+
+  function analyse(analyser: AnalyserNode, buf: Float32Array<ArrayBuffer>) {
+    analyser.getFloatTimeDomainData(buf);
+    const p = detectPitch(buf, analyser.context.sampleRate, PRESETS[settings.inst].minFreq, 1400);
+    if (p && p.clarity > 0.8) {
+      recent.push(p.freq);
+      recent = recent.slice(-5);
+      const median = [...recent].sort((a, b) => a - b)[Math.floor(recent.length / 2)];
+      lastHeard = Date.now();
+      root.classList.remove('quiet');
+      show(median);
+    } else if (Date.now() - lastHeard > 1200) {
+      recent = [];
+      root.classList.add('quiet');
+      root.classList.remove('in-tune');
+      statusEl.textContent = L.listening;
+    }
+  }
+
+  async function start() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      statusEl.textContent = L.noMicSupport;
+      return;
+    }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    } catch {
+      statusEl.textContent = L.noMic;
+      return;
+    }
+    ctx = new AudioContext();
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 4096;
+    ctx.createMediaStreamSource(stream).connect(analyser);
+    const buf = new Float32Array(analyser.fftSize);
+    timer = window.setInterval(() => analyse(analyser, buf), 80);
+    startBtn.textContent = `■ ${L.stop}`;
+    statusEl.textContent = L.listening;
+    root.classList.add('listening', 'quiet');
+  }
+
+  function stop() {
+    clearInterval(timer);
+    stream?.getTracks().forEach((tr) => tr.stop());
+    ctx?.close();
+    stream = null;
+    ctx = null;
+    startBtn.textContent = `🎤 ${L.start}`;
+    statusEl.textContent = L.idle;
+    root.classList.remove('listening', 'in-tune', 'quiet');
+  }
+
+  startBtn.addEventListener('click', () => (stream ? stop() : start()));
+  $<HTMLElement>('#tu-strings').addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('.string-btn');
+    if (b) playRef(Number(b.dataset.midi));
+  });
+  instEl.addEventListener('change', () => {
+    settings.inst = instEl.value;
+    saveSettings();
+    recent = [];
+    renderStrings();
+  });
+  a4El.addEventListener('change', () => {
+    settings.a4 = Math.min(450, Math.max(430, Math.round(Number(a4El.value) || 440)));
+    a4El.value = String(settings.a4);
+    saveSettings();
+  });
+  addEventListener('pagehide', stop);
+
+  renderStrings();
+</script>

@@ -7,7 +7,7 @@ const en = {
   home: {
     title: 'Free online tax calculators and image tools',
     intro: 'Quick, private tools for everyday work. No sign-up and no uploads — everything runs on your device.',
-    categories: { puzzle: 'Puzzles & brain games', study: 'Focus & study', tax: 'Tax calculators', finance: 'Finance calculators', image: 'Image tools' },
+    categories: { music: 'Music practice', puzzle: 'Puzzles & brain games', study: 'Focus & study', tax: 'Tax calculators', finance: 'Finance calculators', image: 'Image tools' },
   },
   common: {
     privacyNote: 'Runs entirely in your browser. Your numbers and files never leave your device.',
@@ -90,6 +90,54 @@ const en = {
         { q: 'How do you play Sudoku?', a: 'Place the numbers 1–9 so that each row, each column and each 3×3 box contains every number exactly once. Every puzzle here has exactly one solution.' },
         { q: "What is Today's puzzle?", a: "A new puzzle for each difficulty is created every day, and it is the same for every player. Solve it on consecutive days to build your streak." },
         { q: 'Does using a hint affect my record?', a: 'Hints help you continue, but a puzzle solved with hints does not count towards your best time.' },
+      ],
+    },
+    metronome: {
+      name: 'Online Metronome',
+      short: 'A steady, accurate metronome with tap tempo, time signatures and subdivisions.',
+      metaDescription:
+        'Free online metronome: set any tempo from 20 to 300 BPM, tap the tempo, choose 2/4, 3/4, 4/4 or 6/8, add eighth notes or triplets, and accent the first beat. Tracks your daily practice time.',
+      ui: {
+        today: 'Practised today', streak: 'Day streak', min: 'min', days: 'days',
+        start: 'Start', stop: 'Stop', tap: 'Tap tempo', signature: 'Time signature', subdivision: 'Subdivision',
+        sub1: 'Quarter notes', sub2: 'Eighth notes', sub3: 'Triplets', sub4: 'Sixteenth notes',
+        sound: 'Sound', soundClick: 'Click', soundWood: 'Wood block', soundBeep: 'Beep', accent: 'Accent the first beat', volume: 'Volume',
+        shortcut: 'Shortcuts: Space to start/stop, ↑ ↓ to change tempo (Shift = ±5), T to tap.',
+      },
+      howTo: [
+        'Set the tempo with the slider or the + and − buttons, or tap the tempo button in time with a song.',
+        'Choose a time signature and, if you like, a subdivision such as eighth notes or triplets.',
+        'Press Start and play along. Start slowly and raise the tempo once you play cleanly.',
+      ],
+      faq: [
+        { q: 'What does BPM mean?', a: 'Beats per minute. 60 BPM is one beat per second; 120 BPM is two beats per second.' },
+        { q: 'How does tap tempo work?', a: 'Tap the button at least twice in time with the music. The metronome averages the gaps between your taps and sets the BPM.' },
+        { q: 'Is this metronome accurate?', a: 'Yes. Clicks are scheduled ahead on the audio clock rather than with ordinary timers, so the beat stays steady even if the page is busy.' },
+      ],
+    },
+    tuner: {
+      name: 'Guitar & Instrument Tuner',
+      short: 'Tune your guitar, bass, ukulele or violin with your microphone.',
+      metaDescription:
+        'Free online tuner: tune guitar, bass, ukulele and violin using your microphone, or use chromatic mode for any instrument. Accurate needle display in cents, adjustable A4 and reference tones. Nothing is recorded.',
+      ui: {
+        instrument: 'Instrument', guitar: 'Guitar (standard EADGBE)', bass: 'Bass (EADG)', ukulele: 'Ukulele (GCEA)', violin: 'Violin (GDAE)', chromatic: 'Chromatic (any note)',
+        reference: 'A4 reference (Hz)', playRef: 'Tap a string to hear its reference note.',
+        start: 'Start tuner', stop: 'Stop', idle: 'Press Start and allow microphone access.', listening: 'Listening… play one string.',
+        inTune: 'In tune ✓', tooLow: 'Too low — tighten the string ↑', tooHigh: 'Too high — loosen the string ↓',
+        noMic: 'Microphone access was blocked. Allow it in your browser settings and try again.',
+        noMicSupport: 'This browser cannot use the microphone. Try Chrome, Edge, Safari or Firefox.',
+        privacy: 'Sound from your microphone is analysed only on this device. It is never recorded or sent anywhere.',
+      },
+      howTo: [
+        'Choose your instrument and press Start, then allow microphone access.',
+        'Play one open string. The tuner shows the nearest string and how far off it is in cents.',
+        'Turn the tuning peg until the needle sits in the middle and the display turns green.',
+      ],
+      faq: [
+        { q: 'What is standard guitar tuning?', a: 'From the thickest string to the thinnest: E2, A2, D3, G3, B3, E4 (often remembered as E-A-D-G-B-E).' },
+        { q: 'What are cents?', a: 'A cent is one hundredth of a semitone. Within about ±5 cents most people hear the note as in tune.' },
+        { q: 'Why does the tuner not react?', a: 'Make sure the browser has microphone permission, play a single string clearly, and reduce background noise.' },
       ],
     },
     'vat-calculator': {
@@ -322,6 +370,7 @@ const en = {
         'You can turn off personalised advertising at https://www.google.com/settings/ads or learn more at https://policies.google.com/technologies/ads.',
         'Our hosting provider may record standard technical information such as IP address and browser type for security purposes.',
         'When you play a radio station, the audio is streamed directly from that broadcaster, which receives standard connection information such as your IP address. Your listening log and favourites are stored only in your browser.',
+        'The tuner uses your microphone only while it is switched on. The sound is analysed on your device and is never recorded or sent anywhere.',
         'If you have questions about this policy, contact us at {email}.',
       ],
     },

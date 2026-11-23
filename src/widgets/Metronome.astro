@@ -1,0 +1,306 @@
+---
+// 메트로놈: 오디오 시계 기준으로 미리 예약해서 재생하므로 박자가 흔들리지 않습니다.
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['metronome'];
+const ui = tool.ui;
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card metro" id="metro" data-labels={JSON.stringify(ui)}>
+  <div class="radio-stats metro-stats" aria-live="polite">
+    <div><span class="stat-label">{ui.today}</span><strong><span id="m-today">0</span> {ui.min}</strong></div>
+    <div><span class="stat-label">{ui.streak}</span><strong><span id="m-streak">0</span> {ui.days}</strong></div>
+  </div>
+
+  <div class="bpm-row">
+    <button type="button" class="round-btn" id="m-minus" aria-label="-1 BPM">−</button>
+    <div class="bpm-display">
+      <strong id="m-bpm">120</strong>
+      <span>BPM · <span id="m-tempo">Allegro</span></span>
+    </div>
+    <button type="button" class="round-btn" id="m-plus" aria-label="+1 BPM">+</button>
+  </div>
+  <input id="m-slider" type="range" min="20" max="300" value="120" aria-label="BPM" />
+
+  <div class="beats" id="m-beats" aria-hidden="true"></div>
+
+  <div class="timer-actions">
+    <button type="button" class="btn big" id="m-start">{ui.start}</button>
+    <button type="button" class="btn ghost" id="m-tap">👆 {ui.tap}</button>
+  </div>
+
+  <div class="grid-3">
+    <label>{ui.signature}
+      <select id="m-beats-sel">
+        <option value="2">2/4</option><option value="3">3/4</option><option value="4" selected>4/4</option>
+        <option value="5">5/4</option><option value="6">6/8</option>
+      </select>
+    </label>
+    <label>{ui.subdivision}
+      <select id="m-subs">
+        <option value="1">{ui.sub1}</option><option value="2">{ui.sub2}</option>
+        <option value="3">{ui.sub3}</option><option value="4">{ui.sub4}</option>
+      </select>
+    </label>
+    <label>{ui.sound}
+      <select id="m-sound">
+        <option value="click">{ui.soundClick}</option><option value="wood">{ui.soundWood}</option><option value="beep">{ui.soundBeep}</option>
+      </select>
+    </label>
+  </div>
+  <div class="grid-2">
+    <label class="check"><input id="m-accent" type="checkbox" checked /> {ui.accent}</label>
+    <label class="mix"><span>{ui.volume}</span><input id="m-vol" type="range" min="0" max="1" step="0.05" value="0.8" /></label>
+  </div>
+  <p class="note center">{ui.shortcut}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script>
+  type Settings = { bpm: number; beats: number; subs: number; sound: 'click' | 'wood' | 'beep'; accent: boolean; vol: number };
+  const root = document.getElementById('metro') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const SET_KEY = 'kitwise-metronome-settings';
+  const LOG_KEY = 'kitwise-metronome-log';
+  const load = <T,>(k: string, fb: T): T => {
+    try {
+      const v = localStorage.getItem(k);
+      return v ? { ...fb, ...JSON.parse(v) } : fb;
+    } catch {
+      return fb;
+    }
+  };
+  const save = (k: string, v: unknown) => {
+    try {
+      localStorage.setItem(k, JSON.stringify(v));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  };
+  const s = load<Settings>(SET_KEY, { bpm: 120, beats: 4, subs: 1, sound: 'click', accent: true, vol: 0.8 });
+  const log = load<Record<string, number>>(LOG_KEY, {});
+  const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+  const slider = $<HTMLInputElement>('#m-slider');
+  const beatsSel = $<HTMLSelectElement>('#m-beats-sel');
+  const subsSel = $<HTMLSelectElement>('#m-subs');
+  const soundSel = $<HTMLSelectElement>('#m-sound');
+  const accentEl = $<HTMLInputElement>('#m-accent');
+  const volEl = $<HTMLInputElement>('#m-vol');
+  const startBtn = $<HTMLButtonElement>('#m-start');
+  const beatsEl = $<HTMLElement>('#m-beats');
+
+  const tempoName = (b: number) =>
+    b < 40 ? 'Grave' : b < 60 ? 'Largo' : b < 66 ? 'Larghetto' : b < 76 ? 'Adagio' : b < 108 ? 'Andante' : b < 120 ? 'Moderato' : b < 168 ? 'Allegro' : b < 200 ? 'Presto' : 'Prestissimo';
+
+  function renderStats() {
+    $<HTMLElement>('#m-today').textContent = String(Math.floor((log[dayKey()] ?? 0) / 60));
+    let n = 0;
+    const d = new Date();
+    if ((log[dayKey(d)] ?? 0) < 60) d.setDate(d.getDate() - 1);
+    while ((log[dayKey(d)] ?? 0) >= 60) {
+      n++;
+      d.setDate(d.getDate() - 1);
+    }
+    $<HTMLElement>('#m-streak').textContent = String(n);
+  }
+
+  function renderBeats() {
+    beatsEl.replaceChildren(
+      ...Array.from({ length: s.beats }, (_, i) => {
+        const dot = document.createElement('span');
+        dot.className = 'beat-dot' + (i === 0 && s.accent ? ' first' : '');
+        return dot;
+      }),
+    );
+  }
+
+  function setBpm(v: number) {
+    s.bpm = Math.min(300, Math.max(20, Math.round(v)));
+    slider.value = String(s.bpm);
+    $<HTMLElement>('#m-bpm').textContent = String(s.bpm);
+    $<HTMLElement>('#m-tempo').textContent = tempoName(s.bpm);
+    save(SET_KEY, s);
+  }
+
+  // ---------------- 소리 ----------------
+  let ctx: AudioContext | null = null;
+  let noiseBuf: AudioBuffer | null = null;
+  const ensureCtx = () => {
+    if (!ctx) ctx = new AudioContext();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  };
+  function click(time: number, kind: 'accent' | 'beat' | 'sub') {
+    const c = ensureCtx();
+    const g = c.createGain();
+    const level = s.vol * (kind === 'sub' ? 0.45 : kind === 'accent' ? 1 : 0.75);
+    g.connect(c.destination);
+    if (s.sound === 'wood') {
+      if (!noiseBuf) {
+        noiseBuf = c.createBuffer(1, c.sampleRate * 0.1, c.sampleRate);
+        const data = noiseBuf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+      }
+      const src = c.createBufferSource();
+      src.buffer = noiseBuf;
+      const bp = c.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.Q.value = 10;
+      bp.frequency.value = kind === 'accent' ? 2600 : kind === 'beat' ? 1900 : 1500;
+      src.connect(bp).connect(g);
+      g.gain.setValueAtTime(level * 3, time);
+      g.gain.exponentialRampToValueAtTime(0.0001, time + 0.05);
+      src.start(time);
+      src.stop(time + 0.06);
+    } else {
+      const o = c.createOscillator();
+      o.type = s.sound === 'beep' ? 'sine' : 'square';
+      const f = s.sound === 'beep' ? { accent: 1320, beat: 880, sub: 660 } : { accent: 1600, beat: 1100, sub: 800 };
+      o.frequency.value = f[kind];
+      const len = s.sound === 'beep' ? 0.08 : 0.03;
+      g.gain.setValueAtTime(0.0001, time);
+      g.gain.exponentialRampToValueAtTime(level * (s.sound === 'beep' ? 0.6 : 0.35), time + 0.002);
+      g.gain.exponentialRampToValueAtTime(0.0001, time + len);
+      o.connect(g);
+      o.start(time);
+      o.stop(time + len + 0.01);
+    }
+  }
+
+  // ---------------- 예약 재생 (25ms마다 0.12초 앞까지 미리 예약) ----------------
+  let running = false;
+  let nextTime = 0;
+  let beat = 0;
+  let sub = 0;
+  let schedId = 0;
+  const queue: { t: number; beat: number }[] = [];
+  function schedule() {
+    const c = ensureCtx();
+    while (nextTime < c.currentTime + 0.12) {
+      // 6/8 은 1박과 4박에 강세
+      const strong = beat === 0 || (s.beats === 6 && beat === 3);
+      click(nextTime, sub > 0 ? 'sub' : strong && s.accent ? 'accent' : 'beat');
+      if (sub === 0) queue.push({ t: nextTime, beat });
+      nextTime += 60 / s.bpm / s.subs;
+      if (++sub >= s.subs) {
+        sub = 0;
+        beat = (beat + 1) % s.beats;
+      }
+    }
+  }
+  function draw() {
+    if (!running || !ctx) return;
+    while (queue.length && queue[0].t <= ctx.currentTime) {
+      const { beat: b } = queue.shift()!;
+      beatsEl.querySelectorAll('.beat-dot').forEach((el, i) => el.classList.toggle('on', i === b));
+    }
+    requestAnimationFrame(draw);
+  }
+  function start() {
+    const c = ensureCtx();
+    running = true;
+    beat = sub = 0;
+    queue.length = 0;
+    nextTime = c.currentTime + 0.06;
+    schedule();
+    schedId = window.setInterval(schedule, 25);
+    startBtn.textContent = L.stop;
+    root.classList.add('playing');
+    requestAnimationFrame(draw);
+  }
+  function stop() {
+    running = false;
+    clearInterval(schedId);
+    startBtn.textContent = L.start;
+    root.classList.remove('playing');
+    beatsEl.querySelectorAll('.beat-dot').forEach((el) => el.classList.remove('on'));
+  }
+  const toggle = () => (running ? stop() : start());
+
+  // 연습 시간 기록
+  let unsaved = 0;
+  setInterval(() => {
+    if (!running) return;
+    const k = dayKey();
+    log[k] = (log[k] ?? 0) + 1;
+    if (++unsaved >= 5) {
+      unsaved = 0;
+      save(LOG_KEY, log);
+      renderStats();
+    }
+  }, 1000);
+  addEventListener('pagehide', () => save(LOG_KEY, log));
+
+  // 탭 템포: 최근 탭 간격의 평균
+  let taps: number[] = [];
+  function tap() {
+    const now = performance.now();
+    if (taps.length && now - taps[taps.length - 1] > 2000) taps = [];
+    taps.push(now);
+    taps = taps.slice(-6);
+    if (taps.length >= 2) {
+      const gaps = taps.slice(1).map((t, i) => t - taps[i]);
+      setBpm(60000 / (gaps.reduce((a, b) => a + b, 0) / gaps.length));
+    }
+  }
+
+  // ---------------- 연결 ----------------
+  slider.addEventListener('input', () => setBpm(Number(slider.value)));
+  $<HTMLButtonElement>('#m-minus').addEventListener('click', () => setBpm(s.bpm - 1));
+  $<HTMLButtonElement>('#m-plus').addEventListener('click', () => setBpm(s.bpm + 1));
+  startBtn.addEventListener('click', toggle);
+  $<HTMLButtonElement>('#m-tap').addEventListener('click', tap);
+  beatsSel.addEventListener('change', () => {
+    s.beats = Number(beatsSel.value);
+    beat = 0;
+    save(SET_KEY, s);
+    renderBeats();
+  });
+  subsSel.addEventListener('change', () => {
+    s.subs = Number(subsSel.value);
+    sub = 0;
+    save(SET_KEY, s);
+  });
+  soundSel.addEventListener('change', () => {
+    s.sound = soundSel.value as Settings['sound'];
+    save(SET_KEY, s);
+  });
+  accentEl.addEventListener('change', () => {
+    s.accent = accentEl.checked;
+    save(SET_KEY, s);
+    renderBeats();
+  });
+  volEl.addEventListener('input', () => {
+    s.vol = Number(volEl.value);
+    save(SET_KEY, s);
+  });
+  document.addEventListener('keydown', (e) => {
+    const tag = (e.target as HTMLElement).tagName;
+    if (['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(tag) || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.code === 'Space') {
+      e.preventDefault();
+      toggle();
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      setBpm(s.bpm + (e.key === 'ArrowUp' ? 1 : -1) * (e.shiftKey ? 5 : 1));
+    } else if (e.key.toLowerCase() === 't') tap();
+  });
+
+  beatsSel.value = String(s.beats);
+  subsSel.value = String(s.subs);
+  soundSel.value = s.sound;
+  accentEl.checked = s.accent;
+  volEl.value = String(s.vol);
+  setBpm(s.bpm);
+  renderBeats();
+  renderStats();
+</script>

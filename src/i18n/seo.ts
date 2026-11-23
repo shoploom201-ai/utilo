@@ -9,6 +9,8 @@ type ToolSeo = Record<ToolId, { slug: string; title: string }>;
 
 export const toolSeo: Record<Locale, ToolSeo> = {
   ko: {
+    metronome: { slug: '메트로놈', title: '메트로놈 온라인 무료 - BPM 박자기 (탭 템포·박자·셋잇단)' },
+    tuner: { slug: '기타-튜너', title: '기타 튜너 온라인 - 마이크로 기타·우쿨렐레·베이스 조율 무료' },
     sudoku: { slug: '스도쿠', title: '스도쿠 무료 - 매일 새로운 오늘의 스도쿠 (쉬움·보통·어려움)' },
     'typing-practice': { slug: '타자-연습', title: '타자 연습 - 한글·영문 타자 속도 측정 무료 (타수·정확도)' },
     'focus-timer': { slug: '뽀모도로-타이머', title: '뽀모도로 타이머 - 공부 집중 타이머 + 백색소음·빗소리 무료' },
@@ -19,6 +21,8 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: '이미지-pdf-변환', title: '이미지 PDF 변환 - JPG·PNG 사진을 PDF로 합치기 무료' },
   },
   ja: {
+    metronome: { slug: 'メトロノーム', title: 'メトロノーム（無料・オンライン）｜BPM・拍子・タップテンポ対応' },
+    tuner: { slug: 'ギターチューナー', title: 'ギターチューナー（無料）｜マイクでギター・ウクレレ・ベースをチューニング' },
     sudoku: { slug: '数独', title: '数独（ナンプレ）無料｜毎日更新の今日の問題・初級〜上級' },
     'typing-practice': { slug: 'タイピング練習', title: 'タイピング練習｜ローマ字入力で日本語・英語の短文を無料で練習' },
     'focus-timer': { slug: 'ポモドーロタイマー', title: 'ポモドーロタイマー｜勉強・作業用の集中タイマー＋ホワイトノイズ（無料）' },
@@ -29,6 +33,8 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: '画像pdf変換', title: '画像をPDFに変換｜JPG・PNGを1つのPDFにまとめる（無料）' },
   },
   es: {
+    metronome: { slug: 'metronomo-online', title: 'Metrónomo online gratis: BPM, compás y tap tempo' },
+    tuner: { slug: 'afinador-de-guitarra', title: 'Afinador de guitarra online con micrófono: guitarra, ukelele y bajo' },
     sudoku: { slug: 'sudoku-online', title: 'Sudoku online gratis: sudoku diario fácil, medio y difícil' },
     'typing-practice': { slug: 'test-de-mecanografia', title: 'Test de mecanografía online gratis: mide tus palabras por minuto' },
     'focus-timer': { slug: 'temporizador-pomodoro', title: 'Temporizador Pomodoro online con ruido blanco para estudiar' },
@@ -39,6 +45,8 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: 'convertir-imagenes-a-pdf', title: 'Convertir imágenes a PDF gratis: JPG y PNG a PDF' },
   },
   en: {
+    metronome: { slug: 'metronome', title: 'Online Metronome – Free BPM Metronome with Tap Tempo' },
+    tuner: { slug: 'guitar-tuner', title: 'Online Guitar Tuner – Tune Guitar, Ukulele & Bass with Your Mic' },
     sudoku: { slug: 'daily-sudoku', title: 'Daily Sudoku – Free Online Sudoku Puzzles, Easy to Hard' },
     'typing-practice': { slug: 'typing-test', title: 'Typing Test – Check Your WPM and Accuracy Free' },
     'focus-timer': { slug: 'pomodoro-timer', title: 'Pomodoro Timer Online with White Noise – Free Focus Timer' },
