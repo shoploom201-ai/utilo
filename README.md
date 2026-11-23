@@ -17,8 +17,9 @@ Astro 정적 사이트. 언어: en / ko / ja / es. 모든 도구는 브라우저
 
 ## 새 도구 추가 순서 (자동화도 이 순서를 따르게 할 것)
 1. `src/tools.ts` 에 `{ id, category }` 한 줄 추가
-2. `src/i18n/en.ts` 의 `tools` 에 문구 추가 → `ko.ts`, `ja.ts`, `es.ts` 에도 같은 키로 추가
-3. `src/i18n/seo.ts` 에 4개 언어의 `slug`(그 언어 검색어) 와 `title`(검색 결과 제목) 추가
+2. **8개 언어 모두** 문구 추가: `en.ts`·`ko.ts`·`ja.ts`·`es.ts`(필수) + `de.ts`·`fr.ts`·`zh-hant.ts`·`hi.ts`
+   - 번역만 하지 말고 그 나라 검색어·관습(통화, 기본값, 용어)에 맞출 것
+3. `src/i18n/seo.ts` 에 **8개 언어 모두** `slug`(그 언어 검색어) 와 `title`(검색 결과 제목) 추가
 4. `src/widgets/<이름>.astro` 에 도구 화면 작성 (기존 `VatCalculator.astro` 참고)
 5. `src/pages/[lang]/[tool].astro` 의 `widgets` 목록에 연결
 6. `npm run check` 와 `npm run build` 통과 + 브라우저에서 실제 동작 확인 후 배포
