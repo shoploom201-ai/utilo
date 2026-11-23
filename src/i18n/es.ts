@@ -142,6 +142,33 @@ const es: Dict = {
         { q: '¿Por qué no reacciona el afinador?', a: 'Comprueba que el navegador tenga permiso para usar el micrófono, toca una sola cuerda con claridad y reduce el ruido de fondo.' },
       ],
     },
+    'us-paycheck': {
+      name: 'Calculadora de salario neto en EE. UU. 2026',
+      short: 'Calcula tu sueldo neto después de impuestos federales, estatales, Seguro Social y Medicare en los 50 estados.',
+      metaDescription:
+        'Calculadora de salario neto en Estados Unidos 2026: introduce tu salario anual o por hora, tu estado y tu estado civil tributario para ver el pago neto por cheque tras el impuesto federal, estatal, Seguro Social, Medicare y 401(k). Los 50 estados y DC.',
+      ui: {
+        payType: 'Tipo de pago', salary: 'Salario anual', hourly: 'Pago por hora', amount: 'Salario anual', hourlyRate: 'Pago por hora', hours: 'Horas por semana',
+        state: 'Estado', filing: 'Estado civil tributario', single: 'Soltero (Single)', mfj: 'Casado, declaración conjunta', hoh: 'Cabeza de familia',
+        frequency: 'Frecuencia de pago', weekly: 'Semanal', biweekly: 'Cada 2 semanas', semimonthly: 'Dos veces al mes', monthly: 'Mensual',
+        k401: '401(k) antes de impuestos (% del sueldo)', takeHome: 'Pago neto', perPaycheck: 'Por cheque', perYear: 'al año', item: 'Concepto',
+        gross: 'Salario bruto', federal: 'Impuesto federal', ss: 'Seguro Social', medicare: 'Medicare', fica: 'Seguro Social y Medicare',
+        stateTax: 'Impuesto estatal', retirement: '401(k)', effective: 'tasa total', marginal: 'tramo federal',
+        noStateTax: 'Este estado no cobra impuesto sobre el salario.', localNote: 'Algunas ciudades y condados de este estado cobran su propio impuesto (por ejemplo, Nueva York), que no está incluido.',
+        disclaimer: 'Solo es una estimación: usa la deducción estándar y no incluye créditos, dependientes ni impuestos locales.',
+        sourceNote: 'Año fiscal {year}. Fuentes: IRS Rev. Proc. 2025-32, SSA y tablas estatales de Tax Foundation.',
+      },
+      howTo: [
+        'Elige salario anual o pago por hora e introduce la cantidad. Si cobras por hora, indica también las horas por semana.',
+        'Selecciona tu estado, tu estado civil tributario y cada cuánto te pagan.',
+        'Añade un porcentaje de 401(k) antes de impuestos para ver cuánto bajan tus impuestos al ahorrar para la jubilación.',
+      ],
+      faq: [
+        { q: '¿Por qué mi cheque real es un poco distinto?', a: 'Las empresas retienen según las tablas del IRS y tu formulario W-4, y pueden descontar seguro médico u otros beneficios. Esta herramienta reparte tu impuesto anual estimado entre cada pago.' },
+        { q: '¿Qué estados no tienen impuesto sobre la renta?', a: 'Alaska, Florida, Nevada, New Hampshire, Dakota del Sur, Tennessee, Texas, Washington y Wyoming no gravan los salarios.' },
+        { q: '¿El 401(k) reduce mis impuestos?', a: 'Las aportaciones al 401(k) antes de impuestos reducen el impuesto federal y casi todos los estatales, pero no el Seguro Social ni Medicare.' },
+      ],
+    },
     'vat-calculator': {
       name: 'Calculadora de IVA',
       short: 'Suma o quita el IVA, GST o impuesto al consumo en 17 países.',

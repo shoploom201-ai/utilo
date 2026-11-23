@@ -1,0 +1,193 @@
+---
+// 미국 급여 실수령액 계산기 (2026). 계산은 src/lib/paycheck.ts, 세율은 src/data/us-tax-2026.ts
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+import { STATES, US_TAX_YEAR } from '../data/us-tax-2026';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['us-paycheck'];
+const ui = tool.ui;
+const states = Object.entries(STATES)
+  .map(([code, s]) => ({ code, name: s.name }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+const meta = Object.fromEntries(Object.entries(STATES).map(([c, s]) => [c, { none: !s.s.length, local: !!s.local }]));
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card paycheck" id="pay" data-lang={lang} data-labels={JSON.stringify(ui)} data-meta={JSON.stringify(meta)}>
+  <fieldset>
+    <legend>{ui.payType}</legend>
+    <div class="radio-row">
+      <label><input type="radio" name="pay-type" value="salary" checked /> {ui.salary}</label>
+      <label><input type="radio" name="pay-type" value="hourly" /> {ui.hourly}</label>
+    </div>
+  </fieldset>
+  <div class="grid-2">
+    <label><span id="p-amount-label">{ui.amount}</span> (USD)
+      <input id="p-amount" type="number" inputmode="decimal" min="0" step="any" value="75000" />
+    </label>
+    <label id="p-hours-wrap" hidden>{ui.hours}
+      <input id="p-hours" type="number" inputmode="decimal" min="1" max="80" step="0.5" value="40" />
+    </label>
+    <label>{ui.state}
+      <select id="p-state">
+        {states.map((s) => <option value={s.code} selected={s.code === 'CA'}>{s.name}</option>)}
+      </select>
+    </label>
+    <label>{ui.filing}
+      <select id="p-filing">
+        <option value="single">{ui.single}</option>
+        <option value="mfj">{ui.mfj}</option>
+        <option value="hoh">{ui.hoh}</option>
+      </select>
+    </label>
+    <label>{ui.frequency}
+      <select id="p-period">
+        <option value="weekly">{ui.weekly}</option>
+        <option value="biweekly" selected>{ui.biweekly}</option>
+        <option value="semimonthly">{ui.semimonthly}</option>
+        <option value="monthly">{ui.monthly}</option>
+      </select>
+    </label>
+    <label>{ui.k401}
+      <input id="p-k401" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="0" />
+    </label>
+  </div>
+
+  <div class="pay-hero" aria-live="polite">
+    <span class="stat-label">{ui.takeHome} · <span id="p-period-label">{ui.biweekly}</span></span>
+    <strong id="p-net">—</strong>
+    <span class="stat-sub"><span id="p-net-year">—</span> {ui.perYear} · {ui.effective} <span id="p-eff">—</span> · {ui.marginal} <span id="p-marg">—</span></span>
+  </div>
+
+  <div class="pay-bar" id="p-bar" role="img" aria-describedby="p-table"></div>
+  <ul class="pay-legend" id="p-legend"></ul>
+
+  <div class="table-wrap pay-table-wrap">
+    <table id="p-table">
+      <thead><tr><th>{ui.item}</th><th id="p-col-period">{ui.perPaycheck}</th><th>{ui.perYear}</th></tr></thead>
+      <tbody id="p-rows"></tbody>
+    </table>
+  </div>
+
+  <p class="note" id="p-state-note"></p>
+  <p class="note">{ui.disclaimer} {ui.sourceNote.replace('{year}', String(US_TAX_YEAR))}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script>
+  import { calcPaycheck, PERIODS, type Period } from '../lib/paycheck';
+  import type { Filing } from '../data/us-tax-2026';
+
+  const root = document.getElementById('pay') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const META = JSON.parse(root.dataset.meta ?? '{}') as Record<string, { none: boolean; local: boolean }>;
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const money = new Intl.NumberFormat(root.dataset.lang, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const pct = new Intl.NumberFormat(root.dataset.lang, { style: 'percent', maximumFractionDigits: 1 });
+  const KEY = 'kitwise-paycheck';
+
+  const els = {
+    amount: $<HTMLInputElement>('#p-amount'), hours: $<HTMLInputElement>('#p-hours'), state: $<HTMLSelectElement>('#p-state'),
+    filing: $<HTMLSelectElement>('#p-filing'), period: $<HTMLSelectElement>('#p-period'), k401: $<HTMLInputElement>('#p-k401'),
+  };
+  const payType = () => root.querySelector<HTMLInputElement>('input[name="pay-type"]:checked')!.value;
+
+  // 마지막 입력값 복원
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+    if (s) {
+      const radio = root.querySelector<HTMLInputElement>(`input[name="pay-type"][value="${s.type}"]`);
+      if (radio) radio.checked = true;
+      Object.entries(els).forEach(([k, el]) => s[k] != null && (el.value = String(s[k])));
+    }
+  } catch {
+    /* 저장 불가 환경 */
+  }
+
+  // 막대 구간: 세전 급여를 실수령·세금·적립으로 나눔 (색은 그래프 가이드의 검증된 순서 1~5번)
+  const SEGMENTS = [
+    { key: 'net', label: () => L.takeHome, cls: 's1' },
+    { key: 'federal', label: () => L.federal, cls: 's2' },
+    { key: 'state', label: () => L.stateTax, cls: 's3' },
+    { key: 'fica', label: () => L.fica, cls: 's4' },
+    { key: 'k401', label: () => L.retirement, cls: 's5' },
+  ] as const;
+
+  function calc() {
+    const isHourly = payType() === 'hourly';
+    $<HTMLElement>('#p-hours-wrap').hidden = !isHourly;
+    $<HTMLElement>('#p-amount-label').textContent = isHourly ? L.hourlyRate : L.amount;
+    const amount = Math.max(0, Number(els.amount.value) || 0);
+    const hours = Math.max(0, Number(els.hours.value) || 0);
+    const gross = isHourly ? amount * hours * 52 : amount;
+    const period = els.period.value as Period;
+    const n = PERIODS[period];
+    const r = calcPaycheck({ gross, filing: els.filing.value as Filing, state: els.state.value, k401Pct: Number(els.k401.value) || 0 });
+    const fica = r.socialSecurity + r.medicare;
+
+    $<HTMLElement>('#p-net').textContent = money.format(r.net / n);
+    $<HTMLElement>('#p-net-year').textContent = money.format(r.net);
+    $<HTMLElement>('#p-eff').textContent = pct.format(r.effectiveRate);
+    $<HTMLElement>('#p-marg').textContent = pct.format(r.marginalFederal);
+    const periodLabel = els.period.selectedOptions[0].textContent ?? '';
+    $<HTMLElement>('#p-period-label').textContent = periodLabel;
+    $<HTMLElement>('#p-col-period').textContent = `${L.perPaycheck} (${periodLabel})`;
+
+    // 막대 + 범례 (이름과 금액을 글자로도 보여 줌: 색만으로 구분하지 않음)
+    const values: Record<string, number> = { net: r.net, federal: r.federal, state: r.state, fica, k401: r.k401 };
+    const bar = $<HTMLElement>('#p-bar');
+    const legend = $<HTMLElement>('#p-legend');
+    bar.replaceChildren();
+    legend.replaceChildren();
+    for (const seg of SEGMENTS) {
+      const v = values[seg.key];
+      if (v <= 0 || gross <= 0) continue;
+      const share = v / gross;
+      const tip = `${seg.label()}: ${money.format(v / n)} (${pct.format(share)})`;
+      const part = document.createElement('span');
+      part.className = `seg ${seg.cls}`;
+      part.style.flexGrow = String(share);
+      part.title = tip;
+      part.setAttribute('aria-label', tip);
+      part.tabIndex = 0;
+      bar.append(part);
+      const li = document.createElement('li');
+      const sw = document.createElement('span');
+      sw.className = `swatch ${seg.cls}`;
+      li.append(sw, `${seg.label()} `, Object.assign(document.createElement('strong'), { textContent: money.format(v / n) }), ` · ${pct.format(share)}`);
+      legend.append(li);
+    }
+
+    // 표 (그래프와 같은 내용을 글자로)
+    const rows: [string, number, boolean?][] = [
+      [L.gross, r.gross], [L.federal, -r.federal], [L.ss, -r.socialSecurity], [L.medicare, -r.medicare],
+      [L.stateTax, -r.state], [L.retirement, -r.k401], [L.takeHome, r.net, true],
+    ];
+    $<HTMLElement>('#p-rows').replaceChildren(
+      ...rows.map(([label, v, strong]) => {
+        const tr = document.createElement('tr');
+        if (strong) tr.className = 'total-row';
+        [label, money.format(v / n), money.format(v)].forEach((txt) => tr.append(Object.assign(document.createElement('td'), { textContent: txt })));
+        return tr;
+      }),
+    );
+
+    const m = META[els.state.value];
+    $<HTMLElement>('#p-state-note').textContent = m?.none ? L.noStateTax : m?.local ? L.localNote : '';
+
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ type: payType(), ...Object.fromEntries(Object.entries(els).map(([k, el]) => [k, el.value])) }));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  }
+
+  root.addEventListener('input', calc);
+  root.addEventListener('change', calc);
+  calc();
+</script>

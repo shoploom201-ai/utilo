@@ -255,6 +255,25 @@ h2.sub { font-size: 1.05rem; margin: .5rem 0 0; }
 .ad-slot { margin: 2.5rem 0; padding-top: .25rem; min-height: 100px; border-top: 1px solid var(--border); }
 .ad-label { display: block; font-size: .72rem; color: var(--muted); letter-spacing: .04em; margin-bottom: .35rem; }
 
+/* ---------- 미국 급여 계산기 (그래프 색: 검증된 범주형 색표 1~5번, 다크 모드는 별도 단계) ---------- */
+.paycheck { display: grid; gap: 1rem; --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; }
+@media (prefers-color-scheme: dark) { .paycheck { --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; } }
+.pay-hero { display: grid; gap: .2rem; padding: 1.1rem 1.25rem; border-radius: var(--radius); background: var(--bg); }
+.pay-hero strong { font-size: clamp(2.2rem, 8vw, 3rem); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.pay-bar { display: flex; gap: 2px; height: 28px; border-radius: 4px; overflow: hidden; background: var(--surface); }
+.pay-bar .seg { min-width: 3px; }
+.pay-bar .seg:first-child { border-radius: 4px 0 0 4px; }
+.pay-bar .seg:last-child { border-radius: 0 4px 4px 0; }
+.pay-bar .seg:hover, .pay-bar .seg:focus-visible { outline: 2px solid var(--text); outline-offset: 1px; }
+.s1 { background: var(--s1); } .s2 { background: var(--s2); } .s3 { background: var(--s3); } .s4 { background: var(--s4); } .s5 { background: var(--s5); }
+.pay-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; font-size: .9rem; color: var(--muted); }
+.pay-legend strong { color: var(--text); font-variant-numeric: tabular-nums; }
+.swatch { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; margin-right: .35rem; vertical-align: -1px; }
+.pay-table-wrap { max-height: none; }
+.pay-table-wrap td:first-child, .pay-table-wrap th:first-child { text-align: left; }
+.total-row td { font-weight: 700; border-top: 2px solid var(--border); }
+.pay-table-wrap th::first-letter { text-transform: uppercase; }
+
 .schedule summary { cursor: pointer; font-weight: 600; }
 .table-wrap { max-height: 420px; overflow: auto; margin-top: .75rem; border: 1px solid var(--border); border-radius: 8px; }
 .table-wrap table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }

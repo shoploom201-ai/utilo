@@ -140,6 +140,33 @@ const en = {
         { q: 'Why does the tuner not react?', a: 'Make sure the browser has microphone permission, play a single string clearly, and reduce background noise.' },
       ],
     },
+    'us-paycheck': {
+      name: 'US Paycheck Calculator 2026',
+      short: 'See your take-home pay after federal, state, Social Security and Medicare taxes in all 50 states.',
+      metaDescription:
+        'Free 2026 paycheck calculator: enter your salary or hourly wage, state and filing status to see take-home pay per paycheck after federal income tax, state tax, Social Security, Medicare and 401(k). All 50 states + DC.',
+      ui: {
+        payType: 'Pay type', salary: 'Annual salary', hourly: 'Hourly wage', amount: 'Annual salary', hourlyRate: 'Hourly wage', hours: 'Hours per week',
+        state: 'State', filing: 'Filing status', single: 'Single', mfj: 'Married filing jointly', hoh: 'Head of household',
+        frequency: 'Pay frequency', weekly: 'Weekly', biweekly: 'Every 2 weeks', semimonthly: 'Twice a month', monthly: 'Monthly',
+        k401: 'Pre-tax 401(k) (% of pay)', takeHome: 'Take-home pay', perPaycheck: 'Per paycheck', perYear: 'per year', item: 'Item',
+        gross: 'Gross pay', federal: 'Federal income tax', ss: 'Social Security', medicare: 'Medicare', fica: 'Social Security & Medicare',
+        stateTax: 'State income tax', retirement: '401(k)', effective: 'total tax rate', marginal: 'federal bracket',
+        noStateTax: 'This state has no income tax on wages.', localNote: 'Some cities and counties in this state add their own income tax (for example New York City), which is not included.',
+        disclaimer: 'Estimate only: uses the standard deduction and does not include credits, dependants or local taxes.',
+        sourceNote: '{year} tax year. Sources: IRS Rev. Proc. 2025-32, SSA, Tax Foundation state tables.',
+      },
+      howTo: [
+        'Choose salary or hourly, then enter your pay. For hourly pay, also enter your hours per week.',
+        'Pick your state, filing status and how often you are paid.',
+        'Add a pre-tax 401(k) percentage to see how saving for retirement lowers your taxes.',
+      ],
+      faq: [
+        { q: 'Why is my real paycheck a little different?', a: 'Employers withhold using IRS tables and your W-4, and may deduct health insurance or other benefits. This tool shows your estimated yearly tax spread over each paycheck.' },
+        { q: 'Which states have no income tax?', a: 'Alaska, Florida, Nevada, New Hampshire, South Dakota, Tennessee, Texas, Washington and Wyoming do not tax wages.' },
+        { q: 'Does a 401(k) reduce my taxes?', a: 'Pre-tax 401(k) contributions lower your federal and most state income tax, but not Social Security or Medicare tax.' },
+      ],
+    },
     'vat-calculator': {
       name: 'VAT Calculator',
       short: 'Add or remove VAT, GST or consumption tax for 17 countries.',
