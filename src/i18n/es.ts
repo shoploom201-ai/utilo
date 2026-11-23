@@ -561,6 +561,37 @@ const es: Dict = {
         { q: '¿Funciona sin conexión?', a: 'Una vez cargada la página puedes ver las frases sin internet. En algunos dispositivos el audio necesita conexión.' },
       ],
     },
+    'transit-cards': {
+      name: 'Tarjetas de transporte por país',
+      short: 'Cómo comprar la tarjeta de transporte en 18 países: dónde conseguirla, cuánto cuesta y cuándo basta con tu tarjeta bancaria.',
+      metaDescription:
+        'Cómo comprar la tarjeta de transporte en el extranjero en 2026: Suica, T-money, EasyCard, Octopus, EZ-Link, Rabbit, Oyster, Navigo, OMNY, Opal y más; dónde comprarla, precio y si puedes pagar sin contacto con tu tarjeta.',
+      ui: {
+        search: 'Busca un país, ciudad o tarjeta',
+        searchPh: 'p. ej. Japón, Suica, Londres…',
+        contactlessTip: 'Consejo: en muchas ciudades no necesitas tarjeta y puedes pagar con tu tarjeta bancaria sin contacto o el móvil.',
+        regions: { asia: 'Asia', mideu: 'Oriente Medio y Europa', america: 'América y Oceanía' },
+        price: 'Precio de la tarjeta',
+        where: 'Dónde comprar',
+        places: { airport: 'Aeropuerto', station: 'Taquilla', machine: 'Máquina', convenience: 'Tienda de conveniencia', retail: 'Tiendas', online: 'En línea', app: 'App del móvil' },
+        contactless: 'Tarjeta bancaria',
+        contactlessYes: 'Se acepta',
+        contactlessSome: 'En algunas líneas',
+        official: 'Sitio oficial',
+        noResult: 'Sin resultados. Prueba otra palabra.',
+        disclaimer: 'Revisado en {date} con fuentes oficiales y de viaje. Precios y normas cambian a menudo: confírmalos en el sitio oficial antes de viajar.',
+      },
+      howTo: [
+        'Busca tu destino por región o escribe el país, la ciudad o la tarjeta.',
+        'Mira dónde se compra y si ya basta con una tarjeta bancaria sin contacto.',
+        'Abre el sitio oficial para confirmar el precio actual antes de viajar.',
+      ],
+      faq: [
+        { q: '¿Sigo necesitando tarjeta de transporte en 2026?', a: 'Depende. En Londres, Singapur, Nueva York, Sídney, Toronto y Países Bajos basta con tarjeta sin contacto o el móvil. En Corea, Japón, Taiwán y Hong Kong la tarjeta local sigue siendo lo más cómodo.' },
+        { q: '¿Me devuelven el depósito?', a: 'Algunas tarjetas tienen depósito reembolsable (como la Octopus estándar de Hong Kong) y otras cobran un precio no reembolsable. Gasta o recupera el saldo antes de irte.' },
+        { q: '¿Mi banco cobra comisión por cada pago?', a: 'Algunos bancos cobran comisión por operación en el extranjero. Una tarjeta sin comisiones o la tarjeta local puede salir más barata.' },
+      ],
+    },
     'loan-calculator': {
       name: 'Calculadora de préstamos',
       short: 'Cuota mensual, intereses totales y cuadro de amortización de cualquier préstamo.',

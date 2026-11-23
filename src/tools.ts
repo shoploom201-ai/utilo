@@ -24,6 +24,7 @@ export const tools = [
   { id: 'image-to-pdf', category: 'image' },
   { id: 'car-diagnosis', category: 'car' },
   { id: 'phrasebook', category: 'travel' },
+  { id: 'transit-cards', category: 'travel' },
 ] as const satisfies readonly { id: string; category: Category }[];
 
 export type ToolId = (typeof tools)[number]['id'];

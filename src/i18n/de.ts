@@ -454,6 +454,37 @@ const de = {
         { q: 'Funktioniert es offline?', a: 'Ist die Seite einmal geladen, sehen Sie die Sätze auch ohne Internet. Für Audio brauchen manche Geräte eine Verbindung.' },
       ],
     },
+    'transit-cards': {
+      name: 'Nahverkehrskarten weltweit',
+      short: 'So kaufen Sie die Nahverkehrskarte in 18 Ländern – wo es sie gibt, was sie kostet und wann die Bankkarte reicht.',
+      metaDescription:
+        'Nahverkehrskarten im Ausland 2026: Suica, T-money, EasyCard, Octopus, EZ-Link, Rabbit, Oyster, Navigo, OMNY, Opal und mehr – wo man sie kauft, was sie kostet und ob kontaktloses Bezahlen mit der Bankkarte geht.',
+      ui: {
+        search: 'Land, Stadt oder Karte suchen',
+        searchPh: 'z. B. Japan, Suica, London …',
+        contactlessTip: 'Tipp: In vielen Städten braucht man keine Karte – einfach kontaktlose Bankkarte oder Handy an die Sperre halten.',
+        regions: { asia: 'Asien', mideu: 'Naher Osten & Europa', america: 'Amerika & Ozeanien' },
+        price: 'Kartenpreis',
+        where: 'Erhältlich',
+        places: { airport: 'Flughafen', station: 'Schalter', machine: 'Automat', convenience: 'Convenience-Store', retail: 'Geschäfte', online: 'Online', app: 'Handy-App' },
+        contactless: 'Bankkarte antippen',
+        contactlessYes: 'Möglich',
+        contactlessSome: 'Auf manchen Linien',
+        official: 'Offizielle Website',
+        noResult: 'Keine Treffer. Anderes Wort versuchen.',
+        disclaimer: 'Geprüft {date} anhand offizieller und Reise-Quellen. Preise und Regeln ändern sich oft – vor der Reise auf der offiziellen Website prüfen.',
+      },
+      howTo: [
+        'Ziel nach Region suchen oder Land, Stadt oder Kartenname eingeben.',
+        'Nachsehen, wo es die Karte gibt und ob die kontaktlose Bankkarte schon reicht.',
+        'Vor der Reise den aktuellen Preis auf der offiziellen Website prüfen.',
+      ],
+      faq: [
+        { q: 'Brauche ich 2026 noch eine Nahverkehrskarte?', a: 'Nicht überall. In London, Singapur, New York, Sydney, Toronto und den Niederlanden reicht die kontaktlose Bankkarte oder das Handy. In Korea, Japan, Taiwan und Hongkong ist die lokale Karte am bequemsten.' },
+        { q: 'Bekomme ich das Pfand zurück?', a: 'Manche Karten haben ein erstattbares Pfand (etwa die Standard-Octopus in Hongkong), andere eine nicht erstattbare Gebühr. Restguthaben vor der Abreise aufbrauchen oder erstatten lassen.' },
+        { q: 'Kostet jede Zahlung mit ausländischer Karte extra?', a: 'Manche Banken berechnen Auslandsgebühren pro Zahlung. Eine gebührenfreie Karte oder die lokale Karte kann günstiger sein.' },
+      ],
+    },
     'loan-calculator': {
       name: 'Kreditrechner',
       short: 'Monatliche Rate, Gesamtzinsen und Tilgungsplan für jeden Kredit.',

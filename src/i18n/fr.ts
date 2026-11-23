@@ -454,6 +454,37 @@ const fr = {
         { q: 'Puis-je l’utiliser hors connexion ?', a: 'Une fois la page chargée, les phrases restent visibles sans internet. L’audio peut nécessiter une connexion sur certains appareils.' },
       ],
     },
+    'transit-cards': {
+      name: 'Cartes de transport par pays',
+      short: 'Comment acheter la carte de transport dans 18 pays : où la trouver, son prix et quand la carte bancaire suffit.',
+      metaDescription:
+        'Acheter une carte de transport à l’étranger en 2026 : Suica, T-money, EasyCard, Octopus, EZ-Link, Rabbit, Oyster, Navigo, OMNY, Opal… Où l’acheter, son prix et si le paiement sans contact par carte bancaire fonctionne.',
+      ui: {
+        search: 'Chercher un pays, une ville ou une carte',
+        searchPh: 'ex. Japon, Suica, Londres…',
+        contactlessTip: 'Astuce : dans de nombreuses villes, pas besoin de carte – il suffit de valider avec une carte bancaire sans contact ou le téléphone.',
+        regions: { asia: 'Asie', mideu: 'Moyen-Orient et Europe', america: 'Amériques et Océanie' },
+        price: 'Prix de la carte',
+        where: 'Où l’acheter',
+        places: { airport: 'Aéroport', station: 'Guichet', machine: 'Automate', convenience: 'Supérette', retail: 'Commerces', online: 'En ligne', app: 'Appli mobile' },
+        contactless: 'Carte bancaire',
+        contactlessYes: 'Acceptée',
+        contactlessSome: 'Sur certaines lignes',
+        official: 'Site officiel',
+        noResult: 'Aucun résultat. Essayez un autre mot.',
+        disclaimer: 'Vérifié en {date} à partir de sources officielles et de voyage. Prix et règles changent souvent : vérifiez sur le site officiel avant de partir.',
+      },
+      howTo: [
+        'Cherchez votre destination par région ou tapez un pays, une ville ou une carte.',
+        'Regardez où l’acheter et si la carte bancaire sans contact suffit déjà.',
+        'Ouvrez le site officiel pour confirmer le prix actuel avant le départ.',
+      ],
+      faq: [
+        { q: 'Faut-il encore une carte de transport en 2026 ?', a: 'Pas partout. À Londres, Singapour, New York, Sydney, Toronto et aux Pays-Bas, la carte bancaire sans contact ou le téléphone suffit. En Corée, au Japon, à Taïwan et à Hong Kong, la carte locale reste le plus pratique.' },
+        { q: 'La caution est-elle remboursée ?', a: 'Certaines cartes ont une caution remboursable (comme l’Octopus standard de Hong Kong), d’autres un prix non remboursable. Utilisez ou faites rembourser le solde avant de partir.' },
+        { q: 'Ma banque facture-t-elle chaque paiement ?', a: 'Certaines banques prennent des frais à l’étranger à chaque paiement. Une carte sans frais ou la carte locale peut revenir moins cher.' },
+      ],
+    },
     'loan-calculator': {
       name: 'Simulateur de prêt',
       short: 'Mensualité, coût total des intérêts et tableau d’amortissement pour tout prêt.',

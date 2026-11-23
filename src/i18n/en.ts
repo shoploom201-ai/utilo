@@ -559,6 +559,37 @@ const en = {
         { q: 'Can I use it offline?', a: 'Once the page has loaded you can browse and show the phrases without a connection. Some devices need a connection for audio.' },
       ],
     },
+    'transit-cards': {
+      name: 'Transit Card Guide by Country',
+      short: 'How to buy a transit card in 18 countries – where to get it, what it costs and when a contactless bank card is enough.',
+      metaDescription:
+        'How to buy a transit card abroad in 2026: Suica, T-money, EasyCard, Octopus, EZ-Link, Rabbit, Oyster, Navigo, OMNY, Opal and more – where to buy, card price, and whether you can just tap your bank card.',
+      ui: {
+        search: 'Search a country, city or card',
+        searchPh: 'e.g. Japan, Suica, London…',
+        contactlessTip: 'Tip: in many cities you can skip the card and tap a contactless bank card or phone at the gate.',
+        regions: { asia: 'Asia', mideu: 'Middle East & Europe', america: 'Americas & Oceania' },
+        price: 'Card price',
+        where: 'Where to buy',
+        places: { airport: 'Airport', station: 'Station counter', machine: 'Ticket machine', convenience: 'Convenience store', retail: 'Shops', online: 'Online', app: 'Phone app' },
+        contactless: 'Bank card tap',
+        contactlessYes: 'Accepted',
+        contactlessSome: 'On some lines',
+        official: 'Official site',
+        noResult: 'No match. Try another word.',
+        disclaimer: 'Checked in {date} from official and travel sources. Prices and rules change often – confirm on the official site before you travel.',
+      },
+      howTo: [
+        'Find your destination by region or type a country, city or card name.',
+        'Check where to buy the card and whether a contactless bank card already works.',
+        'Open the official site to confirm the latest price before you travel.',
+      ],
+      faq: [
+        { q: 'Do I still need a transit card in 2026?', a: 'Not everywhere. In London, Singapore, New York, Sydney, Toronto and the Netherlands you can tap a contactless bank card or phone. In Korea, Japan, Taiwan and Hong Kong a local card is still the easiest option.' },
+        { q: 'Can I get my deposit back?', a: 'Some cards have a refundable deposit (for example Hong Kong’s standard Octopus); others charge a non-refundable card fee. Spend or refund the balance before you leave.' },
+        { q: 'Will foreign bank cards charge extra fees?', a: 'Your bank may add a foreign transaction fee to each tap. A card without foreign fees or a local transit card can work out cheaper.' },
+      ],
+    },
     'loan-calculator': {
       name: 'Loan Calculator',
       short: 'Monthly payment, total interest and a full repayment schedule for any loan.',

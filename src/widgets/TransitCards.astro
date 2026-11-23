@@ -1,0 +1,89 @@
+---
+// 나라별 교통카드 구매 안내. 내용은 src/data/transit-cards.ts (모든 정보를 페이지에 그려 검색엔진이 읽게 함)
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+import { TRANSIT_CARDS, TRANSIT_REVIEWED, type Region } from '../data/transit-cards';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['transit-cards']!;
+const ui = tool.ui;
+const regionNames = new Intl.DisplayNames([lang], { type: 'region' });
+const flag = (code: string) => String.fromCodePoint(...[...code].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+const regions: Region[] = ['asia', 'mideu', 'america'];
+const cards = TRANSIT_CARDS.map((c) => ({ ...c, name: regionNames.of(c.code) ?? c.code }));
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card transit" id="tc">
+  <label>{ui.search}
+    <input id="tc-search" type="search" placeholder={ui.searchPh} autocomplete="off" />
+  </label>
+  <p class="note">{ui.contactlessTip}</p>
+
+  {
+    regions.map((r) => (
+      <section class="region" data-region={r}>
+        <h2>{ui.regions[r]}</h2>
+        <div class="tc-grid">
+          {cards
+            .filter((c) => c.region === r)
+            .map((c) => (
+              <article class="tc" id={`tc-${c.code.toLowerCase()}`}>
+                <h3><span class="flag" aria-hidden="true">{flag(c.code)}</span> {c.name} <small>{c.city}</small></h3>
+                <p class="cardname"><strong>{c.card}</strong></p>
+                <dl>
+                  {c.price && (<><dt>{ui.price}</dt><dd>{c.price}</dd></>)}
+                  <dt>{ui.where}</dt>
+                  <dd class="badges">{c.places.map((p) => <span class="badge">{ui.places[p]}</span>)}</dd>
+                  {c.contactless && (<><dt>{ui.contactless}</dt><dd>{c.contactless === 'yes' ? ui.contactlessYes : ui.contactlessSome}</dd></>)}
+                </dl>
+                <p class="tip">💡 {c.tip[lang]}</p>
+                <a href={c.link} target="_blank" rel="noopener">{ui.official} ↗</a>
+              </article>
+            ))}
+        </div>
+      </section>
+    ))
+  }
+  <p class="note center" id="tc-empty" hidden>{ui.noResult}</p>
+  <p class="note">{ui.disclaimer.replace('{date}', TRANSIT_REVIEWED)}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<style>
+  .transit { display: grid; gap: 1rem; }
+  .region h2 { font-size: 1.15rem; margin: .8rem 0 .6rem; }
+  .tc-grid { display: grid; gap: .8rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .tc { border: 1px solid var(--border, #ddd); border-radius: 12px; padding: .9rem 1rem; display: grid; gap: .45rem; align-content: start; }
+  .tc h3 { margin: 0; font-size: 1.05rem; display: flex; gap: .4rem; align-items: baseline; flex-wrap: wrap; }
+  .tc h3 small { color: var(--muted); font-weight: 400; font-size: .85rem; }
+  .flag { font-size: 1.3rem; }
+  .cardname { margin: 0; }
+  .tc dl { display: grid; grid-template-columns: auto 1fr; gap: .25rem .7rem; margin: 0; font-size: .92rem; }
+  .tc dt { color: var(--muted); }
+  .tc dd { margin: 0; }
+  .badges { display: flex; flex-wrap: wrap; gap: .3rem; }
+  .badge { font-size: .78rem; padding: .1rem .5rem; border-radius: 999px; border: 1px solid var(--border, #ccc); }
+  .tip { margin: 0; font-size: .93rem; line-height: 1.55; }
+</style>
+
+<script>
+  const root = document.getElementById('tc') as HTMLElement;
+  const input = root.querySelector('#tc-search') as HTMLInputElement;
+  const norm = (s: string) => s.toLowerCase().normalize('NFKC');
+  input.addEventListener('input', () => {
+    const q = norm(input.value.trim());
+    let shown = 0;
+    root.querySelectorAll<HTMLElement>('.tc').forEach((el) => {
+      const ok = !q || norm(el.textContent ?? '').includes(q);
+      el.hidden = !ok;
+      if (ok) shown++;
+    });
+    root.querySelectorAll<HTMLElement>('.region').forEach((r) => (r.hidden = !r.querySelector('.tc:not([hidden])')));
+    (root.querySelector('#tc-empty') as HTMLElement).hidden = shown > 0;
+  });
+</script>
