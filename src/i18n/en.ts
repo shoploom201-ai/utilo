@@ -45,6 +45,30 @@ const en = {
         { q: 'Does the timer keep running in another tab?', a: 'Yes. The remaining time is shown in the browser tab title, and a sound plays when the session ends.' },
       ],
     },
+    'typing-practice': {
+      name: 'Typing Test & Practice',
+      short: 'Check your typing speed (WPM) and accuracy with short sentences.',
+      metaDescription:
+        'Free typing test: practise with short English sentences and see your words per minute (WPM) and accuracy live. Track your best score and daily practice streak. No sign-up.',
+      ui: {
+        speed: 'Speed', accuracy: 'Accuracy', best: 'Best', today: 'Practised today', streak: 'Streak', min: 'min', days: ' days',
+        placeholder: 'Type the sentence above here…',
+        hint: 'Your time starts with the first key. Each sentence moves on automatically when it is typed correctly.',
+        imeHint: 'Turn off Japanese input (IME) and type in romaji.',
+        ignoreAccents: 'Ignore accents',
+        next: 'Skip sentence', last: 'Last sentence', newBest: 'New personal best!',
+      },
+      howTo: [
+        'Click the box and start typing the sentence shown. The timer starts with your first key.',
+        'Correct letters turn green and mistakes turn red. Fix them with Backspace.',
+        'When the sentence matches, your speed and accuracy are saved and a new sentence appears.',
+      ],
+      faq: [
+        { q: 'How is WPM calculated?', a: 'WPM (words per minute) counts every five correctly typed characters, including spaces, as one word.' },
+        { q: 'What is a good typing speed?', a: 'Around 40 WPM is average. 60 WPM or more is fast, and accuracy above 95% matters as much as speed.' },
+        { q: 'How can I type faster?', a: 'Keep your fingers on the home row, look at the screen instead of the keyboard, and practise a little every day. Speed follows accuracy.' },
+      ],
+    },
     'vat-calculator': {
       name: 'VAT Calculator',
       short: 'Add or remove VAT, GST or consumption tax for 17 countries.',

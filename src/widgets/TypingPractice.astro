@@ -1,0 +1,322 @@
+---
+// 타자 연습. 화면 언어의 문장 + 영어(영타) 문장. 일본어는 로마자 입력으로 채점합니다.
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+import { typingTexts, type TypingLang } from '../data/typing';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['typing-practice'];
+const ui = tool.ui;
+const modes: TypingLang[] = lang === 'en' ? ['en'] : [lang as TypingLang, 'en'];
+const names = new Intl.DisplayNames([lang], { type: 'language' });
+const texts = Object.fromEntries(modes.map((m) => [m, typingTexts[m]]));
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card typing" id="typing" data-labels={JSON.stringify(ui)} data-texts={JSON.stringify(texts)} data-mode={modes[0]}>
+  {
+    modes.length > 1 && (
+      <div class="mode-tabs" role="tablist">
+        {modes.map((m, i) => (
+          <button type="button" role="tab" data-tmode={m} aria-selected={i === 0 ? 'true' : 'false'}>
+            {names.of(m)}
+          </button>
+        ))}
+      </div>
+    )
+  }
+
+  <div class="radio-stats typing-stats" aria-live="polite">
+    <div><span class="stat-label">{ui.speed}</span><strong><span id="t-speed">0</span> <small id="t-unit"></small></strong></div>
+    <div><span class="stat-label">{ui.accuracy}</span><strong><span id="t-acc">100</span>%</strong></div>
+    <div><span class="stat-label">{ui.best}</span><strong><span id="t-best">0</span> <small class="t-unit2"></small></strong></div>
+    <div>
+      <span class="stat-label">{ui.today}</span>
+      <strong><span id="t-today">0</span> {ui.min}</strong>
+      <span class="stat-sub">{ui.streak} <span id="t-streak">0</span>{ui.days}</span>
+    </div>
+  </div>
+
+  <div class="target" id="t-target" aria-live="off">
+    <div class="t-text" id="t-text"></div>
+    <div class="t-kana" id="t-kana" hidden></div>
+    <div class="t-romaji" id="t-romaji" hidden></div>
+  </div>
+
+  <input id="t-input" class="t-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder={ui.placeholder} aria-label={ui.placeholder} />
+  <p class="note" id="t-hint">{ui.hint}</p>
+  <p class="note ime-warn" id="t-ime" hidden>{ui.imeHint}</p>
+  <label class="check" id="t-accents-wrap" hidden><input id="t-accents" type="checkbox" /> {ui.ignoreAccents}</label>
+
+  <div class="timer-actions">
+    <button type="button" class="btn ghost" id="t-next">{ui.next}</button>
+  </div>
+  <p class="note center" id="t-result" aria-live="polite"></p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script>
+  import { RomajiMatcher } from '../lib/romaji';
+
+  type JaItem = { text: string; kana: string };
+  type Mode = 'ko' | 'en' | 'es' | 'ja';
+  const root = document.getElementById('typing') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const TEXTS = JSON.parse(root.dataset.texts ?? '{}') as Record<string, (string | JaItem)[]>;
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const input = $<HTMLInputElement>('#t-input');
+  const textEl = $<HTMLElement>('#t-text');
+  const kanaEl = $<HTMLElement>('#t-kana');
+  const romajiEl = $<HTMLElement>('#t-romaji');
+  const UNIT: Record<Mode, string> = { ko: '타/분', en: 'WPM', es: 'PPM', ja: '打/分' };
+  const LOG_KEY = 'kitwise-typing-log';
+  const BEST_KEY = 'kitwise-typing-best';
+
+  const load = <T,>(k: string, fb: T): T => {
+    try {
+      const v = localStorage.getItem(k);
+      return v ? (JSON.parse(v) as T) : fb;
+    } catch {
+      return fb;
+    }
+  };
+  const save = (k: string, v: unknown) => {
+    try {
+      localStorage.setItem(k, JSON.stringify(v));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  };
+  const log = load<Record<string, number>>(LOG_KEY, {});
+  const best = load<Record<string, number>>(BEST_KEY, {});
+  const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+  // 한글 타수: 자모 단위 (겹모음·겹받침은 2타)
+  const JUNG2 = new Set([9, 10, 11, 14, 15, 16, 19]);
+  const JONG2 = new Set([3, 5, 6, 9, 10, 11, 12, 13, 14, 15, 18]);
+  const strokes = (s: string) =>
+    [...s].reduce((n, ch) => {
+      const c = ch.charCodeAt(0) - 0xac00;
+      if (c < 0 || c > 11171) return n + 1;
+      const jung = Math.floor((c % 588) / 28);
+      const jong = c % 28;
+      return n + 1 + (JUNG2.has(jung) ? 2 : 1) + (jong ? (JONG2.has(jong) ? 2 : 1) : 0);
+    }, 0);
+
+  let mode = root.dataset.mode as Mode;
+  let order: number[] = [];
+  let pos = 0;
+  let target = '';
+  let matcher: RomajiMatcher | null = null;
+  let startAt = 0;
+  let mistakes = 0;
+  let evaluated: string[] = [];
+  let finished = false;
+
+  const accentsEl = $<HTMLInputElement>('#t-accents');
+  const strip = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const same = (a: string | undefined, b: string | undefined) => {
+    if (a === undefined || b === undefined) return false;
+    const n = (x: string) => (x === '’' ? "'" : x);
+    return mode === 'es' && accentsEl.checked ? strip(n(a)) === strip(n(b)) : n(a) === n(b);
+  };
+
+  function renderStats() {
+    $<HTMLElement>('#t-unit').textContent = UNIT[mode];
+    root.querySelectorAll('.t-unit2').forEach((el) => (el.textContent = UNIT[mode]));
+    $<HTMLElement>('#t-best').textContent = String(best[mode] ?? 0);
+    $<HTMLElement>('#t-today').textContent = String(Math.floor((log[dayKey()] ?? 0) / 60));
+    let streak = 0;
+    const d = new Date();
+    if ((log[dayKey(d)] ?? 0) < 30) d.setDate(d.getDate() - 1);
+    while ((log[dayKey(d)] ?? 0) >= 30) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    }
+    $<HTMLElement>('#t-streak').textContent = String(streak);
+  }
+
+  function shuffle() {
+    order = [...TEXTS[mode].keys()].sort(() => Math.random() - 0.5);
+    pos = 0;
+  }
+
+  function loadSentence() {
+    if (pos >= order.length) shuffle();
+    const item = TEXTS[mode][order[pos]];
+    finished = false;
+    startAt = 0;
+    mistakes = 0;
+    evaluated = [];
+    input.value = '';
+    $<HTMLElement>('#t-speed').textContent = '0';
+    $<HTMLElement>('#t-acc').textContent = '100';
+    const isJa = mode === 'ja';
+    kanaEl.hidden = romajiEl.hidden = !isJa;
+    $<HTMLElement>('#t-ime').hidden = true;
+    $<HTMLElement>('#t-accents-wrap').hidden = mode !== 'es';
+    if (isJa) {
+      const it = item as JaItem;
+      target = it.kana;
+      matcher = new RomajiMatcher(it.kana);
+      textEl.textContent = it.text;
+    } else {
+      target = item as string;
+      matcher = null;
+      textEl.replaceChildren(
+        ...[...target].map((ch) => {
+          const s = document.createElement('span');
+          s.textContent = ch;
+          return s;
+        }),
+      );
+    }
+    paint();
+    input.focus({ preventScroll: true });
+  }
+
+  function paint(composing = false) {
+    if (matcher) {
+      const done = document.createElement('span');
+      done.className = 'ok';
+      done.textContent = matcher.kana.slice(0, matcher.index);
+      kanaEl.replaceChildren(done, matcher.kana.slice(matcher.index));
+      const typed = document.createElement('span');
+      typed.className = 'ok';
+      typed.textContent = matcher.typed;
+      const g = matcher.guide();
+      const next = document.createElement('span');
+      next.className = 'cur';
+      next.textContent = g.slice(0, 1);
+      romajiEl.replaceChildren(typed, next, g.slice(1));
+      return;
+    }
+    const v = input.value;
+    const spans = textEl.children;
+    for (let i = 0; i < spans.length; i++) {
+      const el = spans[i] as HTMLElement;
+      if (i < v.length - (composing ? 1 : 0)) el.className = same(v[i], target[i]) ? 'ok' : 'bad';
+      else if (i === v.length - 1 && composing) el.className = 'typing';
+      else el.className = i === v.length ? 'cur' : '';
+    }
+  }
+
+  // 지금까지 맞게 친 양 → 속도
+  function progressUnits(): number {
+    if (matcher) return matcher.typed.length;
+    const v = input.value;
+    let k = 0;
+    while (k < v.length && same(v[k], target[k])) k++;
+    const done = target.slice(0, k);
+    return mode === 'ko' ? strokes(done) : done.length / 5;
+  }
+  function accuracy(): number {
+    if (matcher) {
+      const ok = matcher.typed.length;
+      return ok + mistakes === 0 ? 100 : Math.round((ok / (ok + mistakes)) * 100);
+    }
+    return Math.max(0, Math.round(((target.length - mistakes) / Math.max(target.length, 1)) * 100));
+  }
+
+  setInterval(() => {
+    if (!startAt || finished) return;
+    const min = (Date.now() - startAt) / 60000;
+    if (min > 0.02) $<HTMLElement>('#t-speed').textContent = String(Math.round(progressUnits() / min));
+    $<HTMLElement>('#t-acc').textContent = String(accuracy());
+  }, 250);
+
+  function finish() {
+    if (finished || !startAt) return;
+    finished = true;
+    const ms = Math.max(Date.now() - startAt, 1000); // 0초로 나누는 일 방지
+    const speed = Math.round(progressUnits() / (ms / 60000));
+    const acc = accuracy();
+    $<HTMLElement>('#t-speed').textContent = String(speed);
+    $<HTMLElement>('#t-acc').textContent = String(acc);
+    const k = dayKey();
+    log[k] = (log[k] ?? 0) + Math.round(ms / 1000);
+    save(LOG_KEY, log);
+    let msg = `${L.last}: ${speed} ${UNIT[mode]} · ${acc}%`;
+    if (acc >= 90 && speed > (best[mode] ?? 0)) {
+      best[mode] = speed;
+      save(BEST_KEY, best);
+      msg += ` — ${L.newBest}`;
+    }
+    $<HTMLElement>('#t-result').textContent = msg;
+    renderStats();
+    pos++;
+    setTimeout(loadSentence, 700);
+  }
+
+  // 한글·영어·스페인어: 입력창 비교 (한글 조합 중인 마지막 글자는 채점 보류)
+  function onInput(composing: boolean) {
+    if (matcher || finished) return;
+    if (!startAt && input.value) startAt = Date.now();
+    const v = input.value;
+    const upto = v.length - (composing ? 1 : 0);
+    for (let i = 0; i < upto; i++) {
+      if (evaluated[i] !== v[i]) {
+        evaluated[i] = v[i];
+        if (!same(v[i], target[i])) mistakes++;
+      }
+    }
+    paint(composing);
+    if (!composing && v.length >= target.length && [...target].every((c, i) => same(v[i], c))) finish();
+  }
+  input.addEventListener('input', (e) => onInput((e as InputEvent).isComposing));
+  input.addEventListener('compositionend', () => onInput(false));
+  // 붙여넣기·끌어다 놓기로 기록을 만들 수 없게
+  input.addEventListener('paste', (e) => e.preventDefault());
+  input.addEventListener('drop', (e) => e.preventDefault());
+
+  // 일본어: 로마자 키를 직접 받아 채점 (일본어 입력기는 꺼야 함)
+  input.addEventListener('keydown', (e) => {
+    if (!matcher) {
+      if (e.key === 'Enter' && input.value.length >= target.length) finish();
+      return;
+    }
+    if (e.isComposing || e.key === 'Process') {
+      $<HTMLElement>('#t-ime').hidden = false;
+      return;
+    }
+    if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+    e.preventDefault();
+    if (!startAt) startAt = Date.now();
+    const r = matcher.key(e.key);
+    if (r === 'miss') {
+      mistakes++;
+      romajiEl.classList.remove('shake');
+      void romajiEl.offsetWidth;
+      romajiEl.classList.add('shake');
+    }
+    paint();
+    if (matcher.done) finish();
+  });
+  input.addEventListener('compositionstart', () => {
+    if (matcher) $<HTMLElement>('#t-ime').hidden = false;
+  });
+
+  $<HTMLButtonElement>('#t-next').addEventListener('click', () => {
+    pos++;
+    loadSentence();
+  });
+  accentsEl.addEventListener('change', () => paint());
+  root.querySelectorAll<HTMLButtonElement>('[data-tmode]').forEach((b) =>
+    b.addEventListener('click', () => {
+      mode = b.dataset.tmode as Mode;
+      root.querySelectorAll('[data-tmode]').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
+      $<HTMLElement>('#t-result').textContent = '';
+      shuffle();
+      renderStats();
+      loadSentence();
+    }),
+  );
+
+  shuffle();
+  renderStats();
+  loadSentence();
+</script>

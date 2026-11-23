@@ -168,6 +168,28 @@ h2.sub { font-size: 1.05rem; margin: .5rem 0 0; }
 .grid-3 { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin: .75rem 0; }
 .check { display: flex; gap: .5rem; align-items: center; font-weight: 400; }
 
+/* ---------- 타자 연습 ---------- */
+.typing { display: grid; gap: 1rem; }
+.typing-stats { grid-template-columns: repeat(4, 1fr); }
+.typing-stats small { font-size: .75rem; font-weight: 600; color: var(--muted); }
+.target { padding: 1.25rem; border-radius: var(--radius); background: var(--bg); display: grid; gap: .5rem; }
+.t-text { font-size: clamp(1.25rem, 3.5vw, 1.6rem); line-height: 1.7; letter-spacing: .01em; overflow-wrap: anywhere; }
+.t-text span { border-bottom: 2px solid transparent; }
+.t-text .ok { color: var(--good); }
+.t-text .bad { color: var(--bad); background: color-mix(in srgb, var(--bad) 15%, transparent); border-bottom-color: var(--bad); }
+.t-text .cur { border-bottom-color: var(--accent); }
+.t-text .typing { color: var(--accent); }
+.t-kana { font-size: 1.15rem; color: var(--muted); }
+.t-kana .ok, .t-romaji .ok { color: var(--good); }
+.t-romaji { font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 1.1rem; color: var(--muted); letter-spacing: .03em; overflow-wrap: anywhere; }
+.t-romaji .cur { color: var(--text); border-bottom: 2px solid var(--accent); }
+.t-romaji.shake { animation: shake .25s; }
+@keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+@media (prefers-reduced-motion: reduce) { .t-romaji.shake { animation: none; } }
+.t-input { width: 100%; font-size: 1.2rem; padding: .85rem 1rem; }
+.ime-warn { color: var(--bad); font-weight: 600; }
+@media (max-width: 560px) { .typing-stats { grid-template-columns: repeat(2, 1fr); } }
+
 .schedule summary { cursor: pointer; font-weight: 600; }
 .table-wrap { max-height: 420px; overflow: auto; margin-top: .75rem; border: 1px solid var(--border); border-radius: 8px; }
 .table-wrap table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }

@@ -47,6 +47,30 @@ const es: Dict = {
         { q: '¿El temporizador sigue funcionando en otra pestaña?', a: 'Sí. El tiempo restante aparece en el título de la pestaña y suena un aviso al terminar.' },
       ],
     },
+    'typing-practice': {
+      name: 'Test de mecanografía',
+      short: 'Mide tu velocidad (PPM) y tu precisión escribiendo frases cortas en español.',
+      metaDescription:
+        'Test de mecanografía gratis: practica con frases cortas en español o inglés y mira tus palabras por minuto (PPM) y tu precisión en tiempo real. Guarda tu mejor marca y tu racha diaria. Sin registro.',
+      ui: {
+        speed: 'Velocidad', accuracy: 'Precisión', best: 'Mejor marca', today: 'Practicado hoy', streak: 'Racha', min: 'min', days: ' días',
+        placeholder: 'Escribe aquí la frase de arriba…',
+        hint: 'El tiempo empieza con la primera tecla. Al escribir bien la frase, pasa a la siguiente.',
+        imeHint: 'Desactiva el teclado japonés (IME) y escribe en romaji.',
+        ignoreAccents: 'Ignorar tildes',
+        next: 'Saltar frase', last: 'Frase anterior', newBest: '¡Nueva mejor marca!',
+      },
+      howTo: [
+        'Haz clic en la casilla y escribe la frase que aparece. El tiempo empieza con la primera tecla.',
+        'Las letras correctas se ponen en verde y los errores en rojo. Corrígelos con la tecla de borrar.',
+        'Si tu teclado no tiene tildes, marca «Ignorar tildes». Para practicar inglés, usa la pestaña de arriba.',
+      ],
+      faq: [
+        { q: '¿Cómo se calculan las PPM?', a: 'Las palabras por minuto cuentan cada cinco caracteres escritos correctamente, incluidos los espacios, como una palabra.' },
+        { q: '¿Cuál es una buena velocidad?', a: 'Unas 40 PPM es lo habitual; 60 PPM o más es rápido. La precisión por encima del 95 % es tan importante como la velocidad.' },
+        { q: '¿Cómo puedo escribir más rápido?', a: 'Mantén los dedos en la fila central, mira la pantalla y no el teclado, y practica un poco cada día.' },
+      ],
+    },
     'vat-calculator': {
       name: 'Calculadora de IVA',
       short: 'Suma o quita el IVA, GST o impuesto al consumo en 17 países.',

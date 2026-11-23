@@ -6,6 +6,7 @@ export type Category = 'study' | 'tax' | 'finance' | 'image';
 
 export const tools = [
   { id: 'focus-timer', category: 'study' },
+  { id: 'typing-practice', category: 'study' },
   { id: 'vat-calculator', category: 'tax' },
   { id: 'loan-calculator', category: 'finance' },
   { id: 'compound-interest-calculator', category: 'finance' },

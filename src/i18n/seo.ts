@@ -9,6 +9,7 @@ type ToolSeo = Record<ToolId, { slug: string; title: string }>;
 
 export const toolSeo: Record<Locale, ToolSeo> = {
   ko: {
+    'typing-practice': { slug: '타자-연습', title: '타자 연습 - 한글·영문 타자 속도 측정 무료 (타수·정확도)' },
     'focus-timer': { slug: '뽀모도로-타이머', title: '뽀모도로 타이머 - 공부 집중 타이머 + 백색소음·빗소리 무료' },
     'vat-calculator': { slug: '부가세-계산기', title: '부가세 계산기 - 공급가액·부가세 포함 금액 자동 계산' },
     'loan-calculator': { slug: '대출-이자-계산기', title: '대출 이자 계산기 - 원리금균등·원금균등 월 상환액 계산' },
@@ -17,6 +18,7 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: '이미지-pdf-변환', title: '이미지 PDF 변환 - JPG·PNG 사진을 PDF로 합치기 무료' },
   },
   ja: {
+    'typing-practice': { slug: 'タイピング練習', title: 'タイピング練習｜ローマ字入力で日本語・英語の短文を無料で練習' },
     'focus-timer': { slug: 'ポモドーロタイマー', title: 'ポモドーロタイマー｜勉強・作業用の集中タイマー＋ホワイトノイズ（無料）' },
     'vat-calculator': { slug: '消費税計算', title: '消費税計算ツール｜税込・税抜を自動計算（10%・8%対応）' },
     'loan-calculator': { slug: 'ローン返済シミュレーション', title: 'ローン返済シミュレーション｜毎月の返済額と総利息を計算' },
@@ -25,6 +27,7 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: '画像pdf変換', title: '画像をPDFに変換｜JPG・PNGを1つのPDFにまとめる（無料）' },
   },
   es: {
+    'typing-practice': { slug: 'test-de-mecanografia', title: 'Test de mecanografía online gratis: mide tus palabras por minuto' },
     'focus-timer': { slug: 'temporizador-pomodoro', title: 'Temporizador Pomodoro online con ruido blanco para estudiar' },
     'vat-calculator': { slug: 'calculadora-iva', title: 'Calculadora de IVA: sumar y quitar IVA online gratis' },
     'loan-calculator': { slug: 'calculadora-prestamos', title: 'Calculadora de préstamos: cuota mensual y tabla de amortización' },
@@ -33,6 +36,7 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: 'convertir-imagenes-a-pdf', title: 'Convertir imágenes a PDF gratis: JPG y PNG a PDF' },
   },
   en: {
+    'typing-practice': { slug: 'typing-test', title: 'Typing Test – Check Your WPM and Accuracy Free' },
     'focus-timer': { slug: 'pomodoro-timer', title: 'Pomodoro Timer Online with White Noise – Free Focus Timer' },
     'vat-calculator': { slug: 'vat-calculator', title: 'VAT Calculator – Add or Remove VAT Online' },
     'loan-calculator': { slug: 'loan-calculator', title: 'Loan Calculator – Monthly Payment & Amortization Schedule' },
