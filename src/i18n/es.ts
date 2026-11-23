@@ -9,7 +9,7 @@ const es: Dict = {
   home: {
     title: 'Herramientas online gratis: calculadoras, temporizador, sudoku y radio para aprender idiomas',
     intro: 'Herramientas rápidas y privadas para el día a día. Sin registro ni subidas: todo se procesa en tu dispositivo.',
-    categories: { music: 'Práctica musical', puzzle: 'Puzzles y juegos mentales', study: 'Concentración y estudio', tax: 'Calculadoras de impuestos', finance: 'Calculadoras financieras', image: 'Herramientas de imagen' },
+    categories: { business: 'Negocios', music: 'Práctica musical', puzzle: 'Puzzles y juegos mentales', study: 'Concentración y estudio', tax: 'Calculadoras de impuestos', finance: 'Calculadoras financieras', image: 'Herramientas de imagen' },
   },
   common: {
     privacyNote: 'Todo funciona dentro de tu navegador. Tus cifras y archivos nunca salen de tu dispositivo.',
@@ -247,6 +247,33 @@ const es: Dict = {
         { q: '¿Qué es el impuesto de autoempleo?', a: 'Es el Seguro Social y Medicare de quien trabaja por su cuenta: el 15,3 % del 92,35 % de tu beneficio, porque no hay empresa que pague la mitad. Puedes deducir la mitad de tus ingresos.' },
         { q: '¿Tengo que pagar impuestos trimestrales?', a: 'Normalmente sí, si esperas deber 1.000 dólares o más en el año. Pagar tarde o de menos puede generar una multa.' },
         { q: '¿Qué es la deducción QBI?', a: 'Muchos freelancers pueden deducir hasta el 20 % de sus ingresos de negocio calificados. Por encima del límite de ingresos la deducción se reduce, sobre todo en servicios profesionales.' },
+      ],
+    },
+    'saas-cost': {
+      name: 'Calculadora de costos de suscripciones SaaS e IA',
+      short: 'Suma tus suscripciones de software e IA, detecta las que no usas y mira cuánto ahorras con el pago anual.',
+      metaDescription:
+        'Calculadora de costos SaaS gratis: añade tus suscripciones de software e IA con precio por usuario o fijo y mira el costo mensual y anual, el costo por empleado y el ahorro al cancelar herramientas sin uso o pasar al pago anual.',
+      ui: {
+        keep: 'Mantener', name: 'Suscripción', price: 'Precio mensual de lista', pricing: 'Tipo de precio', perUser: 'Por usuario', flat: 'Fijo',
+        users: 'Usuarios', billing: 'Facturación', billMonthly: 'Mensual', billAnnual: 'Anual', discount: 'Descuento anual (%)', remove: 'Quitar', add: 'Añadir suscripción',
+        team: 'Tamaño del equipo (personas)', currency: 'Moneda', yearly: 'Total al año', monthly: 'Al mes', perPerson: 'Por persona al año',
+        cancelTitle: 'Cancelar lo que no usas', cancelDesc: 'Ahorro anual de las suscripciones que desmarcaste.',
+        switchTitle: 'Pasar a pago anual', switchDesc: 'Ahorro anual si las que mantienes pasan a facturación anual.',
+        afterTitle: 'Nuevo costo anual', totalSave: 'Ahorras {amount} al año ({pct}).',
+        ranking: 'Ranking de costos', share: 'Porcentaje',
+        disclaimer: 'Introduce los precios de tus propios planes y facturas. No incluye impuestos, cargos por uso ni condiciones de contrato.',
+        ex1: 'CRM', ex2: 'Asistente de IA', ex3: 'Herramienta de diseño', ex4: 'Analítica sin uso',
+      },
+      howTo: [
+        'Añade cada suscripción con su precio mensual de lista, si es por usuario o fijo y cuántos usuarios pagas.',
+        'Elige la facturación y, si el proveedor lo ofrece, el descuento por pago anual.',
+        'Desmarca las herramientas que ya no necesitas para ver cuánto ahorrarías cancelándolas y pasando el resto al pago anual.',
+      ],
+      faq: [
+        { q: '¿El pago anual siempre sale más barato?', a: 'Normalmente un 15–20 %, pero te comprometes un año entero. Cambia solo las herramientas que tu equipo seguro seguirá usando.' },
+        { q: '¿Cómo encuentro suscripciones que no uso?', a: 'Revisa los extractos de la tarjeta y los paneles de administración: licencias sin acceso en 60–90 días, herramientas duplicadas y pruebas gratis que pasaron a pago.' },
+        { q: '¿Para qué sirve el costo por persona?', a: 'Muestra cuánto software cuesta realmente cada empleado y facilita compararlo con el presupuesto o con referencias del sector.' },
       ],
     },
     'vat-calculator': {

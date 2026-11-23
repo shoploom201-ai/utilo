@@ -7,7 +7,7 @@ const en = {
   home: {
     title: 'Free online tools: calculators, study timer, sudoku & language radio',
     intro: 'Quick, private tools for everyday work. No sign-up and no uploads — everything runs on your device.',
-    categories: { music: 'Music practice', puzzle: 'Puzzles & brain games', study: 'Focus & study', tax: 'Tax calculators', finance: 'Finance calculators', image: 'Image tools' },
+    categories: { business: 'Business', music: 'Music practice', puzzle: 'Puzzles & brain games', study: 'Focus & study', tax: 'Tax calculators', finance: 'Finance calculators', image: 'Image tools' },
   },
   common: {
     privacyNote: 'Runs entirely in your browser. Your numbers and files never leave your device.',
@@ -245,6 +245,33 @@ const en = {
         { q: 'What is self-employment tax?', a: 'It is Social Security and Medicare tax for people who work for themselves: 15.3% of 92.35% of your net profit, because there is no employer to pay half. You can deduct half of it from your income.' },
         { q: 'Do I have to pay quarterly estimated taxes?', a: 'Usually yes, if you expect to owe $1,000 or more for the year. Paying late or too little can lead to an underpayment penalty.' },
         { q: 'What is the QBI deduction?', a: 'Many freelancers can deduct up to 20% of their qualified business income. Above the income threshold the deduction is reduced, especially for service businesses.' },
+      ],
+    },
+    'saas-cost': {
+      name: 'SaaS & AI Subscription Cost Calculator',
+      short: 'Add up your software and AI subscriptions, find unused ones and see what annual billing saves.',
+      metaDescription:
+        'Free SaaS cost calculator: list your software and AI subscriptions with per-user or flat pricing, see total monthly and yearly cost, cost per employee, savings from cancelling unused tools and from switching to annual billing.',
+      ui: {
+        keep: 'Keep', name: 'Subscription', price: 'Monthly list price', pricing: 'Pricing', perUser: 'Per user', flat: 'Flat',
+        users: 'Users', billing: 'Billing', billMonthly: 'Monthly', billAnnual: 'Annual', discount: 'Annual discount (%)', remove: 'Remove', add: 'Add a subscription',
+        team: 'Team size (people)', currency: 'Currency', yearly: 'Total per year', monthly: 'Per month', perPerson: 'Per person per year',
+        cancelTitle: 'Cancel unused', cancelDesc: 'Yearly savings from the subscriptions you unchecked.',
+        switchTitle: 'Switch to annual', switchDesc: 'Yearly savings if the ones you keep move to annual billing.',
+        afterTitle: 'New yearly cost', totalSave: 'You save {amount} a year ({pct}).',
+        ranking: 'Cost ranking', share: 'Share',
+        disclaimer: 'Enter the prices from your own plans and invoices. Taxes, usage-based fees and contract terms are not included.',
+        ex1: 'CRM', ex2: 'AI assistant', ex3: 'Design tool', ex4: 'Old analytics tool',
+      },
+      howTo: [
+        'List each subscription with its monthly list price, whether it is per user or flat, and how many users you pay for.',
+        'Set the billing period and, if the vendor offers one, the annual-billing discount.',
+        'Untick tools you no longer need to see how much you would save by cancelling them and moving the rest to annual billing.',
+      ],
+      faq: [
+        { q: 'Is annual billing always cheaper?', a: 'Usually, often by 15–20%, but you commit for a full year. Switch only tools your team is sure to keep using.' },
+        { q: 'How do I find unused subscriptions?', a: 'Check card statements and admin dashboards for seats nobody has logged into for 60–90 days, duplicate tools that do the same job, and free trials that turned into paid plans.' },
+        { q: 'Why look at cost per person?', a: 'It shows how much software each employee really costs and makes it easier to compare with budgets or industry benchmarks.' },
       ],
     },
     'vat-calculator': {

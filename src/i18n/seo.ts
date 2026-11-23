@@ -9,6 +9,7 @@ type ToolSeo = Record<ToolId, { slug: string; title: string }>;
 
 export const toolSeo: Record<Locale, ToolSeo> = {
   ko: {
+    'saas-cost': { slug: 'saas-구독-비용-계산기', title: 'AI·SaaS 구독 비용 계산기 - 소프트웨어 구독료 절약·연간 결제 비교' },
     'self-employed-tax': { slug: '미국-프리랜서-세금-계산기', title: '미국 프리랜서 세금 계산기 2026 - 1099 자영업세·분기 예정 납부액' },
     'debt-payoff': { slug: '빚-상환-계산기', title: '빚 상환 계산기 - 신용카드 빚 눈덩이 vs 고금리 우선 상환 비교' },
     mortgage: { slug: '미국-모기지-계산기', title: '미국 모기지 계산기 - 월 납입금·재산세·PMI 포함 주택담보대출 계산' },
@@ -25,6 +26,7 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: '이미지-pdf-변환', title: '이미지 PDF 변환 - JPG·PNG 사진을 PDF로 합치기 무료' },
   },
   ja: {
+    'saas-cost': { slug: 'saas-サブスク-費用計算', title: 'AI・SaaSサブスク費用計算｜ソフトウェア費の見直し・年払い比較' },
     'self-employed-tax': { slug: 'アメリカ-フリーランス-税金計算', title: 'アメリカのフリーランス税金計算 2026｜1099の自営業税と四半期予定納税' },
     'debt-payoff': { slug: '借金返済シミュレーション', title: '借金返済シミュレーション｜スノーボール方式とアバランチ方式を比較' },
     mortgage: { slug: 'アメリカ-住宅ローン計算', title: 'アメリカの住宅ローン計算（モーゲージ）｜固定資産税・保険・PMI込みの月々返済' },
@@ -41,6 +43,7 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: '画像pdf変換', title: '画像をPDFに変換｜JPG・PNGを1つのPDFにまとめる（無料）' },
   },
   es: {
+    'saas-cost': { slug: 'calculadora-costos-saas', title: 'Calculadora de costos SaaS e IA: ahorra en suscripciones de software' },
     'self-employed-tax': { slug: 'calculadora-impuestos-autonomo-usa', title: 'Calculadora de impuestos para autónomos en EE. UU. 2026 (1099)' },
     'debt-payoff': { slug: 'calculadora-pago-deudas', title: 'Calculadora para pagar deudas: bola de nieve vs avalancha' },
     mortgage: { slug: 'calculadora-hipoteca-usa', title: 'Calculadora de hipoteca en EE. UU.: pago mensual con impuestos, seguro y PMI' },
@@ -57,6 +60,7 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: 'convertir-imagenes-a-pdf', title: 'Convertir imágenes a PDF gratis: JPG y PNG a PDF' },
   },
   en: {
+    'saas-cost': { slug: 'saas-cost-calculator', title: 'SaaS Cost Calculator – Software & AI Subscription Spend and Savings' },
     'self-employed-tax': { slug: 'self-employment-tax-calculator', title: 'Self-Employment Tax Calculator 2026 – 1099 Taxes & Quarterly Payments' },
     'debt-payoff': { slug: 'debt-payoff-calculator', title: 'Debt Payoff Calculator – Snowball vs Avalanche Credit Card Payoff' },
     mortgage: { slug: 'mortgage-calculator', title: 'Mortgage Calculator with Taxes, Insurance & PMI – Monthly Payment' },

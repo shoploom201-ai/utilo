@@ -1,0 +1,190 @@
+---
+// AI·SaaS 구독 비용 계산기. 특정 회사 가격은 넣지 않음(자주 바뀌므로) — 사용자가 직접 입력.
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['saas-cost'];
+const ui = tool.ui;
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card paycheck debts saas" id="saas" data-lang={lang} data-labels={JSON.stringify(ui)}>
+  <div class="table-wrap debt-inputs">
+    <table>
+      <thead><tr><th>{ui.keep}</th><th>{ui.name}</th><th>{ui.price}</th><th>{ui.pricing}</th><th>{ui.users}</th><th>{ui.billing}</th><th>{ui.discount}</th><th><span class="sr-only">{ui.remove}</span></th></tr></thead>
+      <tbody id="s-rows"></tbody>
+    </table>
+  </div>
+  <div class="timer-actions"><button type="button" class="btn ghost" id="s-add">＋ {ui.add}</button></div>
+  <div class="grid-2">
+    <label>{ui.team}<input id="s-team" type="number" inputmode="numeric" min="1" step="1" value="10" /></label>
+    <label>{ui.currency}
+      <select id="s-cur">
+        <option value="USD">USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option><option value="CAD">CAD $</option>
+        <option value="AUD">AUD $</option><option value="JPY">JPY ¥</option><option value="KRW">KRW ₩</option><option value="MXN">MXN $</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="pay-hero" aria-live="polite">
+    <span class="stat-label">{ui.yearly}</span>
+    <strong id="s-yearly">—</strong>
+    <span class="stat-sub">{ui.monthly} <b id="s-monthly">—</b> · {ui.perPerson} <b id="s-pp">—</b></span>
+  </div>
+
+  <div class="strategy-grid">
+    <article class="strategy"><h3>{ui.cancelTitle}</h3><strong class="s-date" id="s-cancel">—</strong><p class="note">{ui.cancelDesc}</p></article>
+    <article class="strategy"><h3>{ui.switchTitle}</h3><strong class="s-date" id="s-switch">—</strong><p class="note">{ui.switchDesc}</p></article>
+    <article class="strategy best"><h3>{ui.afterTitle}</h3><strong class="s-date" id="s-after">—</strong><p class="note" id="s-total-save"></p></article>
+  </div>
+
+  <h2 class="sub">{ui.ranking}</h2>
+  <div class="table-wrap pay-table-wrap">
+    <table>
+      <thead><tr><th>{ui.name}</th><th>{ui.monthly}</th><th>{ui.yearly}</th><th>{ui.share}</th></tr></thead>
+      <tbody id="s-rank"></tbody>
+    </table>
+  </div>
+  <p class="note">{ui.disclaimer}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script>
+  import { summarize, type Sub } from '../lib/saas';
+
+  const root = document.getElementById('saas') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const lang = root.dataset.lang ?? 'en';
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const KEY = 'kitwise-saas';
+  const rowsEl = $<HTMLElement>('#s-rows');
+  const teamEl = $<HTMLInputElement>('#s-team');
+  const curEl = $<HTMLSelectElement>('#s-cur');
+
+  let subs: Sub[] = [
+    { name: L.ex1, price: 50, perUser: true, users: 10, billing: 'monthly', annualDiscount: 20, keep: true },
+    { name: L.ex2, price: 25, perUser: true, users: 10, billing: 'monthly', annualDiscount: 15, keep: true },
+    { name: L.ex3, price: 15, perUser: true, users: 4, billing: 'annual', annualDiscount: 20, keep: true },
+    { name: L.ex4, price: 99, perUser: false, users: 1, billing: 'monthly', annualDiscount: 0, keep: false },
+  ];
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+    if (s?.subs?.length) {
+      subs = s.subs;
+      teamEl.value = String(s.team);
+      curEl.value = s.cur;
+    }
+  } catch {
+    /* 저장 불가 환경 */
+  }
+
+  function renderRows() {
+    rowsEl.replaceChildren(
+      ...subs.map((s, i) => {
+        const tr = document.createElement('tr');
+        const td = (node: HTMLElement) => {
+          const c = document.createElement('td');
+          c.append(node);
+          return c;
+        };
+        const input = (k: keyof Sub, type: string, value: string, label: string) => {
+          const el = Object.assign(document.createElement('input'), { type, value, min: '0', step: 'any' });
+          if (type === 'checkbox') el.checked = s.keep;
+          if (type === 'number') el.inputMode = 'decimal';
+          el.dataset.i = String(i);
+          el.dataset.k = k;
+          el.setAttribute('aria-label', label);
+          return el;
+        };
+        const select = (k: keyof Sub, opts: [string, string][], value: string, label: string) => {
+          const el = document.createElement('select');
+          opts.forEach(([v, t]) => el.add(new Option(t, v, false, v === value)));
+          el.dataset.i = String(i);
+          el.dataset.k = k;
+          el.setAttribute('aria-label', label);
+          return el;
+        };
+        const del = Object.assign(document.createElement('button'), { type: 'button', textContent: '✕', title: L.remove, className: 'row-del' });
+        del.dataset.del = String(i);
+        del.setAttribute('aria-label', L.remove);
+        tr.append(
+          td(input('keep', 'checkbox', '', L.keep)),
+          td(input('name', 'text', s.name, L.name)),
+          td(input('price', 'number', String(s.price), L.price)),
+          td(select('perUser', [['1', L.perUser], ['0', L.flat]], s.perUser ? '1' : '0', L.pricing)),
+          td(input('users', 'number', String(s.users), L.users)),
+          td(select('billing', [['monthly', L.billMonthly], ['annual', L.billAnnual]], s.billing, L.billing)),
+          td(input('annualDiscount', 'number', String(s.annualDiscount), L.discount)),
+          td(del),
+        );
+        if (!s.keep) tr.className = 'cancelled';
+        return tr;
+      }),
+    );
+  }
+
+  function calc() {
+    const money = new Intl.NumberFormat(lang, { style: 'currency', currency: curEl.value, maximumFractionDigits: 0 });
+    const pct = new Intl.NumberFormat(lang, { style: 'percent', maximumFractionDigits: 1 });
+    const r = summarize(subs, Math.max(0, Number(teamEl.value) || 0));
+    $<HTMLElement>('#s-yearly').textContent = money.format(r.yearly);
+    $<HTMLElement>('#s-monthly').textContent = money.format(r.monthly);
+    $<HTMLElement>('#s-pp').textContent = money.format(r.perPerson);
+    $<HTMLElement>('#s-cancel').textContent = money.format(r.cancelSaving);
+    $<HTMLElement>('#s-switch').textContent = money.format(r.switchSaving);
+    $<HTMLElement>('#s-after').textContent = money.format(r.afterYearly);
+    $<HTMLElement>('#s-total-save').textContent = L.totalSave.replace('{amount}', money.format(r.totalSaving)).replace('{pct}', pct.format(r.yearly ? r.totalSaving / r.yearly : 0));
+    $<HTMLElement>('#s-rank').replaceChildren(
+      ...r.rows.map((row) => {
+        const tr = document.createElement('tr');
+        if (!row.keep) tr.className = 'cancelled';
+        [row.name || '—', money.format(row.monthly), money.format(row.yearly), pct.format(r.yearly ? row.yearly / r.yearly : 0)]
+          .forEach((txt) => tr.append(Object.assign(document.createElement('td'), { textContent: txt })));
+        return tr;
+      }),
+    );
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ subs, team: teamEl.value, cur: curEl.value }));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  }
+
+  const onEdit = (e: Event) => {
+    const el = e.target as HTMLInputElement | HTMLSelectElement;
+    const i = Number(el.dataset.i), k = el.dataset.k as keyof Sub;
+    if (!subs[i] || !k) return;
+    const s = subs[i] as unknown as Record<string, unknown>;
+    if (k === 'keep') {
+      s.keep = (el as HTMLInputElement).checked;
+      el.closest('tr')?.classList.toggle('cancelled', !s.keep);
+    } else if (k === 'name' || k === 'billing') s[k] = el.value;
+    else if (k === 'perUser') s.perUser = el.value === '1';
+    else s[k] = Math.max(0, Number(el.value) || 0);
+    calc();
+  };
+  rowsEl.addEventListener('input', onEdit);
+  rowsEl.addEventListener('change', onEdit);
+  rowsEl.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-del]');
+    if (!b) return;
+    subs.splice(Number(b.dataset.del), 1);
+    renderRows();
+    calc();
+  });
+  $<HTMLButtonElement>('#s-add').addEventListener('click', () => {
+    if (subs.length >= 30) return;
+    subs.push({ name: '', price: 10, perUser: true, users: 1, billing: 'monthly', annualDiscount: 0, keep: true });
+    renderRows();
+    calc();
+  });
+  teamEl.addEventListener('input', calc);
+  curEl.addEventListener('change', calc);
+  renderRows();
+  calc();
+</script>

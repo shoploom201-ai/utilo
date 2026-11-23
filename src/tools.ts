@@ -2,7 +2,7 @@
 import { locales, type Locale } from './i18n';
 import { toolSeo } from './i18n/seo';
 
-export type Category = 'study' | 'puzzle' | 'music' | 'tax' | 'finance' | 'image';
+export type Category = 'study' | 'puzzle' | 'music' | 'business' | 'tax' | 'finance' | 'image';
 
 export const tools = [
   { id: 'metronome', category: 'music' },
@@ -15,6 +15,7 @@ export const tools = [
   { id: 'mortgage', category: 'finance' },
   { id: 'debt-payoff', category: 'finance' },
   { id: 'self-employed-tax', category: 'tax' },
+  { id: 'saas-cost', category: 'business' },
   { id: 'loan-calculator', category: 'finance' },
   { id: 'compound-interest-calculator', category: 'finance' },
   { id: 'image-compressor', category: 'image' },
@@ -22,7 +23,7 @@ export const tools = [
 ] as const satisfies readonly { id: string; category: Category }[];
 
 export type ToolId = (typeof tools)[number]['id'];
-export const categories: Category[] = ['study', 'puzzle', 'music', 'tax', 'finance', 'image'];
+export const categories: Category[] = ['study', 'puzzle', 'music', 'tax', 'finance', 'business', 'image'];
 
 /** 언어별 도구 주소. 예: toolPath('ko', 'vat-calculator') → "/ko/부가세-계산기/" */
 export const toolPath = (lang: Locale, id: ToolId) => `/${lang}/${toolSeo[lang][id].slug}/`;
