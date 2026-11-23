@@ -25,7 +25,11 @@ const site = Astro.site ?? new URL('https://example.com');
 const available = locales.filter((l) => paths[l]);
 const urlFor = (l: Locale) => new URL(paths[l] ?? `/${l}/`, site).href;
 const xDefault = paths[defaultLocale] ? defaultLocale : lang;
-const fullTitle = isHome ? `${SITE.name} — ${title}` : `${title} | ${SITE.name}`;
+// 검색 결과 제목은 약 600px(영문 60자·한중일 30자)에서 잘림 → 길면 사이트 이름 꼬리를 떼서 핵심 검색어가 다 보이게
+const width = (s: string) => [...s].reduce((n, c) => n + (/[　-鿿가-힯＀-￯]/.test(c) ? 2 : 1), 0);
+const withBrand = isHome ? `${SITE.name} — ${title}` : `${title} | ${SITE.name}`;
+const fullTitle = width(withBrand) <= 62 ? withBrand : title;
+const ogImage = new URL('/og.png', site).href;
 ---
 
 <!doctype html>
@@ -45,6 +49,13 @@ const fullTitle = isHome ? `${SITE.name} — ${title}` : `${title} | ${SITE.name
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={urlFor(lang)} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />

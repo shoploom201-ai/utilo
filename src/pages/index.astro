@@ -13,7 +13,7 @@ const site = Astro.site ?? new URL('https://example.com');
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{SITE.name}</title>
-    <meta name="description" content={t(defaultLocale).tagline} />
+    <meta name="description" content="Kitwise: free online calculators, study tools, sudoku and language radio in English, 한국어, 日本語 and Español. Choose your language." />
     <link rel="canonical" href={new URL('/', site).href} />
     {locales.map((l) => <link rel="alternate" hreflang={l} href={new URL(`/${l}/`, site).href} />)}
     <link rel="alternate" hreflang="x-default" href={new URL('/', site).href} />
