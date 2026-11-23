@@ -9,7 +9,7 @@ const es: Dict = {
   home: {
     title: 'Calculadoras de impuestos y herramientas de imagen gratis',
     intro: 'Herramientas rápidas y privadas para el día a día. Sin registro ni subidas: todo se procesa en tu dispositivo.',
-    categories: { tax: 'Calculadoras de impuestos', finance: 'Calculadoras financieras', image: 'Herramientas de imagen' },
+    categories: { study: 'Concentración y estudio', tax: 'Calculadoras de impuestos', finance: 'Calculadoras financieras', image: 'Herramientas de imagen' },
   },
   common: {
     privacyNote: 'Todo funciona dentro de tu navegador. Tus cifras y archivos nunca salen de tu dispositivo.',
@@ -19,6 +19,34 @@ const es: Dict = {
     related: 'Más herramientas gratis',
   },
   tools: {
+    'focus-timer': {
+      name: 'Temporizador Pomodoro',
+      short: 'Temporizador Pomodoro con lluvia, olas y ruido blanco para concentrarte.',
+      metaDescription:
+        'Temporizador Pomodoro online gratis con sonidos de fondo: bloques de 25 minutos y descansos, más ruido blanco, lluvia, olas y viento que puedes mezclar. Registra tus sesiones diarias y tu racha. Sin registro.',
+      ui: {
+        focus: 'Concentración', shortBreak: 'Descanso corto', longBreak: 'Descanso largo',
+        start: 'Empezar', pause: 'Pausa', reset: 'Reiniciar', skip: 'Saltar',
+        settings: 'Ajustes del temporizador', focusLen: 'Concentración (min)', shortLen: 'Descanso corto (min)', longLen: 'Descanso largo (min)',
+        autoStart: 'Empezar la siguiente sesión automáticamente',
+        sounds: 'Sonidos de fondo', white: 'Ruido blanco', pink: 'Ruido rosa', brown: 'Ruido marrón', rain: 'Lluvia', waves: 'Olas del mar', wind: 'Viento',
+        stopSounds: 'Silenciar todo',
+        soundsNote: 'Todos los sonidos se generan en tu navegador, así que no se descarga nada.',
+        today: 'Sesiones hoy', goal: 'Meta diaria: {n} sesiones', streak: 'Racha', week: 'Esta semana', min: 'min', days: 'días',
+        focusDone: '¡Sesión completada! Tómate un descanso.', breakDone: 'Se acabó el descanso. ¿Listo para concentrarte?',
+        shortcut: 'Consejo: pulsa la barra espaciadora para empezar o pausar.',
+      },
+      howTo: [
+        'Pulsa Empezar y trabaja en una sola tarea hasta que suene el temporizador (25 minutos por defecto).',
+        'Descansa 5 minutos. Cada cuatro sesiones, haz un descanso largo de 15 minutos.',
+        'Sube el volumen de algún sonido de fondo para tapar las distracciones; puedes mezclar varios.',
+      ],
+      faq: [
+        { q: '¿Qué es la técnica Pomodoro?', a: 'Un método de gestión del tiempo en el que trabajas en bloques de concentración, normalmente de 25 minutos, separados por descansos cortos. Así es más fácil empezar y mantener la concentración.' },
+        { q: '¿Qué ruido de fondo es mejor para estudiar?', a: 'Depende de cada persona. El ruido blanco tapa los sonidos agudos, el marrón es más grave y suave, y la lluvia o las olas resultan más naturales. Prueba a mezclarlos a volumen bajo.' },
+        { q: '¿El temporizador sigue funcionando en otra pestaña?', a: 'Sí. El tiempo restante aparece en el título de la pestaña y suena un aviso al terminar.' },
+      ],
+    },
     'vat-calculator': {
       name: 'Calculadora de IVA',
       short: 'Suma o quita el IVA, GST o impuesto al consumo en 17 países.',

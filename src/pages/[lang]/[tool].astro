@@ -8,6 +8,7 @@ import CompoundInterest from '../../widgets/CompoundInterest.astro';
 import ImageCompressor from '../../widgets/ImageCompressor.astro';
 import ImageToPdf from '../../widgets/ImageToPdf.astro';
 import RadioPlayer from '../../widgets/RadioPlayer.astro';
+import FocusTimer from '../../widgets/FocusTimer.astro';
 import radio from '../../data/radio.json';
 import { locales, t, type Locale } from '../../i18n';
 import { toolSeo, radioSeo, radioTargets, radioPath } from '../../i18n/seo';
@@ -33,6 +34,7 @@ const site = Astro.site ?? new URL('https://example.com');
 const home = new URL(`/${lang}/`, site).href;
 
 const widgets = {
+  'focus-timer': FocusTimer,
   'vat-calculator': VatCalculator,
   'loan-calculator': LoanCalculator,
   'compound-interest-calculator': CompoundInterest,
@@ -54,7 +56,8 @@ if (page.kind === 'tool') {
   paths = toolPaths(page.id);
   name = info.name;
   pagePath = toolPath(lang, page.id);
-  category = tools.find((tool) => tool.id === page.id)!.category === 'image' ? 'MultimediaApplication' : 'FinanceApplication';
+  const appCategory = { study: 'EducationalApplication', image: 'MultimediaApplication', tax: 'FinanceApplication', finance: 'FinanceApplication' };
+  category = appCategory[tools.find((tool) => tool.id === page.id)!.category];
 } else {
   const target = page.target;
   const langName = new Intl.DisplayNames([lang], { type: 'language' }).of(target) ?? target;

@@ -7,7 +7,7 @@ const en = {
   home: {
     title: 'Free online tax calculators and image tools',
     intro: 'Quick, private tools for everyday work. No sign-up and no uploads — everything runs on your device.',
-    categories: { tax: 'Tax calculators', finance: 'Finance calculators', image: 'Image tools' },
+    categories: { study: 'Focus & study', tax: 'Tax calculators', finance: 'Finance calculators', image: 'Image tools' },
   },
   common: {
     privacyNote: 'Runs entirely in your browser. Your numbers and files never leave your device.',
@@ -17,6 +17,34 @@ const en = {
     related: 'More free tools',
   },
   tools: {
+    'focus-timer': {
+      name: 'Pomodoro Focus Timer',
+      short: 'A Pomodoro timer with rain, waves and white noise to help you focus.',
+      metaDescription:
+        'Free online Pomodoro timer with background sounds: 25-minute focus sessions and breaks, plus white noise, rain, waves and wind you can mix. Tracks daily sessions and streaks. No sign-up.',
+      ui: {
+        focus: 'Focus', shortBreak: 'Short break', longBreak: 'Long break',
+        start: 'Start', pause: 'Pause', reset: 'Reset', skip: 'Skip',
+        settings: 'Timer settings', focusLen: 'Focus (min)', shortLen: 'Short break (min)', longLen: 'Long break (min)',
+        autoStart: 'Start the next session automatically',
+        sounds: 'Background sounds', white: 'White noise', pink: 'Pink noise', brown: 'Brown noise', rain: 'Rain', waves: 'Ocean waves', wind: 'Wind',
+        stopSounds: 'Mute all',
+        soundsNote: 'All sounds are generated live in your browser, so nothing is downloaded.',
+        today: 'Sessions today', goal: 'Daily goal: {n} sessions', streak: 'Day streak', week: 'Focus this week', min: 'min', days: 'days',
+        focusDone: 'Focus session complete! Take a short break.', breakDone: 'Break is over. Ready to focus again?',
+        shortcut: 'Tip: press the space bar to start or pause.',
+      },
+      howTo: [
+        'Press Start and work on one task until the timer rings (25 minutes by default).',
+        'Take a 5-minute break. After every fourth session, take a longer 15-minute break.',
+        'Turn up any background sound to block out distractions, and mix several if you like.',
+      ],
+      faq: [
+        { q: 'What is the Pomodoro technique?', a: 'A time-management method where you work in focused blocks, usually 25 minutes, separated by short breaks. Short, timed sessions make it easier to start and to stay focused.' },
+        { q: 'Which background noise is best for studying?', a: 'It depends on the person. White noise masks sharp sounds, brown noise is deeper and softer, and rain or waves feel more natural. Try mixing them at a low volume.' },
+        { q: 'Does the timer keep running in another tab?', a: 'Yes. The remaining time is shown in the browser tab title, and a sound plays when the session ends.' },
+      ],
+    },
     'vat-calculator': {
       name: 'VAT Calculator',
       short: 'Add or remove VAT, GST or consumption tax for 17 countries.',

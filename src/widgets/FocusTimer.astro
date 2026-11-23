@@ -1,0 +1,386 @@
+---
+// 뽀모도로 집중 타이머 + 브라우저에서 직접 만드는 배경 소리(저작권 걱정 없음)
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['focus-timer'];
+const ui = tool.ui;
+const GOAL = 4;
+const sounds = ['rain', 'waves', 'wind', 'white', 'pink', 'brown'] as const;
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card focus" id="focus" data-labels={JSON.stringify(ui)} data-goal={GOAL}>
+  <div class="radio-stats" aria-live="polite">
+    <div>
+      <span class="stat-label">{ui.today}</span>
+      <strong><span id="f-today">0</span> / {GOAL}</strong>
+      <div class="goal-bar" aria-hidden="true"><span id="f-goal-fill"></span></div>
+      <span class="stat-sub">{ui.goal.replace('{n}', String(GOAL))}</span>
+    </div>
+    <div>
+      <span class="stat-label">{ui.streak}</span>
+      <strong><span id="f-streak">0</span> {ui.days}</strong>
+    </div>
+    <div>
+      <span class="stat-label">{ui.week}</span>
+      <strong><span id="f-week">0</span> {ui.min}</strong>
+    </div>
+  </div>
+
+  <div class="mode-tabs" role="tablist">
+    <button type="button" role="tab" data-mode="focus" aria-selected="true">{ui.focus}</button>
+    <button type="button" role="tab" data-mode="short" aria-selected="false">{ui.shortBreak}</button>
+    <button type="button" role="tab" data-mode="long" aria-selected="false">{ui.longBreak}</button>
+  </div>
+
+  <div class="dial">
+    <svg viewBox="0 0 200 200" aria-hidden="true">
+      <circle class="dial-track" cx="100" cy="100" r="90"></circle>
+      <circle class="dial-fill" id="f-ring" cx="100" cy="100" r="90"></circle>
+    </svg>
+    <div class="dial-text">
+      <span id="f-time" class="time" role="timer" aria-live="off">25:00</span>
+      <span id="f-cycle" class="note"></span>
+    </div>
+  </div>
+
+  <div class="timer-actions">
+    <button type="button" class="btn big" id="f-start">{ui.start}</button>
+    <button type="button" class="btn ghost" id="f-reset">{ui.reset}</button>
+    <button type="button" class="btn ghost" id="f-skip">{ui.skip}</button>
+  </div>
+  <p class="note center" id="f-message" aria-live="polite">{ui.shortcut}</p>
+
+  <h2 class="sub">{ui.sounds}</h2>
+  <div class="mixer">
+    {
+      sounds.map((s) => (
+        <label class="mix">
+          <span>{ui[s]}</span>
+          <input type="range" min="0" max="1" step="0.05" value="0" data-sound={s} aria-label={ui[s]} />
+        </label>
+      ))
+    }
+  </div>
+  <div class="timer-actions">
+    <button type="button" class="btn ghost" id="f-mute">{ui.stopSounds}</button>
+  </div>
+  <p class="note">{ui.soundsNote}</p>
+
+  <details class="settings">
+    <summary>{ui.settings}</summary>
+    <div class="grid-3">
+      <label>{ui.focusLen}<input id="f-len-focus" type="number" min="1" max="120" step="1" value="25" /></label>
+      <label>{ui.shortLen}<input id="f-len-short" type="number" min="1" max="60" step="1" value="5" /></label>
+      <label>{ui.longLen}<input id="f-len-long" type="number" min="1" max="60" step="1" value="15" /></label>
+    </div>
+    <label class="check"><input id="f-auto" type="checkbox" /> {ui.autoStart}</label>
+  </details>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script>
+  type Mode = 'focus' | 'short' | 'long';
+  type Settings = { focus: number; short: number; long: number; auto: boolean; vol: Record<string, number> };
+
+  const root = document.getElementById('focus') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const GOAL = Number(root.dataset.goal ?? 4);
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const LOG_KEY = 'kitwise-focus-log';
+  const SET_KEY = 'kitwise-focus-settings';
+
+  const load = <T,>(k: string, fb: T): T => {
+    try {
+      const v = localStorage.getItem(k);
+      return v ? { ...fb, ...JSON.parse(v) } : fb;
+    } catch {
+      return fb;
+    }
+  };
+  const save = (k: string, v: unknown) => {
+    try {
+      localStorage.setItem(k, JSON.stringify(v));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  };
+
+  // ---------------- 설정 ----------------
+  const settings = load<Settings>(SET_KEY, { focus: 25, short: 5, long: 15, auto: false, vol: {} });
+  const lenInputs = { focus: $<HTMLInputElement>('#f-len-focus'), short: $<HTMLInputElement>('#f-len-short'), long: $<HTMLInputElement>('#f-len-long') };
+  const autoEl = $<HTMLInputElement>('#f-auto');
+  (Object.keys(lenInputs) as Mode[]).forEach((m) => (lenInputs[m].value = String(settings[m])));
+  autoEl.checked = settings.auto;
+  const minutesOf = (m: Mode) => Math.min(180, Math.max(1, Math.round(Number(lenInputs[m].value) || settings[m])));
+
+  // ---------------- 기록: { "2026-11-23": { s: 횟수, m: 분 } } ----------------
+  const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const log = load<Record<string, { s: number; m: number }>>(LOG_KEY, {});
+  function renderStats() {
+    const today = log[dayKey()]?.s ?? 0;
+    $<HTMLElement>('#f-today').textContent = String(today);
+    $<HTMLElement>('#f-goal-fill').style.width = `${Math.min(100, (today / GOAL) * 100)}%`;
+    let week = 0;
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      week += log[dayKey(d)]?.m ?? 0;
+    }
+    $<HTMLElement>('#f-week').textContent = String(week);
+    let streak = 0;
+    const d = new Date();
+    if (!log[dayKey(d)]?.s) d.setDate(d.getDate() - 1);
+    while (log[dayKey(d)]?.s) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    }
+    $<HTMLElement>('#f-streak').textContent = String(streak);
+  }
+
+  // ---------------- 오디오 (첫 클릭 때 만듦: 브라우저 자동재생 정책) ----------------
+  let ctx: AudioContext | null = null;
+  let master: GainNode;
+  const ensureCtx = () => {
+    if (!ctx) {
+      ctx = new AudioContext();
+      master = ctx.createGain();
+      master.gain.value = 0.9;
+      master.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  };
+
+  function chime() {
+    const c = ensureCtx();
+    [0, 0.25, 0.5].forEach((delay, i) => {
+      const o = c.createOscillator();
+      const g = c.createGain();
+      o.type = 'sine';
+      o.frequency.value = [880, 1108.73, 1318.51][i];
+      const t0 = c.currentTime + delay;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.35, t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.9);
+      o.connect(g).connect(c.destination);
+      o.start(t0);
+      o.stop(t0 + 1);
+    });
+  }
+
+  // 5초 길이 소음을 만들어 반복 재생 (white/pink/brown)
+  const buffers: Record<string, AudioBuffer> = {};
+  function noise(kind: 'white' | 'pink' | 'brown') {
+    const c = ensureCtx();
+    if (buffers[kind]) return buffers[kind];
+    const len = c.sampleRate * 5;
+    const buf = c.createBuffer(1, len, c.sampleRate);
+    const out = buf.getChannelData(0);
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0, last = 0;
+    for (let i = 0; i < len; i++) {
+      const w = Math.random() * 2 - 1;
+      if (kind === 'white') out[i] = w * 0.5;
+      else if (kind === 'pink') {
+        b0 = 0.99886 * b0 + w * 0.0555179; b1 = 0.99332 * b1 + w * 0.0750759; b2 = 0.969 * b2 + w * 0.153852;
+        b3 = 0.8665 * b3 + w * 0.3104856; b4 = 0.55 * b4 + w * 0.5329522; b5 = -0.7616 * b5 - w * 0.016898;
+        out[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11;
+        b6 = w * 0.115926;
+      } else {
+        last = (last + 0.02 * w) / 1.02;
+        out[i] = last * 3.5;
+      }
+    }
+    return (buffers[kind] = buf);
+  }
+
+  const channels: Record<string, GainNode> = {};
+  function channel(name: string): GainNode {
+    if (channels[name]) return channels[name];
+    const c = ensureCtx();
+    const src = c.createBufferSource();
+    src.loop = true;
+    const out = c.createGain();
+    out.gain.value = 0;
+    let last: AudioNode = src;
+    const lfo = (rate: number, depth: number, target: AudioParam) => {
+      const o = c.createOscillator();
+      const g = c.createGain();
+      o.frequency.value = rate;
+      g.gain.value = depth;
+      o.connect(g).connect(target);
+      o.start();
+    };
+    if (name === 'white' || name === 'pink' || name === 'brown') {
+      src.buffer = noise(name);
+    } else if (name === 'rain') {
+      // 높은 대역만 남긴 핑크노이즈 = 빗소리
+      src.buffer = noise('pink');
+      const hp = c.createBiquadFilter();
+      hp.type = 'highpass';
+      hp.frequency.value = 900;
+      const lp = c.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 9000;
+      last = src.connect(hp).connect(lp);
+    } else if (name === 'waves') {
+      // 낮은 소음 + 천천히 커졌다 작아지는 음량 = 파도
+      src.buffer = noise('brown');
+      const lp = c.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 700;
+      const swell = c.createGain();
+      swell.gain.value = 0.55;
+      lfo(0.09, 0.45, swell.gain);
+      last = src.connect(lp).connect(swell);
+    } else if (name === 'wind') {
+      // 대역이 천천히 움직이는 핑크노이즈 = 바람
+      src.buffer = noise('pink');
+      const bp = c.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.Q.value = 0.8;
+      bp.frequency.value = 500;
+      lfo(0.06, 300, bp.frequency);
+      last = src.connect(bp);
+    }
+    last.connect(out).connect(master);
+    src.start();
+    return (channels[name] = out);
+  }
+
+  const sliders = [...root.querySelectorAll<HTMLInputElement>('[data-sound]')];
+  function setVolume(name: string, v: number) {
+    settings.vol[name] = v;
+    if (v === 0 && !channels[name]) return;
+    const g = channel(name);
+    g.gain.setTargetAtTime(v * (name === 'white' ? 0.5 : name === 'rain' ? 1.4 : 1), ensureCtx().currentTime, 0.1);
+  }
+  sliders.forEach((s) => {
+    s.value = String(settings.vol[s.dataset.sound!] ?? 0);
+    s.addEventListener('input', () => {
+      setVolume(s.dataset.sound!, Number(s.value));
+      save(SET_KEY, settings);
+    });
+  });
+  $<HTMLButtonElement>('#f-mute').addEventListener('click', () => {
+    sliders.forEach((s) => {
+      s.value = '0';
+      setVolume(s.dataset.sound!, 0);
+    });
+    save(SET_KEY, settings);
+  });
+
+  // ---------------- 타이머 (끝나는 시각 기준이라 다른 탭에서도 정확) ----------------
+  let mode: Mode = 'focus';
+  let remaining = minutesOf('focus') * 60_000;
+  let endAt = 0;
+  let running = false;
+  let focusCount = 0; // 이번 묶음에서 끝낸 집중 수 (4번마다 긴 휴식)
+  const baseTitle = document.title;
+  const timeEl = $<HTMLElement>('#f-time');
+  const ring = $<SVGCircleElement>('#f-ring');
+  const startBtn = $<HTMLButtonElement>('#f-start');
+  const msgEl = $<HTMLElement>('#f-message');
+  const C = 2 * Math.PI * 90;
+  ring.style.strokeDasharray = String(C);
+  const label = (m: Mode) => (m === 'focus' ? L.focus : m === 'short' ? L.shortBreak : L.longBreak);
+  const fmt = (ms: number) => {
+    const s = Math.max(0, Math.ceil(ms / 1000));
+    return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  };
+
+  function render() {
+    const total = minutesOf(mode) * 60_000;
+    timeEl.textContent = fmt(remaining);
+    ring.style.strokeDashoffset = String(C * (1 - remaining / total));
+    root.dataset.mode = mode;
+    $<HTMLElement>('#f-cycle').textContent = mode === 'focus' ? `#${focusCount + 1}` : label(mode);
+    startBtn.textContent = running ? L.pause : L.start;
+    document.title = running ? `${fmt(remaining)} · ${label(mode)}` : baseTitle;
+    root.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.mode === mode)));
+  }
+
+  function setMode(m: Mode) {
+    mode = m;
+    running = false;
+    remaining = minutesOf(m) * 60_000;
+    render();
+  }
+
+  function start() {
+    ensureCtx();
+    endAt = Date.now() + remaining;
+    running = true;
+    render();
+  }
+  function pause() {
+    remaining = Math.max(0, endAt - Date.now());
+    running = false;
+    render();
+  }
+
+  function complete(natural: boolean) {
+    if (natural) chime();
+    if (mode === 'focus') {
+      if (natural) {
+        const k = dayKey();
+        log[k] = { s: (log[k]?.s ?? 0) + 1, m: (log[k]?.m ?? 0) + minutesOf('focus') };
+        save(LOG_KEY, log);
+        renderStats();
+      }
+      focusCount++;
+      msgEl.textContent = L.focusDone;
+      setMode(focusCount % 4 === 0 ? 'long' : 'short');
+    } else {
+      msgEl.textContent = L.breakDone;
+      setMode('focus');
+    }
+    if (natural && autoEl.checked) start();
+  }
+
+  setInterval(() => {
+    if (!running) return;
+    remaining = endAt - Date.now();
+    if (remaining <= 0) complete(true);
+    else render();
+  }, 250);
+
+  startBtn.addEventListener('click', () => (running ? pause() : start()));
+  $<HTMLButtonElement>('#f-reset').addEventListener('click', () => setMode(mode));
+  $<HTMLButtonElement>('#f-skip').addEventListener('click', () => complete(false));
+  root.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode as Mode)));
+  (Object.keys(lenInputs) as Mode[]).forEach((m) =>
+    lenInputs[m].addEventListener('change', () => {
+      settings[m] = minutesOf(m);
+      save(SET_KEY, settings);
+      if (m === mode && !running) setMode(mode);
+    }),
+  );
+  autoEl.addEventListener('change', () => {
+    settings.auto = autoEl.checked;
+    save(SET_KEY, settings);
+  });
+  document.addEventListener('keydown', (e) => {
+    const tag = (e.target as HTMLElement).tagName;
+    if (e.code === 'Space' && !['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(tag)) {
+      e.preventDefault();
+      running ? pause() : start();
+    }
+  });
+
+  // 저장된 소리 설정은 첫 클릭 이후 다시 켬 (브라우저는 클릭 전 소리 재생을 막음)
+  const resumeSounds = () => {
+    sliders.forEach((s) => Number(s.value) > 0 && setVolume(s.dataset.sound!, Number(s.value)));
+    removeEventListener('pointerdown', resumeSounds);
+  };
+  if (sliders.some((s) => Number(s.value) > 0)) addEventListener('pointerdown', resumeSounds);
+
+  renderStats();
+  render();
+</script>
