@@ -1,0 +1,161 @@
+---
+// 자동차 증상·경고등 진단. 모든 결과 문구를 페이지에 미리 넣어 두고(검색엔진 색인용) 선택한 것만 보여 줌.
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+import { CAUSES, SYMPTOMS, SYMPTOM_GROUPS, LIGHTS, lightIcon, type CauseId, type LightId, type SymptomId } from '../data/car';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['car-diagnosis']!;
+const ui = tool.ui;
+const lightIds = Object.keys(LIGHTS) as LightId[];
+const diyLabel = (n: number) => [ui.diy1, ui.diy1, ui.diy2, ui.diy3][n];
+const urgLabel = (n: number) => [ui.u0, ui.u1, ui.u2, ui.u3][n];
+const causeList = (ids: readonly CauseId[]) => ids.map((id) => ({ id, ...CAUSES[id], ...tool.causes[id] }));
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card car" id="car">
+  <div class="mode-tabs" role="tablist">
+    <button type="button" role="tab" data-mode="symptom" aria-selected="true">🔧 {ui.modeSymptom}</button>
+    <button type="button" role="tab" data-mode="light" aria-selected="false">⚠️ {ui.modeLight}</button>
+  </div>
+
+  <div data-panel="symptom">
+    {
+      SYMPTOM_GROUPS.map((g) => (
+        <div class="sym-group">
+          <h3>{ui.groups[g.id]}</h3>
+          <div class="chips">
+            {g.items.map((s) => (
+              <button type="button" class="chip" data-pick={`s-${s}`}>{tool.symptoms[s]}</button>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div data-panel="light" hidden>
+    <p class="note">{ui.lightHint}</p>
+    <div class="lights">
+      {
+        lightIds.map((id) => (
+          <button type="button" class={`light ${LIGHTS[id].color}`} data-pick={`l-${id}`} title={tool.lights[id].name}>
+            <span set:html={lightIcon(id)} />
+            <small>{tool.lights[id].name}</small>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <p class="note center" id="car-empty">{ui.pick}</p>
+
+  {
+    (Object.keys(SYMPTOMS) as SymptomId[]).map((s) => (
+      <article class="result" id={`s-${s}`} hidden>
+        <h2>{tool.symptoms[s]}</h2>
+        <h3>{ui.causesTitle}</h3>
+        <ol class="causes">
+          {causeList(SYMPTOMS[s]).map((c) => (
+            <li class={`cause u${c.urgency}`}>
+              <strong>{c.name}</strong>
+              <p>{c.fix}</p>
+              <span class={`badge u${c.urgency}`}>{urgLabel(c.urgency)}</span>
+              <span class="badge diy">{ui.diy}: {diyLabel(c.diy)}</span>
+            </li>
+          ))}
+        </ol>
+      </article>
+    ))
+  }
+  {
+    lightIds.map((id) => (
+      <article class="result" id={`l-${id}`} hidden>
+        <h2 class={`light-title ${LIGHTS[id].color}`}><span set:html={lightIcon(id)} /> {tool.lights[id].name}</h2>
+        <p class={`alert ${LIGHTS[id].color}`}>{LIGHTS[id].color === 'red' ? ui.red : ui.amber}</p>
+        <p>{tool.lights[id].action}</p>
+        <h3>{ui.causesTitle}</h3>
+        <ol class="causes">
+          {causeList(LIGHTS[id].causes).map((c) => (
+            <li class={`cause u${c.urgency}`}>
+              <strong>{c.name}</strong>
+              <p>{c.fix}</p>
+              <span class={`badge u${c.urgency}`}>{urgLabel(c.urgency)}</span>
+              <span class="badge diy">{ui.diy}: {diyLabel(c.diy)}</span>
+            </li>
+          ))}
+        </ol>
+      </article>
+    ))
+  }
+  <p class="note">{ui.disclaimer}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<style>
+  .car { display: grid; gap: 1rem; }
+  .sym-group h3 { font-size: .95rem; margin: .4rem 0; color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .chip { border: 1px solid var(--border, #ccc); background: var(--surface, transparent); color: inherit; border-radius: 999px; padding: .45rem .9rem; cursor: pointer; font: inherit; }
+  .chip[aria-pressed='true'], .light[aria-pressed='true'] { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .lights { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: .6rem; }
+  .light { display: grid; justify-items: center; gap: .3rem; padding: .7rem .4rem; border-radius: 12px; border: 1px solid var(--border, #ccc); background: #111; cursor: pointer; font: inherit; }
+  .light small { color: #eee; font-size: .78rem; line-height: 1.25; text-align: center; }
+  .light.red { color: #ff4b3e; } .light.amber { color: #ffb020; }
+  .light-title { display: flex; align-items: center; gap: .5rem; }
+  .light-title span { display: inline-grid; background: #111; border-radius: 8px; padding: .2rem; }
+  .light-title.red span { color: #ff4b3e; } .light-title.amber span { color: #ffb020; }
+  .alert { padding: .6rem .8rem; border-radius: 8px; font-weight: 600; }
+  .alert.red { background: color-mix(in srgb, #d93025 14%, transparent); }
+  .alert.amber { background: color-mix(in srgb, #e8a000 16%, transparent); }
+  .causes { display: grid; gap: .7rem; padding-left: 1.2rem; }
+  .cause p { margin: .25rem 0 .4rem; }
+  .badge { display: inline-block; font-size: .8rem; padding: .15rem .55rem; border-radius: 999px; margin-right: .35rem; border: 1px solid var(--border, #ccc); }
+  .badge.u3 { background: #d93025; color: #fff; border-color: #d93025; }
+  .badge.u2 { background: #e8a000; color: #111; border-color: #e8a000; }
+  .badge.u1 { background: color-mix(in srgb, #2a78d6 16%, transparent); }
+  .badge.u0 { background: color-mix(in srgb, #1baf7a 18%, transparent); }
+</style>
+
+<script>
+  const root = document.getElementById('car') as HTMLElement;
+  const KEY = 'kitwise-car-mode';
+  const empty = root.querySelector('#car-empty') as HTMLElement;
+
+  function setMode(mode: string) {
+    root.querySelectorAll<HTMLElement>('[data-mode]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.mode === mode)));
+    root.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => (p.hidden = p.dataset.panel !== mode));
+    try {
+      localStorage.setItem(KEY, mode);
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  }
+
+  function pick(id: string, btn: HTMLElement) {
+    root.querySelectorAll<HTMLElement>('.result').forEach((r) => (r.hidden = r.id !== id));
+    root.querySelectorAll<HTMLElement>('[data-pick]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    empty.hidden = true;
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  root.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const m = target.closest<HTMLElement>('[data-mode]');
+    if (m) return setMode(m.dataset.mode!);
+    const p = target.closest<HTMLElement>('[data-pick]');
+    if (p) pick(p.dataset.pick!, p);
+  });
+
+  try {
+    const saved = localStorage.getItem(KEY);
+    if (saved === 'light' || saved === 'symptom') setMode(saved);
+  } catch {
+    /* 저장 불가 환경 */
+  }
+</script>
