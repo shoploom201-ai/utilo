@@ -1,0 +1,42 @@
+---
+// 없는 주소용 페이지. 이 파일이 없으면 Cloudflare Pages가 홈 페이지를 "정상(200)"으로 보여 줘서
+// 구글이 가짜 페이지(soft 404)로 판단합니다. 4개 언어로 안내하고 검색 결과에는 넣지 않습니다(noindex).
+import '../styles/global.css';
+import { locales, t } from '../i18n';
+import { SITE } from '../site';
+
+const message: Record<string, string> = {
+  en: 'Page not found',
+  ko: '페이지를 찾을 수 없습니다',
+  ja: 'ページが見つかりません',
+  es: 'Página no encontrada',
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>404 | {SITE.name}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>404</h1>
+      <ul class="tool-grid">
+        {
+          locales.map((l) => (
+            <li>
+              <a class="card" href={`/${l}/`} lang={l} hreflang={l}>
+                <strong>{message[l]}</strong>
+                <span>{SITE.name} — {t(l).langName}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </main>
+  </body>
+</html>
