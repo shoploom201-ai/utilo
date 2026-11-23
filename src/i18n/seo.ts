@@ -8,6 +8,19 @@ import type { ToolId } from '../tools';
 type ToolSeo = Record<ToolId, { slug: string; title: string }>;
 
 export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
+  fr: {
+    'vat-calculator': { slug: 'calcul-tva', title: 'Calcul TVA en ligne – HT en TTC et TTC en HT (20 %, 10 %, 5,5 %)' },
+    'loan-calculator': { slug: 'simulateur-pret', title: 'Simulateur de prêt – Mensualité, intérêts et tableau d’amortissement' },
+    'compound-interest-calculator': { slug: 'calcul-interets-composes', title: 'Calcul des intérêts composés – Simulateur d’épargne mensuelle' },
+    'image-compressor': { slug: 'compresser-image', title: 'Compresser une image en ligne – Réduire le poids d’une photo' },
+    'image-to-pdf': { slug: 'image-en-pdf', title: 'Convertir une image en PDF – JPG et PNG en un seul PDF gratuit' },
+    'focus-timer': { slug: 'minuteur-pomodoro', title: 'Minuteur Pomodoro en ligne – Timer de travail avec bruit blanc' },
+    sudoku: { slug: 'sudoku', title: 'Sudoku gratuit en ligne – Grille du jour, de facile à difficile' },
+    metronome: { slug: 'metronome', title: 'Métronome en ligne gratuit – BPM, mesure et tap tempo' },
+    tuner: { slug: 'accordeur', title: 'Accordeur en ligne – Accorder guitare, basse, ukulélé et violon' },
+    'typing-practice': { slug: 'test-dactylographie', title: 'Test de dactylographie – Mesurer sa vitesse de frappe (gratuit)' },
+    'saas-cost': { slug: 'calculateur-cout-saas', title: 'Calculateur de coûts SaaS – Abonnements logiciels et IA' },
+  },
   de: {
     'vat-calculator': { slug: 'mwst-rechner', title: 'MwSt-Rechner – Mehrwertsteuer berechnen & herausrechnen (19 % / 7 %)' },
     'loan-calculator': { slug: 'kreditrechner', title: 'Kreditrechner – Monatliche Rate, Zinsen & Tilgungsplan berechnen' },
@@ -96,6 +109,12 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
  * "그 언어를 배우는 사람"이 자기 말로 검색하는 문구를 노립니다 (예: 일본인 → 韓国語 リスニング).
  */
 export const radioSeo: Record<Locale, Partial<Record<Locale, { slug: string; title: string }>>> = {
+  fr: {
+    en: { slug: 'radio-anglaise', title: 'Apprendre l’anglais avec la radio – Radios anglaises et américaines en direct' },
+    es: { slug: 'radio-espagnole', title: 'Apprendre l’espagnol avec la radio – Radios d’Espagne et d’Amérique latine' },
+    ja: { slug: 'radio-japonaise', title: 'Apprendre le japonais avec la radio – Radios japonaises en direct' },
+    ko: { slug: 'radio-coreenne', title: 'Apprendre le coréen avec la radio – Radios coréennes en direct' },
+  },
   de: {
     en: { slug: 'englisch-lernen-radio', title: 'Englisch lernen mit Radio – Live-Sender aus USA, UK & Australien' },
     es: { slug: 'spanisch-lernen-radio', title: 'Spanisch lernen mit Radio – Live-Sender aus Spanien & Lateinamerika' },
@@ -130,4 +149,4 @@ export const radioTargets = (lang: Locale) =>
 export const radioPath = (lang: Locale, target: Locale) => `/${lang}/${radioSeo[lang][target]!.slug}/`;
 
 /** 검색엔진에 알려 줄 각 언어의 지역 표기 (og:locale) */
-export const ogLocale: Record<Locale, string> = { ko: 'ko_KR', ja: 'ja_JP', es: 'es_ES', en: 'en_US', de: 'de_DE' };
+export const ogLocale: Record<Locale, string> = { ko: 'ko_KR', ja: 'ja_JP', es: 'es_ES', en: 'en_US', de: 'de_DE', fr: 'fr_FR' };

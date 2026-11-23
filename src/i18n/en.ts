@@ -276,7 +276,7 @@ const en = {
     },
     'vat-calculator': {
       name: 'VAT Calculator',
-      short: 'Add or remove VAT, GST or consumption tax for 18 countries.',
+      short: 'Add or remove VAT, GST or consumption tax for 19 countries.',
       metaDescription:
         'Free VAT calculator: add or remove VAT or GST from any amount with standard and reduced rates for the UK, EU, Japan, Korea, Australia and more.',
       ui: {

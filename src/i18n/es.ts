@@ -278,7 +278,7 @@ const es: Dict = {
     },
     'vat-calculator': {
       name: 'Calculadora de IVA',
-      short: 'Suma o quita el IVA, GST o impuesto al consumo en 18 países.',
+      short: 'Suma o quita el IVA, GST o impuesto al consumo en 19 países.',
       metaDescription:
         'Calculadora de IVA gratis: añade o quita el IVA de cualquier importe con los tipos general y reducidos de España, México, la UE, Japón, Corea y más.',
       ui: {

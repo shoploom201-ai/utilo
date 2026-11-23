@@ -63,8 +63,8 @@ const texts = Object.fromEntries(modes.map((m) => [m, typingTexts[m]]));
   import { RomajiMatcher } from '../lib/romaji';
 
   type JaItem = { text: string; kana: string };
-  type Mode = 'ko' | 'en' | 'es' | 'ja' | 'de';
-  const ACCENT_MODES: string[] = ['es', 'de'];
+  type Mode = 'ko' | 'en' | 'es' | 'ja' | 'de' | 'fr';
+  const ACCENT_MODES: string[] = ['es', 'de', 'fr'];
   const root = document.getElementById('typing') as HTMLElement;
   const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
   const TEXTS = JSON.parse(root.dataset.texts ?? '{}') as Record<string, (string | JaItem)[]>;
@@ -73,7 +73,7 @@ const texts = Object.fromEntries(modes.map((m) => [m, typingTexts[m]]));
   const textEl = $<HTMLElement>('#t-text');
   const kanaEl = $<HTMLElement>('#t-kana');
   const romajiEl = $<HTMLElement>('#t-romaji');
-  const UNIT: Record<Mode, string> = { ko: '타/분', en: 'WPM', es: 'PPM', ja: '打/分', de: 'WPM' };
+  const UNIT: Record<Mode, string> = { ko: '타/분', en: 'WPM', es: 'PPM', ja: '打/分', de: 'WPM', fr: 'MPM' };
   const LOG_KEY = 'kitwise-typing-log';
   const BEST_KEY = 'kitwise-typing-best';
 
