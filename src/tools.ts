@@ -6,7 +6,9 @@ export type Category = 'tax' | 'finance' | 'image';
 export const tools = [
   { slug: 'vat-calculator', category: 'tax' },
   { slug: 'loan-calculator', category: 'finance' },
+  { slug: 'compound-interest-calculator', category: 'finance' },
   { slug: 'image-compressor', category: 'image' },
+  { slug: 'image-to-pdf', category: 'image' },
 ] as const satisfies readonly { slug: string; category: Category }[];
 
 export type ToolSlug = (typeof tools)[number]['slug'];

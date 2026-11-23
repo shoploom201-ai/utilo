@@ -1,0 +1,202 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolInfo from '../../components/ToolInfo.astro';
+import { localeStaticPaths, t, type Locale } from '../../i18n';
+
+export const getStaticPaths = localeStaticPaths;
+const lang = Astro.params.lang as Locale;
+const d = t(lang);
+const tool = d.tools['image-to-pdf'];
+const ui = tool.ui;
+---
+
+<Base lang={lang} title={tool.name} description={tool.metaDescription} path="/image-to-pdf/">
+  <h1>{tool.name}</h1>
+  <p class="lead">{tool.short}</p>
+
+  <section class="tool card" id="pdf" data-labels={JSON.stringify(ui)}>
+    <label class="dropzone" id="pdf-drop">
+      <span>{ui.choose}</span>
+      <input id="pdf-files" type="file" accept="image/*" multiple />
+    </label>
+    <ul class="file-list" id="pdf-list"></ul>
+    <div class="grid-2">
+      <label>
+        {ui.pageSize}
+        <select id="pdf-size">
+          <option value="a4">{ui.a4}</option>
+          <option value="letter">{ui.letter}</option>
+          <option value="fit">{ui.fit}</option>
+        </select>
+      </label>
+      <label>
+        {ui.margin}
+        <select id="pdf-margin">
+          <option value="0">{ui.none}</option>
+          <option value="20" selected>{ui.small}</option>
+          <option value="48">{ui.large}</option>
+        </select>
+      </label>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn" id="pdf-create">{ui.create}</button>
+      <a class="btn" id="pdf-download" hidden download="images.pdf">{ui.download}</a>
+    </div>
+    <p class="note" id="pdf-status" aria-live="polite"></p>
+    <p class="privacy-note">{d.common.privacyNote}</p>
+  </section>
+
+  <ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+</Base>
+
+<script>
+  import { PDFDocument } from 'pdf-lib';
+
+  const root = document.getElementById('pdf') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const input = root.querySelector<HTMLInputElement>('#pdf-files')!;
+  const drop = root.querySelector<HTMLElement>('#pdf-drop')!;
+  const list = root.querySelector<HTMLUListElement>('#pdf-list')!;
+  const sizeEl = root.querySelector<HTMLSelectElement>('#pdf-size')!;
+  const marginEl = root.querySelector<HTMLSelectElement>('#pdf-margin')!;
+  const createBtn = root.querySelector<HTMLButtonElement>('#pdf-create')!;
+  const download = root.querySelector<HTMLAnchorElement>('#pdf-download')!;
+  const status = root.querySelector<HTMLElement>('#pdf-status')!;
+
+  type Item = { file: File; thumb: string };
+  let items: Item[] = [];
+  let pdfUrl = '';
+
+  const PAGE = { a4: [595.28, 841.89], letter: [612, 792] } as const;
+
+  function resetOutput() {
+    if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+    pdfUrl = '';
+    download.hidden = true;
+    status.textContent = '';
+  }
+
+  function render() {
+    list.replaceChildren(
+      ...items.map((item, i) => {
+        const li = document.createElement('li');
+        li.className = 'file-item';
+        const img = document.createElement('img');
+        img.src = item.thumb;
+        img.alt = '';
+        const name = document.createElement('div');
+        name.className = 'name';
+        name.textContent = `${i + 1}. ${item.file.name}`;
+        const btns = document.createElement('div');
+        btns.className = 'row-actions';
+        const up = document.createElement('button');
+        up.type = 'button';
+        up.textContent = '↑';
+        up.title = up.ariaLabel = L.moveUp;
+        up.disabled = i === 0;
+        up.onclick = () => {
+          [items[i - 1], items[i]] = [items[i], items[i - 1]];
+          resetOutput();
+          render();
+        };
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.textContent = '✕';
+        del.title = del.ariaLabel = L.remove;
+        del.onclick = () => {
+          URL.revokeObjectURL(item.thumb);
+          items.splice(i, 1);
+          resetOutput();
+          render();
+        };
+        btns.append(up, del);
+        li.append(img, name, btns);
+        return li;
+      }),
+    );
+  }
+
+  function addFiles(files: FileList | null) {
+    for (const file of Array.from(files ?? [])) {
+      if (file.type.startsWith('image/')) items.push({ file, thumb: URL.createObjectURL(file) });
+    }
+    input.value = '';
+    resetOutput();
+    render();
+  }
+
+  // 모든 이미지를 캔버스로 다시 그려 JPEG로 만듦: 휴대폰 사진의 회전 정보(EXIF)가 반영되고 WebP 등도 지원됨
+  async function toJpeg(file: File) {
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bitmap, 0, 0);
+    bitmap.close();
+    const blob = await new Promise<Blob>((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error('encode'))), 'image/jpeg', 0.92));
+    return { bytes: await blob.arrayBuffer(), width: canvas.width, height: canvas.height };
+  }
+
+  async function createPdf() {
+    resetOutput();
+    if (!items.length) {
+      status.textContent = L.empty;
+      return;
+    }
+    createBtn.disabled = true;
+    status.textContent = L.creating;
+    try {
+      const doc = await PDFDocument.create();
+      const margin = Number(marginEl.value);
+      for (const item of items) {
+        const img = await toJpeg(item.file);
+        const embedded = await doc.embedJpg(img.bytes);
+        const landscape = img.width > img.height;
+        let pageW: number, pageH: number;
+        if (sizeEl.value === 'fit') {
+          // 픽셀 → 포인트(96dpi 기준), 여백 포함
+          pageW = img.width * 0.75 + margin * 2;
+          pageH = img.height * 0.75 + margin * 2;
+        } else {
+          const [w, h] = PAGE[sizeEl.value as 'a4' | 'letter'];
+          [pageW, pageH] = landscape ? [h, w] : [w, h];
+        }
+        const boxW = pageW - margin * 2;
+        const boxH = pageH - margin * 2;
+        const scale = Math.min(boxW / img.width, boxH / img.height);
+        const drawW = img.width * scale;
+        const drawH = img.height * scale;
+        const page = doc.addPage([pageW, pageH]);
+        page.drawImage(embedded, { x: (pageW - drawW) / 2, y: (pageH - drawH) / 2, width: drawW, height: drawH });
+      }
+      const bytes = await doc.save();
+      pdfUrl = URL.createObjectURL(new Blob([bytes as BlobPart], { type: 'application/pdf' }));
+      download.href = pdfUrl;
+      download.hidden = false;
+      const kb = bytes.length / 1024;
+      status.textContent = `${items.length} → PDF (${kb < 1024 ? kb.toFixed(0) + ' KB' : (kb / 1024).toFixed(1) + ' MB'})`;
+    } catch {
+      status.textContent = L.error;
+    } finally {
+      createBtn.disabled = false;
+    }
+  }
+
+  input.addEventListener('change', () => addFiles(input.files));
+  drop.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    drop.classList.add('over');
+  });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', (e) => {
+    e.preventDefault();
+    drop.classList.remove('over');
+    addFiles(e.dataTransfer?.files ?? null);
+  });
+  sizeEl.addEventListener('change', resetOutput);
+  marginEl.addEventListener('change', resetOutput);
+  createBtn.addEventListener('click', createPdf);
+</script>

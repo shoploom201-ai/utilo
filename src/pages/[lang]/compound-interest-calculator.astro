@@ -1,0 +1,114 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolInfo from '../../components/ToolInfo.astro';
+import { localeStaticPaths, t, type Locale } from '../../i18n';
+
+export const getStaticPaths = localeStaticPaths;
+const lang = Astro.params.lang as Locale;
+const d = t(lang);
+const tool = d.tools['compound-interest-calculator'];
+const ui = tool.ui;
+---
+
+<Base lang={lang} title={tool.name} description={tool.metaDescription} path="/compound-interest-calculator/">
+  <h1>{tool.name}</h1>
+  <p class="lead">{tool.short}</p>
+
+  <section class="tool card" id="ci" data-lang={lang}>
+    <div class="grid-2">
+      <label>
+        {ui.principal}
+        <input id="ci-principal" type="number" inputmode="decimal" min="0" step="any" value="10000" />
+      </label>
+      <label>
+        {ui.contribution}
+        <input id="ci-contribution" type="number" inputmode="decimal" min="0" step="any" value="500" />
+      </label>
+      <label>
+        {ui.rate}
+        <input id="ci-rate" type="number" inputmode="decimal" min="0" max="100" step="0.01" value="5" />
+      </label>
+      <label>
+        {ui.years}
+        <input id="ci-years" type="number" inputmode="numeric" min="1" max="100" step="1" value="10" />
+      </label>
+    </div>
+    <label>
+      {ui.frequency}
+      <select id="ci-frequency">
+        <option value="1">{ui.yearly}</option>
+        <option value="12" selected>{ui.monthly}</option>
+        <option value="365">{ui.daily}</option>
+      </select>
+    </label>
+    <dl class="results" aria-live="polite">
+      <div class="total"><dt>{ui.final}</dt><dd id="ci-final">—</dd></div>
+      <div><dt>{ui.contributed}</dt><dd id="ci-contributed">—</dd></div>
+      <div><dt>{ui.interest}</dt><dd id="ci-interest">—</dd></div>
+    </dl>
+    <details class="schedule">
+      <summary>{ui.table}</summary>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>{ui.year}</th><th>{ui.contributed}</th><th>{ui.interest}</th><th>{ui.balance}</th></tr>
+          </thead>
+          <tbody id="ci-rows"></tbody>
+        </table>
+      </div>
+    </details>
+    <p class="privacy-note">{d.common.privacyNote}</p>
+  </section>
+
+  <p class="note">{ui.disclaimer}</p>
+
+  <ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+</Base>
+
+<script>
+  const root = document.getElementById('ci') as HTMLElement;
+  const fmt = new Intl.NumberFormat(root.dataset.lang ?? 'en', { maximumFractionDigits: 0 });
+  const num = (id: string) => parseFloat(root.querySelector<HTMLInputElement | HTMLSelectElement>(id)!.value);
+  const el = (id: string) => root.querySelector(id)!;
+  const rowsEl = root.querySelector<HTMLTableSectionElement>('#ci-rows')!;
+
+  function calc() {
+    const P = num('#ci-principal');
+    const C = num('#ci-contribution');
+    const rate = num('#ci-rate') / 100;
+    const years = num('#ci-years');
+    const n = num('#ci-frequency');
+    if (!(P >= 0) || !(C >= 0) || !(rate >= 0) || !(years >= 1) || years > 100 || P + C === 0) {
+      el('#ci-final').textContent = el('#ci-contributed').textContent = el('#ci-interest').textContent = '—';
+      rowsEl.replaceChildren();
+      return;
+    }
+    // 복리 주기(n)를 월 단위 실효 이율로 바꿔서 매달 계산. 적립금은 매달 말에 입금.
+    const monthlyRate = Math.pow(1 + rate / n, n / 12) - 1;
+    let balance = P;
+    let contributed = P;
+    const rows: string[][] = [];
+    for (let m = 1; m <= Math.round(years) * 12; m++) {
+      balance = balance * (1 + monthlyRate) + C;
+      contributed += C;
+      if (m % 12 === 0) rows.push([String(m / 12), fmt.format(contributed), fmt.format(balance - contributed), fmt.format(balance)]);
+    }
+    el('#ci-final').textContent = fmt.format(balance);
+    el('#ci-contributed').textContent = fmt.format(contributed);
+    el('#ci-interest').textContent = fmt.format(balance - contributed);
+    rowsEl.replaceChildren(
+      ...rows.map((cells) => {
+        const tr = document.createElement('tr');
+        for (const c of cells) {
+          const td = document.createElement('td');
+          td.textContent = c;
+          tr.append(td);
+        }
+        return tr;
+      }),
+    );
+  }
+
+  root.addEventListener('input', calc);
+  calc();
+</script>

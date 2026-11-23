@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.6",
-    "astro": "^7.4.13"
+    "astro": "^7.4.13",
+    "pdf-lib": "^1.17.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
