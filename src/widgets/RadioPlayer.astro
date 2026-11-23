@@ -11,7 +11,7 @@ interface Props {
 }
 const { lang, target } = Astro.props;
 const d = t(lang);
-const r = d.radio;
+const r = d.radio!;
 const ui = r.ui;
 
 type Station = (typeof radio.targets)['ko'][number];

@@ -7,7 +7,7 @@ import type { ToolId } from '../tools';
 
 type ToolSeo = Record<ToolId, { slug: string; title: string }>;
 
-export const toolSeo: Record<Locale, ToolSeo> = {
+export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
   ko: {
     'saas-cost': { slug: 'saas-구독-비용-계산기', title: 'AI·SaaS 구독 비용 계산기 - 소프트웨어 구독료 절약·연간 결제 비교' },
     'self-employed-tax': { slug: '미국-프리랜서-세금-계산기', title: '미국 프리랜서 세금 계산기 2026 - 1099 자영업세·분기 예정 납부액' },

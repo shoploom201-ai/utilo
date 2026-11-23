@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { localeStaticPaths, t, type Locale } from '../../i18n';
-import { tools, categories, toolPath, samePaths } from '../../tools';
+import { toolsFor, categories, toolPath, samePaths } from '../../tools';
 import { SITE } from '../../site';
 import { radioTargets, radioPath } from '../../i18n/seo';
 import AdSlot from '../../components/AdSlot.astro';
@@ -25,21 +25,23 @@ const jsonLd = [
 <Base lang={lang} title={d.home.title} description={d.tagline} paths={samePaths('/')} jsonLd={jsonLd} isHome xDefaultPath="/">
   <h1>{d.home.title}</h1>
   <p class="lead">{d.home.intro}</p>
-  <section>
-    <h2>📻 {d.radio.category}</h2>
-    <ul class="tool-grid">
-      {
-        radioTargets(lang).map(({ target, title }) => (
-          <li>
-            <a class="card" href={radioPath(lang, target)}>
-              <strong>{d.radio.name.replaceAll('{target}', new Intl.DisplayNames([lang], { type: 'language' }).of(target) ?? target)}</strong>
-              <span>{title}</span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
+  {
+    d.radio && radioTargets(lang).length > 0 && (
+      <section>
+        <h2>📻 {d.radio.category}</h2>
+        <ul class="tool-grid">
+          {radioTargets(lang).map(({ target, title }) => (
+            <li>
+              <a class="card" href={radioPath(lang, target)}>
+                <strong>{d.radio!.name.replaceAll('{target}', new Intl.DisplayNames([lang], { type: 'language' }).of(target) ?? target)}</strong>
+                <span>{title}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
   <!-- ② 홈 화면 중간 (라디오 묶음 다음) -->
   <AdSlot lang={lang} position="inContent" />
   {
@@ -47,13 +49,13 @@ const jsonLd = [
       <section>
         <h2>{d.home.categories[cat]}</h2>
         <ul class="tool-grid">
-          {tools
+          {toolsFor(lang)
             .filter((tool) => tool.category === cat)
             .map((tool) => (
               <li>
                 <a class="card" href={toolPath(lang, tool.id)}>
-                  <strong>{d.tools[tool.id].name}</strong>
-                  <span>{d.tools[tool.id].short}</span>
+                  <strong>{d.tools[tool.id]!.name}</strong>
+                  <span>{d.tools[tool.id]!.short}</span>
                 </a>
               </li>
             ))}

@@ -21,7 +21,7 @@ import SaasCost from '../../widgets/SaasCost.astro';
 import radio from '../../data/radio.json';
 import { locales, t, type Locale } from '../../i18n';
 import { toolSeo, radioSeo, radioTargets, radioPath } from '../../i18n/seo';
-import { tools, toolPath, toolPaths, type ToolId } from '../../tools';
+import { tools, toolsFor, toolPath, toolPaths, type ToolId } from '../../tools';
 import { SITE } from '../../site';
 import AdSlot from '../../components/AdSlot.astro';
 
@@ -29,7 +29,7 @@ type PageProps = { kind: 'tool'; id: ToolId } | { kind: 'radio'; target: Locale 
 
 export function getStaticPaths() {
   const toolPages = locales.flatMap((lang) =>
-    tools.map((tool) => ({ params: { lang, tool: toolSeo[lang][tool.id].slug }, props: { kind: 'tool', id: tool.id } })),
+    toolsFor(lang).map((tool) => ({ params: { lang, tool: toolSeo[lang][tool.id]!.slug }, props: { kind: 'tool', id: tool.id } })),
   );
   const radioPages = locales.flatMap((lang) =>
     radioTargets(lang).map(({ target, slug }) => ({ params: { lang, tool: slug }, props: { kind: 'radio', target } })),
@@ -69,8 +69,8 @@ let pagePath: string;
 let category: string;
 
 if (page.kind === 'tool') {
-  const info = d.tools[page.id];
-  title = toolSeo[lang][page.id].title;
+  const info = d.tools[page.id]!;
+  title = toolSeo[lang][page.id]!.title;
   description = info.metaDescription;
   paths = toolPaths(page.id);
   name = info.name;
@@ -86,13 +86,13 @@ if (page.kind === 'tool') {
     [...new Set(stations.map((s) => s.country))].map((c) => regionName.of(c) ?? c),
   );
   title = radioSeo[lang][target]!.title;
-  description = d.radio.metaDescription
+  description = d.radio!.metaDescription
     .replaceAll('{target}', langName)
     .replaceAll('{countries}', countries)
     .replaceAll('{count}', String(stations.length));
   // 같은 언어를 배우는 다른 나라 사람용 페이지끼리 hreflang 으로 연결
   paths = Object.fromEntries(locales.filter((l) => radioSeo[l][target]).map((l) => [l, radioPath(l, target)]));
-  name = d.radio.name.replaceAll('{target}', langName);
+  name = d.radio!.name.replaceAll('{target}', langName);
   pagePath = radioPath(lang, target);
   category = 'EducationalApplication';
 }
@@ -123,7 +123,7 @@ const jsonLd = [
 
 // 같은 분야 도구를 먼저 보여 주는 내부 링크 (검색엔진이 다른 페이지를 찾고 방문자가 더 머물게 함)
 const currentCategory = page.kind === 'tool' ? tools.find((tool) => tool.id === page.id)!.category : '';
-const related = tools
+const related = toolsFor(lang)
   .filter((tool) => page.kind !== 'tool' || tool.id !== page.id)
   .sort((a, b) => Number(b.category === currentCategory) - Number(a.category === currentCategory));
 const Widget = page.kind === 'tool' ? widgets[page.id] : null;
@@ -140,8 +140,8 @@ const Widget = page.kind === 'tool' ? widgets[page.id] : null;
         related.map((tool) => (
           <li>
             <a class="card" href={toolPath(lang, tool.id)}>
-              <strong>{d.tools[tool.id].name}</strong>
-              <span>{d.tools[tool.id].short}</span>
+              <strong>{d.tools[tool.id]!.name}</strong>
+              <span>{d.tools[tool.id]!.short}</span>
             </a>
           </li>
         ))

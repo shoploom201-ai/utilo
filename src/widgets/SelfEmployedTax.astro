@@ -6,7 +6,7 @@ import { STATES } from '../data/us-tax-2026';
 
 const { lang } = Astro.props as { lang: Locale };
 const d = t(lang);
-const tool = d.tools['self-employed-tax'];
+const tool = d.tools['self-employed-tax']!;
 const ui = tool.ui;
 const states = Object.entries(STATES).map(([code, s]) => ({ code, name: s.name })).sort((a, b) => a.name.localeCompare(b.name));
 ---

@@ -5,7 +5,7 @@ import { vatRates, VAT_REVIEWED } from '../data/vat-rates';
 
 const { lang } = Astro.props as { lang: Locale };
 const d = t(lang);
-const tool = d.tools['vat-calculator'];
+const tool = d.tools['vat-calculator']!;
 const ui = tool.ui;
 
 // 국가 이름은 각 언어로 자동 번역(Intl.DisplayNames)하고 그 언어의 가나다/ABC 순으로 정렬

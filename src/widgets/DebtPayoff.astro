@@ -5,7 +5,7 @@ import { t, type Locale } from '../i18n';
 
 const { lang } = Astro.props as { lang: Locale };
 const d = t(lang);
-const tool = d.tools['debt-payoff'];
+const tool = d.tools['debt-payoff']!;
 const ui = tool.ui;
 ---
 

@@ -5,7 +5,7 @@ import { t, type Locale } from '../i18n';
 
 const { lang } = Astro.props as { lang: Locale };
 const d = t(lang);
-const tool = d.tools['tuner'];
+const tool = d.tools['tuner']!;
 const ui = tool.ui;
 // 나라별 음 이름 관습: 스페인어권은 Do Re Mi, 한국·일본은 영문 + 계이름 병기
 const SOLFEGE: Partial<Record<Locale, string[]>> = {

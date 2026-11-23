@@ -6,7 +6,7 @@ import { STATES, US_TAX_YEAR } from '../data/us-tax-2026';
 
 const { lang } = Astro.props as { lang: Locale };
 const d = t(lang);
-const tool = d.tools['us-paycheck'];
+const tool = d.tools['us-paycheck']!;
 const ui = tool.ui;
 const states = Object.entries(STATES)
   .map(([code, s]) => ({ code, name: s.name }))
