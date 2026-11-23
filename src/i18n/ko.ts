@@ -16,6 +16,7 @@ const ko: Dict = {
     howTo: '사용 방법',
     faq: '자주 묻는 질문',
     lastReviewed: '세율 확인 시점',
+    related: '함께 쓰면 좋은 무료 도구',
   },
   tools: {
     'vat-calculator': {

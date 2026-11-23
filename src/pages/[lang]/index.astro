@@ -1,14 +1,26 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { localeStaticPaths, t, type Locale } from '../../i18n';
-import { tools, categories } from '../../tools';
+import { tools, categories, toolPath, samePaths } from '../../tools';
+import { SITE } from '../../site';
 
 export const getStaticPaths = localeStaticPaths;
 const lang = Astro.params.lang as Locale;
 const d = t(lang);
+const site = Astro.site ?? new URL('https://example.com');
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE.name,
+    url: new URL(`/${lang}/`, site).href,
+    inLanguage: lang,
+    description: d.tagline,
+  },
+];
 ---
 
-<Base lang={lang} title={d.home.title} description={d.tagline} path="/">
+<Base lang={lang} title={d.home.title} description={d.tagline} paths={samePaths('/')} jsonLd={jsonLd} isHome>
   <h1>{d.home.title}</h1>
   <p class="lead">{d.home.intro}</p>
   {
@@ -20,9 +32,9 @@ const d = t(lang);
             .filter((tool) => tool.category === cat)
             .map((tool) => (
               <li>
-                <a class="card" href={`/${lang}/${tool.slug}/`}>
-                  <strong>{d.tools[tool.slug].name}</strong>
-                  <span>{d.tools[tool.slug].short}</span>
+                <a class="card" href={toolPath(lang, tool.id)}>
+                  <strong>{d.tools[tool.id].name}</strong>
+                  <span>{d.tools[tool.id].short}</span>
                 </a>
               </li>
             ))}

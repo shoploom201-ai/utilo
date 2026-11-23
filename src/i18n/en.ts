@@ -14,6 +14,7 @@ const en = {
     howTo: 'How to use',
     faq: 'Frequently asked questions',
     lastReviewed: 'Rates last reviewed',
+    related: 'More free tools',
   },
   tools: {
     'vat-calculator': {

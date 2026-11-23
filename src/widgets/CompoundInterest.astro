@@ -1,16 +1,13 @@
 ---
-import Base from '../../layouts/Base.astro';
-import ToolInfo from '../../components/ToolInfo.astro';
-import { localeStaticPaths, t, type Locale } from '../../i18n';
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
 
-export const getStaticPaths = localeStaticPaths;
-const lang = Astro.params.lang as Locale;
+const { lang } = Astro.props as { lang: Locale };
 const d = t(lang);
 const tool = d.tools['compound-interest-calculator'];
 const ui = tool.ui;
 ---
 
-<Base lang={lang} title={tool.name} description={tool.metaDescription} path="/compound-interest-calculator/">
   <h1>{tool.name}</h1>
   <p class="lead">{tool.short}</p>
 
@@ -63,7 +60,6 @@ const ui = tool.ui;
   <p class="note">{ui.disclaimer}</p>
 
   <ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
-</Base>
 
 <script>
   const root = document.getElementById('ci') as HTMLElement;

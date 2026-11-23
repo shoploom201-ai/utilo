@@ -16,6 +16,7 @@ const ja: Dict = {
     howTo: '使い方',
     faq: 'よくある質問',
     lastReviewed: '税率の確認時点',
+    related: 'ほかの無料ツール',
   },
   tools: {
     'vat-calculator': {

@@ -16,6 +16,7 @@ const es: Dict = {
     howTo: 'Cómo se usa',
     faq: 'Preguntas frecuentes',
     lastReviewed: 'Tipos revisados por última vez',
+    related: 'Más herramientas gratis',
   },
   tools: {
     'vat-calculator': {

@@ -1,11 +1,9 @@
 ---
-import Base from '../../layouts/Base.astro';
-import ToolInfo from '../../components/ToolInfo.astro';
-import { localeStaticPaths, t, type Locale } from '../../i18n';
-import { vatRates, VAT_REVIEWED } from '../../data/vat-rates';
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+import { vatRates, VAT_REVIEWED } from '../data/vat-rates';
 
-export const getStaticPaths = localeStaticPaths;
-const lang = Astro.params.lang as Locale;
+const { lang } = Astro.props as { lang: Locale };
 const d = t(lang);
 const tool = d.tools['vat-calculator'];
 const ui = tool.ui;
@@ -17,7 +15,6 @@ const countries = vatRates
   .sort((a, b) => a.name.localeCompare(b.name, lang));
 ---
 
-<Base lang={lang} title={tool.name} description={tool.metaDescription} path="/vat-calculator/">
   <h1>{tool.name}</h1>
   <p class="lead">{tool.short}</p>
 
@@ -63,10 +60,9 @@ const countries = vatRates
   <p class="note">{d.common.lastReviewed}: {VAT_REVIEWED}. {ui.disclaimer}</p>
 
   <ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
-</Base>
 
 <script>
-  import type { VatCountry } from '../../data/vat-rates';
+  import type { VatCountry } from '../data/vat-rates';
 
   const root = document.getElementById('vat') as HTMLElement;
   const rates = JSON.parse(root.dataset.rates ?? '[]') as VatCountry[];

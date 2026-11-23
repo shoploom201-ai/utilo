@@ -1,0 +1,84 @@
+---
+// 모든 도구 페이지를 언어별 주소로 만듭니다. 예: /ko/부가세-계산기/, /ja/消費税計算/, /es/calculadora-iva/
+import Base from '../../layouts/Base.astro';
+import VatCalculator from '../../widgets/VatCalculator.astro';
+import LoanCalculator from '../../widgets/LoanCalculator.astro';
+import CompoundInterest from '../../widgets/CompoundInterest.astro';
+import ImageCompressor from '../../widgets/ImageCompressor.astro';
+import ImageToPdf from '../../widgets/ImageToPdf.astro';
+import { locales, t, type Locale } from '../../i18n';
+import { toolSeo } from '../../i18n/seo';
+import { tools, toolPath, toolPaths, type ToolId } from '../../tools';
+import { SITE } from '../../site';
+
+export function getStaticPaths() {
+  return locales.flatMap((lang) =>
+    tools.map((tool) => ({ params: { lang, tool: toolSeo[lang][tool.id].slug }, props: { id: tool.id } })),
+  );
+}
+
+const lang = Astro.params.lang as Locale;
+const { id } = Astro.props as { id: ToolId };
+const d = t(lang);
+const info = d.tools[id];
+const seo = toolSeo[lang][id];
+const category = tools.find((tool) => tool.id === id)!.category;
+const site = Astro.site ?? new URL('https://example.com');
+
+const widgets = {
+  'vat-calculator': VatCalculator,
+  'loan-calculator': LoanCalculator,
+  'compound-interest-calculator': CompoundInterest,
+  'image-compressor': ImageCompressor,
+  'image-to-pdf': ImageToPdf,
+} satisfies Record<ToolId, unknown>;
+const Widget = widgets[id];
+
+const pageUrl = new URL(toolPath(lang, id), site).href;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: info.name,
+    url: pageUrl,
+    description: info.metaDescription,
+    inLanguage: lang,
+    applicationCategory: category === 'image' ? 'MultimediaApplication' : 'FinanceApplication',
+    operatingSystem: 'Any',
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: SITE.name, item: new URL(`/${lang}/`, site).href },
+      { '@type': 'ListItem', position: 2, name: info.name, item: pageUrl },
+    ],
+  },
+];
+
+// 같은 분야 도구를 먼저 보여 주는 내부 링크 (검색엔진이 다른 페이지를 찾고 방문자가 더 머물게 함)
+const related = tools
+  .filter((tool) => tool.id !== id)
+  .sort((a, b) => Number(b.category === category) - Number(a.category === category));
+---
+
+<Base lang={lang} title={seo.title} description={info.metaDescription} paths={toolPaths(id)} jsonLd={jsonLd}>
+  <Widget lang={lang} />
+  <section>
+    <h2>{d.common.related}</h2>
+    <ul class="tool-grid">
+      {
+        related.map((tool) => (
+          <li>
+            <a class="card" href={toolPath(lang, tool.id)}>
+              <strong>{d.tools[tool.id].name}</strong>
+              <span>{d.tools[tool.id].short}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
