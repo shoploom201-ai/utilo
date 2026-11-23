@@ -9,6 +9,7 @@ type ToolSeo = Record<ToolId, { slug: string; title: string }>;
 
 export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
   hi: {
+    'import-cost': { slug: 'आयात-लागत-कैलकुलेटर', title: 'आयात लागत कैलकुलेटर – कस्टम ड्यूटी, टैक्स और शिपिंग' },
     'jp-takehome': { slug: 'जापान-सैलरी-कैलकुलेटर', title: 'जापान सैलरी कैलकुलेटर 2026 – टैक्स के बाद इन-हैंड सैलरी' },
     'loan-calculator': { slug: 'emi-कैलकुलेटर', title: 'EMI कैलकुलेटर – होम लोन, कार लोन, पर्सनल लोन की EMI निकालें' },
     'compound-interest-calculator': { slug: 'चक्रवृद्धि-ब्याज-कैलकुलेटर', title: 'चक्रवृद्धि ब्याज कैलकुलेटर – कंपाउंड इंटरेस्ट और SIP अनुमान' },
@@ -20,6 +21,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     tuner: { slug: 'गिटार-ट्यूनर', title: 'गिटार ट्यूनर ऑनलाइन – माइक से गिटार, उकुलेले, वायलिन ट्यून करें' },
   },
   'zh-hant': {
+    'import-cost': { slug: '進口成本計算', title: '進口成本計算機｜關稅・營業稅・國際運費與售價試算' },
     'jp-takehome': { slug: '日本薪水實領計算', title: '日本薪水實領計算 2026｜社會保險・所得稅・住民稅自動計算' },
     'vat-calculator': { slug: '營業稅計算', title: '營業稅計算機｜5% 含稅未稅換算・稅額計算' },
     'loan-calculator': { slug: '貸款計算機', title: '貸款計算機｜房貸・信貸每月還款與利息試算' },
@@ -32,6 +34,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     tuner: { slug: '吉他調音器', title: '吉他調音器線上｜用麥克風為吉他・烏克麗麗調音' },
   },
   fr: {
+    'import-cost': { slug: 'calcul-frais-importation', title: 'Calcul des frais d’importation – Droits de douane, TVA et transport' },
     'jp-takehome': { slug: 'salaire-net-japon', title: 'Salaire net au Japon 2026 – Calcul après impôts et cotisations' },
     'vat-calculator': { slug: 'calcul-tva', title: 'Calcul TVA en ligne – HT en TTC et TTC en HT (20 %, 10 %, 5,5 %)' },
     'loan-calculator': { slug: 'simulateur-pret', title: 'Simulateur de prêt – Mensualité, intérêts et tableau d’amortissement' },
@@ -46,6 +49,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     'saas-cost': { slug: 'calculateur-cout-saas', title: 'Calculateur de coûts SaaS – Abonnements logiciels et IA' },
   },
   de: {
+    'import-cost': { slug: 'importkosten-rechner', title: 'Importkosten-Rechner – Zoll, Einfuhrumsatzsteuer & Versand berechnen' },
     'jp-takehome': { slug: 'brutto-netto-rechner-japan', title: 'Brutto-Netto-Rechner Japan 2026 – Gehalt nach Steuern & Abgaben' },
     'vat-calculator': { slug: 'mwst-rechner', title: 'MwSt-Rechner – Mehrwertsteuer berechnen & herausrechnen (19 % / 7 %)' },
     'loan-calculator': { slug: 'kreditrechner', title: 'Kreditrechner – Monatliche Rate, Zinsen & Tilgungsplan berechnen' },
@@ -60,6 +64,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     'saas-cost': { slug: 'saas-kostenrechner', title: 'SaaS-Kostenrechner – Software- & KI-Abos berechnen und sparen' },
   },
   ko: {
+    'import-cost': { slug: '수입-비용-계산기', title: '수입 비용 계산기 - 관세·부가세·국제배송비·판매가 한 번에 계산' },
     'jp-takehome': { slug: '일본-월급-실수령액-계산기', title: '일본 월급 실수령액 계산기 2026 - 사회보험·소득세·주민세 자동 계산' },
     'saas-cost': { slug: 'saas-구독-비용-계산기', title: 'AI·SaaS 구독 비용 계산기 - 소프트웨어 구독료 절약·연간 결제 비교' },
     'self-employed-tax': { slug: '미국-프리랜서-세금-계산기', title: '미국 프리랜서 세금 계산기 2026 - 1099 자영업세·분기 예정 납부액' },
@@ -78,6 +83,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     'image-to-pdf': { slug: '이미지-pdf-변환', title: '이미지 PDF 변환 - JPG·PNG 사진을 PDF로 합치기 무료' },
   },
   ja: {
+    'import-cost': { slug: '輸入コスト計算', title: '輸入コスト計算｜関税・消費税・国際送料から原価と販売価格を計算' },
     'jp-takehome': { slug: '手取り計算', title: '手取り計算 2026｜月給・年収から社会保険料と税金を自動計算（都道府県別）' },
     'saas-cost': { slug: 'saas-サブスク-費用計算', title: 'AI・SaaSサブスク費用計算｜ソフトウェア費の見直し・年払い比較' },
     'self-employed-tax': { slug: 'アメリカ-フリーランス-税金計算', title: 'アメリカのフリーランス税金計算 2026｜1099の自営業税と四半期予定納税' },
@@ -96,6 +102,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     'image-to-pdf': { slug: '画像pdf変換', title: '画像をPDFに変換｜JPG・PNGを1つのPDFにまとめる（無料）' },
   },
   es: {
+    'import-cost': { slug: 'calculadora-costos-importacion', title: 'Calculadora de costos de importación: aranceles, IVA y envío' },
     'jp-takehome': { slug: 'calculadora-salario-neto-japon', title: 'Calculadora de salario neto en Japón 2026: sueldo después de impuestos' },
     'saas-cost': { slug: 'calculadora-costos-saas', title: 'Calculadora de costos SaaS e IA: ahorra en suscripciones de software' },
     'self-employed-tax': { slug: 'calculadora-impuestos-autonomo-usa', title: 'Calculadora de impuestos para autónomos en EE. UU. 2026 (1099)' },
@@ -114,6 +121,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     'image-to-pdf': { slug: 'convertir-imagenes-a-pdf', title: 'Convertir imágenes a PDF gratis: JPG y PNG a PDF' },
   },
   en: {
+    'import-cost': { slug: 'import-cost-calculator', title: 'Import Cost Calculator – Customs Duty, VAT & Shipping (Landed Cost)' },
     'jp-takehome': { slug: 'japan-take-home-pay-calculator', title: 'Japan Take-Home Pay Calculator 2026 – Salary After Tax & Insurance' },
     'saas-cost': { slug: 'saas-cost-calculator', title: 'SaaS Cost Calculator – Software & AI Subscription Spend and Savings' },
     'self-employed-tax': { slug: 'self-employment-tax-calculator', title: 'Self-Employment Tax Calculator 2026 – 1099 Taxes & Quarterly Payments' },

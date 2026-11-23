@@ -17,6 +17,7 @@ export const tools = [
   { id: 'debt-payoff', category: 'finance' },
   { id: 'self-employed-tax', category: 'tax' },
   { id: 'saas-cost', category: 'business' },
+  { id: 'import-cost', category: 'business' },
   { id: 'loan-calculator', category: 'finance' },
   { id: 'compound-interest-calculator', category: 'finance' },
   { id: 'image-compressor', category: 'image' },

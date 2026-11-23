@@ -1,0 +1,233 @@
+---
+// 수입 비용 계산기: 국제 운임(무게·부피) → 관세 → 수입 부가세 → 원가 → 판매가, 그리고 수입 절차 안내.
+// 계산은 src/lib/import-cost.ts, 나라별 규칙은 src/data/import-countries.ts
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+import { importCountries } from '../data/import-countries';
+import { VAT_REVIEWED } from '../data/vat-rates';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['import-cost']!;
+const ui = tool.ui;
+const regionNames = new Intl.DisplayNames([lang], { type: 'region' });
+const countries = importCountries
+  .map((c) => ({ ...c, name: regionNames.of(c.code) ?? c.code }))
+  .sort((a, b) => a.name.localeCompare(b.name, lang));
+const def = countries.some((c) => c.code === d.defaultCountry) ? d.defaultCountry : 'US';
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card paycheck import" id="imp" data-lang={lang} data-labels={JSON.stringify(ui)} data-countries={JSON.stringify(countries)}>
+  <div class="grid-2">
+    <label>{ui.country}
+      <select id="i-country">{countries.map((c) => <option value={c.code} selected={c.code === def}>{c.name}</option>)}</select>
+    </label>
+    <label>{ui.qty}<input id="i-qty" type="number" inputmode="numeric" min="1" step="1" value="100" /></label>
+    <label>{ui.unitPrice} (<span class="i-cur"></span>)<input id="i-unit" type="number" inputmode="decimal" min="0" step="any" value="10" /></label>
+  </div>
+
+  <fieldset>
+    <legend>🚚 {ui.shipTitle}</legend>
+    <div class="grid-2">
+      <label>{ui.boxes}<input id="i-boxes" type="number" inputmode="numeric" min="0" step="1" value="2" /></label>
+      <label>{ui.boxKg}<input id="i-boxkg" type="number" inputmode="decimal" min="0" step="0.1" value="10" /></label>
+      <label>{ui.dims}
+        <span class="dims"><input id="i-l" type="number" inputmode="decimal" min="0" value="50" aria-label="L" />×<input id="i-w" type="number" inputmode="decimal" min="0" value="40" aria-label="W" />×<input id="i-h" type="number" inputmode="decimal" min="0" value="30" aria-label="H" /></span>
+      </label>
+      <label>{ui.divisor}
+        <select id="i-div"><option value="5000" selected>5000 ({ui.express})</option><option value="6000">6000</option><option value="0">{ui.noVolumetric}</option></select>
+      </label>
+      <label>{ui.ratePerKg} (<span class="i-cur"></span>)<input id="i-rate" type="number" inputmode="decimal" min="0" step="any" value="5" /></label>
+      <label>{ui.baseFee} (<span class="i-cur"></span>)<input id="i-base" type="number" inputmode="decimal" min="0" step="any" value="20" /></label>
+    </div>
+    <p class="note" id="i-weight"></p>
+  </fieldset>
+
+  <fieldset>
+    <legend>🛃 {ui.taxTitle}</legend>
+    <div class="grid-2">
+      <label>{ui.duty}<input id="i-duty" type="number" inputmode="decimal" min="0" max="500" step="0.1" value="8" /></label>
+      <label>{ui.basis}
+        <select id="i-basis"><option value="CIF">{ui.basisCIF}</option><option value="FOB">{ui.basisFOB}</option></select>
+      </label>
+      <label>{ui.vat}<select id="i-vat"></select></label>
+      <label>{ui.insurance}<input id="i-ins" type="number" inputmode="decimal" min="0" step="0.1" value="0" /></label>
+      <label>{ui.other} (<span class="i-cur"></span>)<input id="i-other" type="number" inputmode="decimal" min="0" step="any" value="30" /></label>
+      <label class="check"><input id="i-reclaim" type="checkbox" /> {ui.vatReclaim}</label>
+    </div>
+    <p class="note">{ui.dutyHint} <a id="i-tariff" href="#" target="_blank" rel="noopener">{ui.tariffLink} ↗</a></p>
+  </fieldset>
+
+  <fieldset>
+    <legend>🏷️ {ui.priceTitle}</legend>
+    <div class="grid-2">
+      <label>{ui.margin}<input id="i-margin" type="number" inputmode="decimal" min="0" max="95" step="1" value="30" /></label>
+      <label class="check"><input id="i-salesvat" type="checkbox" checked /> {ui.addSalesVat}</label>
+    </div>
+  </fieldset>
+
+  <div class="pay-hero" aria-live="polite">
+    <span class="stat-label">{ui.perUnit}</span>
+    <strong id="i-unitcost">—</strong>
+    <span class="stat-sub">{ui.salePrice} <strong id="i-sale">—</strong> · {ui.salePriceInc} <strong id="i-saleinc">—</strong> · {ui.profit} <strong id="i-profit">—</strong></span>
+  </div>
+
+  <div class="pay-bar" id="i-bar" role="img" aria-describedby="i-table"></div>
+  <ul class="pay-legend" id="i-legend"></ul>
+
+  <div class="table-wrap pay-table-wrap">
+    <table id="i-table">
+      <thead><tr><th>{ui.item}</th><th>{ui.amount}</th></tr></thead>
+      <tbody id="i-rows"></tbody>
+    </table>
+  </div>
+  <p class="note">{ui.disclaimer} {ui.vatReviewed.replace('{date}', VAT_REVIEWED)}</p>
+</section>
+
+<section class="card">
+  <h2>📋 {ui.stepsTitle} — <span id="i-country-name"></span></h2>
+  <ol class="steps">{tool.steps.map((s) => <li>{s}</li>)}</ol>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<style>
+  .import fieldset { border: 1px solid var(--border, #ddd); border-radius: 10px; padding: .75rem 1rem 1rem; margin: 0; }
+  .import legend { font-weight: 600; padding: 0 .35rem; }
+  .dims { display: flex; gap: .3rem; align-items: center; }
+  .dims input { min-width: 0; width: 100%; }
+  .steps { display: grid; gap: .6rem; padding-left: 1.3rem; line-height: 1.6; }
+</style>
+
+<script>
+  import { calcImport } from '../lib/import-cost';
+  import type { ImportCountry } from '../data/import-countries';
+
+  const root = document.getElementById('imp') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const C = JSON.parse(root.dataset.countries ?? '[]') as (ImportCountry & { name: string })[];
+  const lang = root.dataset.lang ?? 'en';
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const KEY = 'kitwise-import-cost';
+  const num = (id: string) => Math.max(0, Number($<HTMLInputElement>(id).value) || 0);
+  const countryEl = $<HTMLSelectElement>('#i-country');
+  const vatEl = $<HTMLSelectElement>('#i-vat');
+  const basisEl = $<HTMLSelectElement>('#i-basis');
+  const inputs = [...root.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select')];
+
+  const country = () => C.find((c) => c.code === countryEl.value) ?? C[0];
+
+  // 나라를 바꾸면 과세 기준·부가세율·통화·관세율 조회 링크를 그 나라 것으로
+  function applyCountry() {
+    const c = country();
+    basisEl.value = c.basis;
+    const rates = [c.vat, ...c.reduced];
+    vatEl.replaceChildren(...rates.map((r, i) => Object.assign(document.createElement('option'), { value: String(r), textContent: `${r}%${i === 0 ? '' : ` (${L.reduced})`}` })));
+    root.querySelectorAll('.i-cur').forEach((e) => (e.textContent = c.currency));
+    $<HTMLAnchorElement>('#i-tariff').href = c.tariffLink;
+    const nameEl = document.getElementById('i-country-name');
+    if (nameEl) nameEl.textContent = c.name;
+  }
+
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) ?? 'null') as Record<string, string | boolean> | null;
+    if (s?.['i-country'] && C.some((c) => c.code === s['i-country'])) countryEl.value = String(s['i-country']);
+    applyCountry();
+    if (s) {
+      inputs.forEach((el) => {
+        if (!(el.id in s) || el.id === 'i-country') return;
+        if (el instanceof HTMLInputElement && el.type === 'checkbox') el.checked = !!s[el.id];
+        else el.value = String(s[el.id]);
+      });
+    }
+  } catch {
+    applyCountry();
+  }
+
+  const SEGMENTS = [
+    { key: 'goods', label: () => L.goods, cls: 's1' },
+    { key: 'freight', label: () => L.shipping, cls: 's2' },
+    { key: 'duty', label: () => L.dutyAmt, cls: 's3' },
+    { key: 'vat', label: () => L.vatAmt, cls: 's4' },
+    { key: 'other', label: () => L.otherAmt, cls: 's5' },
+  ] as const;
+
+  function calc() {
+    const c = country();
+    const noCents = ['JPY', 'KRW', 'TWD'].includes(c.currency);
+    const money = new Intl.NumberFormat(lang, { style: 'currency', currency: c.currency, maximumFractionDigits: noCents ? 0 : 2 });
+    const pct = new Intl.NumberFormat(lang, { style: 'percent', maximumFractionDigits: 1 });
+    const kg = new Intl.NumberFormat(lang, { maximumFractionDigits: 1 });
+    const vatPct = Number(vatEl.value) || 0;
+    const reclaim = $<HTMLInputElement>('#i-reclaim').checked;
+    const r = calcImport({
+      qty: num('#i-qty'), unitPrice: num('#i-unit'), boxes: num('#i-boxes'), boxKg: num('#i-boxkg'),
+      l: num('#i-l'), w: num('#i-w'), h: num('#i-h'), divisor: Number($<HTMLSelectElement>('#i-div').value),
+      ratePerKg: num('#i-rate'), baseFee: num('#i-base'), insurancePct: num('#i-ins'), dutyPct: num('#i-duty'),
+      basis: basisEl.value as 'CIF' | 'FOB', vatPct, vatReclaim: reclaim,
+      otherCosts: num('#i-other'), marginPct: num('#i-margin'), salesVatPct: $<HTMLInputElement>('#i-salesvat').checked ? vatPct : 0,
+    });
+
+    $<HTMLElement>('#i-weight').textContent = L.weightNote
+      .replace('{vol}', kg.format(r.volPerBox)).replace('{charge}', kg.format(r.chargeablePerBox)).replace('{total}', kg.format(r.chargeable));
+    $<HTMLElement>('#i-unitcost').textContent = money.format(r.unitCost);
+    $<HTMLElement>('#i-sale').textContent = money.format(r.priceExVat);
+    $<HTMLElement>('#i-saleinc').textContent = money.format(r.priceIncVat);
+    $<HTMLElement>('#i-profit').textContent = money.format(r.profitPerUnit);
+
+    // 막대: 원가 구성 (그래프 가이드의 검증된 색 순서 1~5, 이름·금액을 글자로도 표시)
+    const values: Record<string, number> = { goods: r.goods, freight: r.shipping + r.insurance, duty: r.duty, vat: reclaim ? 0 : r.vat, other: r.other };
+    const bar = $<HTMLElement>('#i-bar');
+    const legend = $<HTMLElement>('#i-legend');
+    bar.replaceChildren();
+    legend.replaceChildren();
+    for (const seg of SEGMENTS) {
+      const v = values[seg.key];
+      if (v <= 0 || r.landed <= 0) continue;
+      const share = v / r.landed;
+      const tip = `${seg.label()}: ${money.format(v)} (${pct.format(share)})`;
+      const part = document.createElement('span');
+      part.className = `seg ${seg.cls}`;
+      part.style.flexGrow = String(share);
+      part.title = tip;
+      part.setAttribute('aria-label', tip);
+      part.tabIndex = 0;
+      bar.append(part);
+      const li = document.createElement('li');
+      const sw = document.createElement('span');
+      sw.className = `swatch ${seg.cls}`;
+      li.append(sw, `${seg.label()} `, Object.assign(document.createElement('strong'), { textContent: money.format(v) }), ` · ${pct.format(share)}`);
+      legend.append(li);
+    }
+
+    const rows: [string, string, boolean?][] = [
+      [L.goods, money.format(r.goods)], [L.shipping, money.format(r.shipping)], [L.insuranceAmt, money.format(r.insurance)],
+      [L.customsValue, money.format(r.customsValue)], [L.dutyAmt, money.format(r.duty)],
+      [L.vatAmt + (reclaim ? ` (${L.reclaimed})` : ''), money.format(r.vat)], [L.otherAmt, money.format(r.other)],
+      [L.totalPaid, money.format(r.totalPaid)], [L.landed, money.format(r.landed), true], [L.perUnit, money.format(r.unitCost), true],
+      [L.markup, pct.format(r.markupPct / 100)],
+    ];
+    $<HTMLElement>('#i-rows').replaceChildren(
+      ...rows.map(([label, val, strong]) => {
+        const tr = document.createElement('tr');
+        if (strong) tr.className = 'total-row';
+        [label, val].forEach((txt) => tr.append(Object.assign(document.createElement('td'), { textContent: txt })));
+        return tr;
+      }),
+    );
+
+    try {
+      localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(inputs.map((el) => [el.id, el instanceof HTMLInputElement && el.type === 'checkbox' ? el.checked : el.value]))));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  }
+
+  countryEl.addEventListener('change', applyCountry);
+  root.addEventListener('input', calc);
+  root.addEventListener('change', calc);
+  calc();
+</script>
