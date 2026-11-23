@@ -9,7 +9,7 @@ const es: Dict = {
   home: {
     title: 'Calculadoras de impuestos y herramientas de imagen gratis',
     intro: 'Herramientas rápidas y privadas para el día a día. Sin registro ni subidas: todo se procesa en tu dispositivo.',
-    categories: { study: 'Concentración y estudio', tax: 'Calculadoras de impuestos', finance: 'Calculadoras financieras', image: 'Herramientas de imagen' },
+    categories: { puzzle: 'Puzzles y juegos mentales', study: 'Concentración y estudio', tax: 'Calculadoras de impuestos', finance: 'Calculadoras financieras', image: 'Herramientas de imagen' },
   },
   common: {
     privacyNote: 'Todo funciona dentro de tu navegador. Tus cifras y archivos nunca salen de tu dispositivo.',
@@ -69,6 +69,29 @@ const es: Dict = {
         { q: '¿Cómo se calculan las PPM?', a: 'Las palabras por minuto cuentan cada cinco caracteres escritos correctamente, incluidos los espacios, como una palabra.' },
         { q: '¿Cuál es una buena velocidad?', a: 'Unas 40 PPM es lo habitual; 60 PPM o más es rápido. La precisión por encima del 95 % es tan importante como la velocidad.' },
         { q: '¿Cómo puedo escribir más rápido?', a: 'Mantén los dedos en la fila central, mira la pantalla y no el teclado, y practica un poco cada día.' },
+      ],
+    },
+    sudoku: {
+      name: 'Sudoku diario',
+      short: 'Un sudoku nuevo cada día y sudokus gratis ilimitados, de fácil a difícil.',
+      metaDescription:
+        'Juega al sudoku online gratis: un sudoku diario nuevo cada día y sudokus ilimitados fáciles, medios y difíciles. Notas, pistas, deshacer y guardado automático. Registra tu mejor tiempo y tu racha. Sin registro.',
+      ui: {
+        easy: 'Fácil', medium: 'Medio', hard: 'Difícil', daily: 'Sudoku de hoy', newGame: 'Nuevo sudoku',
+        mistakes: 'Errores', best: 'Mejor tiempo', streak: 'Racha', days: 'días', solved: 'Resueltos',
+        undo: 'Deshacer', erase: 'Borrar', notes: 'Notas', hint: 'Pista', highlight: 'Marcar errores',
+        keyboardTip: 'Consejo: usa las teclas de números, las flechas y la N para las notas.',
+        solvedMsg: '¡Resuelto en {t}! 🎉', newBest: '¡Nuevo mejor tiempo!', comeBack: 'Vuelve mañana para un nuevo sudoku diario.',
+      },
+      howTo: [
+        'Completa cada fila, columna y caja de 3×3 con los números del 1 al 9, sin repetir.',
+        'Toca una casilla y luego un número. Activa «Notas» para apuntar los números posibles.',
+        'El «Sudoku de hoy» es el mismo para todos cada día. Tu partida se guarda automáticamente.',
+      ],
+      faq: [
+        { q: '¿Cómo se juega al sudoku?', a: 'Coloca los números del 1 al 9 de modo que cada fila, columna y caja de 3×3 los tenga todos una sola vez. Todos los sudokus de aquí tienen una única solución.' },
+        { q: '¿Qué es el sudoku de hoy?', a: 'Cada día se crea un sudoku nuevo por dificultad, igual para todos los jugadores. Resuélvelo varios días seguidos para aumentar tu racha.' },
+        { q: '¿Usar pistas afecta a mi récord?', a: 'Las pistas te ayudan a seguir, pero un sudoku resuelto con pistas no cuenta para tu mejor tiempo.' },
       ],
     },
     'vat-calculator': {

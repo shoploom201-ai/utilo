@@ -7,7 +7,7 @@ const en = {
   home: {
     title: 'Free online tax calculators and image tools',
     intro: 'Quick, private tools for everyday work. No sign-up and no uploads — everything runs on your device.',
-    categories: { study: 'Focus & study', tax: 'Tax calculators', finance: 'Finance calculators', image: 'Image tools' },
+    categories: { puzzle: 'Puzzles & brain games', study: 'Focus & study', tax: 'Tax calculators', finance: 'Finance calculators', image: 'Image tools' },
   },
   common: {
     privacyNote: 'Runs entirely in your browser. Your numbers and files never leave your device.',
@@ -67,6 +67,29 @@ const en = {
         { q: 'How is WPM calculated?', a: 'WPM (words per minute) counts every five correctly typed characters, including spaces, as one word.' },
         { q: 'What is a good typing speed?', a: 'Around 40 WPM is average. 60 WPM or more is fast, and accuracy above 95% matters as much as speed.' },
         { q: 'How can I type faster?', a: 'Keep your fingers on the home row, look at the screen instead of the keyboard, and practise a little every day. Speed follows accuracy.' },
+      ],
+    },
+    sudoku: {
+      name: 'Daily Sudoku',
+      short: 'A new Sudoku every day, plus unlimited free puzzles from easy to hard.',
+      metaDescription:
+        'Play free Sudoku online: a new daily puzzle every day plus unlimited easy, medium and hard Sudoku. Notes, hints, undo and auto-save. Track your best times and daily streak. No sign-up.',
+      ui: {
+        easy: 'Easy', medium: 'Medium', hard: 'Hard', daily: "Today's puzzle", newGame: 'New puzzle',
+        mistakes: 'Mistakes', best: 'Best time', streak: 'Daily streak', days: 'days', solved: 'Solved',
+        undo: 'Undo', erase: 'Erase', notes: 'Notes', hint: 'Hint', highlight: 'Highlight mistakes',
+        keyboardTip: 'Tip: use number keys, arrow keys, and N for notes.',
+        solvedMsg: 'Solved in {t}! 🎉', newBest: 'New best time!', comeBack: "Come back tomorrow for a new daily puzzle.",
+      },
+      howTo: [
+        'Fill every row, column and 3×3 box with the numbers 1 to 9, each exactly once.',
+        'Tap a cell, then a number. Turn on Notes to pencil in possible numbers.',
+        "Everyone gets the same Today's puzzle each day. Your progress is saved automatically.",
+      ],
+      faq: [
+        { q: 'How do you play Sudoku?', a: 'Place the numbers 1–9 so that each row, each column and each 3×3 box contains every number exactly once. Every puzzle here has exactly one solution.' },
+        { q: "What is Today's puzzle?", a: "A new puzzle for each difficulty is created every day, and it is the same for every player. Solve it on consecutive days to build your streak." },
+        { q: 'Does using a hint affect my record?', a: 'Hints help you continue, but a puzzle solved with hints does not count towards your best time.' },
       ],
     },
     'vat-calculator': {

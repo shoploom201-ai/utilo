@@ -2,9 +2,10 @@
 import { locales, type Locale } from './i18n';
 import { toolSeo } from './i18n/seo';
 
-export type Category = 'study' | 'tax' | 'finance' | 'image';
+export type Category = 'study' | 'puzzle' | 'tax' | 'finance' | 'image';
 
 export const tools = [
+  { id: 'sudoku', category: 'puzzle' },
   { id: 'focus-timer', category: 'study' },
   { id: 'typing-practice', category: 'study' },
   { id: 'vat-calculator', category: 'tax' },
@@ -15,7 +16,7 @@ export const tools = [
 ] as const satisfies readonly { id: string; category: Category }[];
 
 export type ToolId = (typeof tools)[number]['id'];
-export const categories: Category[] = ['study', 'tax', 'finance', 'image'];
+export const categories: Category[] = ['study', 'puzzle', 'tax', 'finance', 'image'];
 
 /** 언어별 도구 주소. 예: toolPath('ko', 'vat-calculator') → "/ko/부가세-계산기/" */
 export const toolPath = (lang: Locale, id: ToolId) => `/${lang}/${toolSeo[lang][id].slug}/`;

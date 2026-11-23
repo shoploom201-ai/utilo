@@ -1,0 +1,303 @@
+---
+// 매일 스도쿠: 날짜로 만든 "오늘의 퍼즐"(모두 같은 문제) + 무제한 새 퍼즐. 진행 상황 자동 저장.
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['sudoku'];
+const ui = tool.ui;
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card sudoku" id="sudoku" data-labels={JSON.stringify(ui)} data-lang={lang}>
+  <div class="mode-tabs" role="tablist">
+    <button type="button" role="tab" data-diff="easy" aria-selected="true">{ui.easy}</button>
+    <button type="button" role="tab" data-diff="medium" aria-selected="false">{ui.medium}</button>
+    <button type="button" role="tab" data-diff="hard" aria-selected="false">{ui.hard}</button>
+  </div>
+
+  <div class="radio-stats sudoku-stats" aria-live="polite">
+    <div><span class="stat-label" id="s-title">{ui.daily}</span><strong id="s-time">00:00</strong><span class="stat-sub">{ui.mistakes} <span id="s-mistakes">0</span></span></div>
+    <div><span class="stat-label">{ui.best}</span><strong id="s-best">—</strong></div>
+    <div><span class="stat-label">{ui.streak}</span><strong><span id="s-streak">0</span> {ui.days}</strong><span class="stat-sub">{ui.solved} <span id="s-solved">0</span></span></div>
+  </div>
+
+  <div class="sgrid" id="s-grid" role="grid" aria-label={tool.name}></div>
+
+  <div class="tool-row">
+    <button type="button" class="tool-btn" id="s-undo">↶ <span>{ui.undo}</span></button>
+    <button type="button" class="tool-btn" id="s-erase">⌫ <span>{ui.erase}</span></button>
+    <button type="button" class="tool-btn" id="s-notes" aria-pressed="false">✎ <span>{ui.notes}</span></button>
+    <button type="button" class="tool-btn" id="s-hint">💡 <span>{ui.hint}</span></button>
+  </div>
+
+  <div class="numpad" id="s-pad">
+    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => <button type="button" data-num={n}>{n}<small></small></button>)}
+  </div>
+
+  <p class="note center" id="s-msg" aria-live="polite">{ui.keyboardTip}</p>
+
+  <div class="timer-actions">
+    <button type="button" class="btn ghost" id="s-daily">📅 {ui.daily}</button>
+    <button type="button" class="btn ghost" id="s-new">🔀 {ui.newGame}</button>
+  </div>
+  <label class="check center-check"><input id="s-highlight" type="checkbox" checked /> {ui.highlight}</label>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script>
+  import { generate, hashSeed, PEERS, type Difficulty } from '../lib/sudoku';
+
+  type Game = {
+    id: string; diff: Difficulty; daily: boolean; date: string;
+    puzzle: number[]; solution: number[]; values: number[]; notes: number[];
+    elapsed: number; mistakes: number; hints: number; done: boolean;
+  };
+  type Stats = { best: Partial<Record<Difficulty, number>>; solved: Partial<Record<Difficulty, number>>; daily: Record<string, boolean> };
+
+  const root = document.getElementById('sudoku') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const gridEl = $<HTMLElement>('#s-grid');
+  const msgEl = $<HTMLElement>('#s-msg');
+  const GAME_KEY = 'kitwise-sudoku-current';
+  const STATS_KEY = 'kitwise-sudoku-stats';
+
+  const load = <T,>(k: string, fb: T): T => {
+    try {
+      const v = localStorage.getItem(k);
+      return v ? (JSON.parse(v) as T) : fb;
+    } catch {
+      return fb;
+    }
+  };
+  const save = (k: string, v: unknown) => {
+    try {
+      localStorage.setItem(k, JSON.stringify(v));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  };
+  const today = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const fmt = (ms: number) => {
+    const s = Math.floor(ms / 1000);
+    const h = Math.floor(s / 3600);
+    const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+    const ss = String(s % 60).padStart(2, '0');
+    return h ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+  };
+
+  const stats = load<Stats>(STATS_KEY, { best: {}, solved: {}, daily: {} });
+  let game: Game;
+  let selected = -1;
+  let notesMode = false;
+  let history: { i: number; v: number; n: number }[] = [];
+
+  function newGame(diff: Difficulty, daily: boolean) {
+    const date = today();
+    const seed = daily ? hashSeed(`kitwise-${date}-${diff}`) : (Math.random() * 2 ** 32) >>> 0;
+    const { puzzle, solution } = generate(seed, diff);
+    game = {
+      id: daily ? `daily-${date}-${diff}` : `free-${seed}`, diff, daily, date,
+      puzzle, solution, values: [...puzzle], notes: new Array(81).fill(0),
+      elapsed: 0, mistakes: 0, hints: 0, done: false,
+    };
+    history = [];
+    selected = puzzle.findIndex((v) => !v);
+    msgEl.textContent = L.keyboardTip;
+    persist();
+    render();
+  }
+
+  const persist = () => save(GAME_KEY, game);
+
+  function streak() {
+    let n = 0;
+    const d = new Date();
+    if (!stats.daily[today(d)]) d.setDate(d.getDate() - 1);
+    while (stats.daily[today(d)]) {
+      n++;
+      d.setDate(d.getDate() - 1);
+    }
+    return n;
+  }
+
+  function renderStats() {
+    $<HTMLElement>('#s-time').textContent = fmt(game.elapsed);
+    $<HTMLElement>('#s-mistakes').textContent = String(game.mistakes);
+    $<HTMLElement>('#s-best').textContent = stats.best[game.diff] ? fmt(stats.best[game.diff]!) : '—';
+    $<HTMLElement>('#s-solved').textContent = String(Object.values(stats.solved).reduce((a, b) => a + (b ?? 0), 0));
+    $<HTMLElement>('#s-streak').textContent = String(streak());
+    $<HTMLElement>('#s-title').textContent = game.daily ? `${L.daily} · ${game.date.slice(5)}` : L.newGame;
+  }
+
+  function render() {
+    const highlight = $<HTMLInputElement>('#s-highlight').checked;
+    const selVal = selected >= 0 ? game.values[selected] : 0;
+    const peers = new Set(selected >= 0 ? PEERS[selected] : []);
+    gridEl.replaceChildren(
+      ...game.values.map((v, i) => {
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = 'scell';
+        cell.dataset.i = String(i);
+        cell.setAttribute('role', 'gridcell');
+        cell.setAttribute('aria-label', `${Math.floor(i / 9) + 1}-${(i % 9) + 1}: ${v || ''}`);
+        if (game.puzzle[i]) cell.classList.add('given');
+        if (i === selected) cell.classList.add('sel');
+        else if (peers.has(i)) cell.classList.add('peer');
+        if (v && v === selVal) cell.classList.add('same');
+        if (v && highlight && v !== game.solution[i]) cell.classList.add('wrong');
+        if (v) cell.textContent = String(v);
+        else if (game.notes[i]) {
+          const box = document.createElement('span');
+          box.className = 'notes';
+          for (let n = 1; n <= 9; n++) {
+            const s = document.createElement('span');
+            s.textContent = game.notes[i] & (1 << n) ? String(n) : '';
+            box.append(s);
+          }
+          cell.append(box);
+        }
+        return cell;
+      }),
+    );
+    // 숫자판: 남은 개수 표시, 다 쓴 숫자는 흐리게
+    root.querySelectorAll<HTMLButtonElement>('[data-num]').forEach((b) => {
+      const n = Number(b.dataset.num);
+      const left = 9 - game.values.filter((v, i) => v === n && v === game.solution[i]).length;
+      b.querySelector('small')!.textContent = left > 0 ? String(left) : '';
+      b.disabled = left <= 0 || game.done;
+    });
+    root.querySelectorAll('[data-diff]').forEach((b) => b.setAttribute('aria-selected', String((b as HTMLElement).dataset.diff === game.diff)));
+    $<HTMLButtonElement>('#s-notes').setAttribute('aria-pressed', String(notesMode));
+    root.classList.toggle('solved', game.done);
+    renderStats();
+  }
+
+  function place(n: number) {
+    const i = selected;
+    if (i < 0 || game.done || game.puzzle[i]) return;
+    history.push({ i, v: game.values[i], n: game.notes[i] });
+    if (notesMode && n) {
+      if (game.values[i]) return;
+      game.notes[i] ^= 1 << n;
+    } else {
+      game.values[i] = game.values[i] === n ? 0 : n;
+      game.notes[i] = 0;
+      if (n && game.values[i] === n) {
+        if (n !== game.solution[i]) game.mistakes++;
+        else PEERS[i].forEach((p) => (game.notes[p] &= ~(1 << n))); // 맞게 넣으면 같은 줄·칸의 메모에서 지움
+      }
+    }
+    checkDone();
+    persist();
+    render();
+  }
+
+  function checkDone() {
+    if (!game.values.every((v, i) => v === game.solution[i])) return;
+    game.done = true;
+    stats.solved[game.diff] = (stats.solved[game.diff] ?? 0) + 1;
+    let msg = L.solvedMsg.replace('{t}', fmt(game.elapsed));
+    if (game.hints === 0 && (!stats.best[game.diff] || game.elapsed < stats.best[game.diff]!)) {
+      stats.best[game.diff] = game.elapsed;
+      msg += ` ${L.newBest}`;
+    }
+    if (game.daily && game.date === today()) {
+      stats.daily[game.date] = true;
+      msg += ` ${L.comeBack}`;
+    }
+    save(STATS_KEY, stats);
+    msgEl.textContent = msg;
+  }
+
+  function hint() {
+    if (game.done) return;
+    let i = selected;
+    if (i < 0 || game.values[i] === game.solution[i]) {
+      const empty = game.values.map((v, k) => (v !== game.solution[k] ? k : -1)).filter((k) => k >= 0);
+      if (!empty.length) return;
+      i = empty[Math.floor(Math.random() * empty.length)];
+    }
+    selected = i;
+    game.hints++;
+    const was = notesMode;
+    notesMode = false;
+    place(game.solution[i]);
+    notesMode = was;
+  }
+
+  // 시간: 화면을 보고 있을 때만 흐름 (공정한 기록)
+  setInterval(() => {
+    if (!game || game.done || document.hidden) return;
+    game.elapsed += 1000;
+    $<HTMLElement>('#s-time').textContent = fmt(game.elapsed);
+    if (game.elapsed % 10000 === 0) persist();
+  }, 1000);
+  addEventListener('pagehide', () => game && persist());
+
+  gridEl.addEventListener('click', (e) => {
+    const cell = (e.target as HTMLElement).closest<HTMLElement>('.scell');
+    if (!cell) return;
+    selected = Number(cell.dataset.i);
+    render();
+  });
+  root.querySelectorAll<HTMLButtonElement>('[data-num]').forEach((b) => b.addEventListener('click', () => place(Number(b.dataset.num))));
+  $<HTMLButtonElement>('#s-erase').addEventListener('click', () => place(0));
+  $<HTMLButtonElement>('#s-notes').addEventListener('click', () => {
+    notesMode = !notesMode;
+    render();
+  });
+  $<HTMLButtonElement>('#s-hint').addEventListener('click', hint);
+  $<HTMLButtonElement>('#s-undo').addEventListener('click', () => {
+    const h = history.pop();
+    if (!h || game.done) return;
+    game.values[h.i] = h.v;
+    game.notes[h.i] = h.n;
+    selected = h.i;
+    persist();
+    render();
+  });
+  $<HTMLInputElement>('#s-highlight').addEventListener('change', render);
+  $<HTMLButtonElement>('#s-daily').addEventListener('click', () => newGame(game.diff, true));
+  $<HTMLButtonElement>('#s-new').addEventListener('click', () => newGame(game.diff, false));
+  root.querySelectorAll<HTMLButtonElement>('[data-diff]').forEach((b) =>
+    b.addEventListener('click', () => newGame(b.dataset.diff as Difficulty, game.daily)),
+  );
+
+  document.addEventListener('keydown', (e) => {
+    const tag = (e.target as HTMLElement).tagName;
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag) || e.altKey || e.metaKey) return;
+    if (e.ctrlKey && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      $<HTMLButtonElement>('#s-undo').click();
+      return;
+    }
+    if (e.ctrlKey) return;
+    if (/^[1-9]$/.test(e.key)) place(Number(e.key));
+    else if (['Backspace', 'Delete', '0'].includes(e.key)) place(0);
+    else if (e.key.toLowerCase() === 'n') $<HTMLButtonElement>('#s-notes').click();
+    else if (e.key.startsWith('Arrow')) {
+      e.preventDefault();
+      if (selected < 0) selected = 0;
+      const r = Math.floor(selected / 9), c = selected % 9;
+      const [dr, dc] = ({ ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] } as Record<string, number[]>)[e.key] ?? [0, 0];
+      selected = ((r + dr + 9) % 9) * 9 + ((c + dc + 9) % 9);
+      render();
+    }
+  });
+
+  // 시작: 저장된 판이 있으면 이어서, 지난날의 오늘의 퍼즐이면 오늘 것으로 새로
+  const saved = load<Game | null>(GAME_KEY, null);
+  if (saved && saved.solution?.length === 81 && !(saved.daily && saved.date !== today())) {
+    game = saved;
+    selected = game.values.findIndex((v, i) => !game.puzzle[i] && v !== game.solution[i]);
+    if (game.done) msgEl.textContent = L.solvedMsg.replace('{t}', fmt(game.elapsed));
+    render();
+  } else newGame(saved?.diff ?? 'easy', true);
+</script>
