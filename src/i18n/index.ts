@@ -5,6 +5,7 @@ import es from './es';
 import de from './de';
 import fr from './fr';
 import zhHant from './zh-hant';
+import hi from './hi';
 import { SITE } from '../site';
 
 /**
@@ -15,7 +16,7 @@ import { SITE } from '../site';
 export type LiteDict = Omit<Dict, 'tools' | 'radio'> & { tools: Partial<Dict['tools']>; radio?: Dict['radio'] };
 
 // 새 언어 추가: src/i18n/xx.ts (LiteDict) 를 만들어 여기에 등록 + seo.ts 에 주소·제목 추가
-export const dictionaries = { en, ko, ja, es, de, fr, 'zh-hant': zhHant } satisfies Record<string, LiteDict>;
+export const dictionaries = { en, ko, ja, es, de, fr, 'zh-hant': zhHant, hi } satisfies Record<string, LiteDict>;
 export type Locale = keyof typeof dictionaries;
 export const locales = Object.keys(dictionaries) as Locale[];
 export const defaultLocale: Locale = 'en';

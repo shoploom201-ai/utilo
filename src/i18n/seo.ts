@@ -8,6 +8,16 @@ import type { ToolId } from '../tools';
 type ToolSeo = Record<ToolId, { slug: string; title: string }>;
 
 export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
+  hi: {
+    'loan-calculator': { slug: 'emi-कैलकुलेटर', title: 'EMI कैलकुलेटर – होम लोन, कार लोन, पर्सनल लोन की EMI निकालें' },
+    'compound-interest-calculator': { slug: 'चक्रवृद्धि-ब्याज-कैलकुलेटर', title: 'चक्रवृद्धि ब्याज कैलकुलेटर – कंपाउंड इंटरेस्ट और SIP अनुमान' },
+    'image-compressor': { slug: 'फ़ोटो-साइज़-कम-करें', title: 'फ़ोटो का साइज़ कम करें – इमेज कंप्रेसर (KB में), मुफ़्त' },
+    'image-to-pdf': { slug: 'इमेज-को-pdf-में-बदलें', title: 'इमेज को PDF में बदलें – JPG से PDF मुफ़्त' },
+    'focus-timer': { slug: 'पढ़ाई-टाइमर', title: 'पोमोडोरो पढ़ाई टाइमर – स्टडी टाइमर व्हाइट नॉइज़ के साथ' },
+    sudoku: { slug: 'सुडोकू', title: 'सुडोकू ऑनलाइन मुफ़्त – रोज़ नई पहेली (आसान से कठिन)' },
+    metronome: { slug: 'मेट्रोनोम', title: 'ऑनलाइन मेट्रोनोम मुफ़्त – BPM, ताल और टैप टेम्पो' },
+    tuner: { slug: 'गिटार-ट्यूनर', title: 'गिटार ट्यूनर ऑनलाइन – माइक से गिटार, उकुलेले, वायलिन ट्यून करें' },
+  },
   'zh-hant': {
     'vat-calculator': { slug: '營業稅計算', title: '營業稅計算機｜5% 含稅未稅換算・稅額計算' },
     'loan-calculator': { slug: '貸款計算機', title: '貸款計算機｜房貸・信貸每月還款與利息試算' },
@@ -120,6 +130,11 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
  * "그 언어를 배우는 사람"이 자기 말로 검색하는 문구를 노립니다 (예: 일본인 → 韓国語 リスニング).
  */
 export const radioSeo: Record<Locale, Partial<Record<Locale, { slug: string; title: string }>>> = {
+  hi: {
+    en: { slug: 'अंग्रेज़ी-रेडियो', title: 'रेडियो से अंग्रेज़ी सीखें – अमेरिका, ब्रिटेन के लाइव रेडियो सुनें' },
+    ko: { slug: 'कोरियाई-रेडियो', title: 'रेडियो से कोरियन सीखें – कोरिया के लाइव रेडियो सुनें' },
+    ja: { slug: 'जापानी-रेडियो', title: 'रेडियो से जापानी सीखें – जापान के लाइव रेडियो सुनें' },
+  },
   'zh-hant': {
     en: { slug: '英文廣播', title: '英文廣播線上聽｜聽美國・英國電台練英文聽力' },
     ja: { slug: '日文廣播', title: '日文廣播線上聽｜聽日本電台練日文聽力' },
@@ -166,4 +181,4 @@ export const radioTargets = (lang: Locale) =>
 export const radioPath = (lang: Locale, target: Locale) => `/${lang}/${radioSeo[lang][target]!.slug}/`;
 
 /** 검색엔진에 알려 줄 각 언어의 지역 표기 (og:locale) */
-export const ogLocale: Record<Locale, string> = { ko: 'ko_KR', ja: 'ja_JP', es: 'es_ES', en: 'en_US', de: 'de_DE', fr: 'fr_FR', 'zh-hant': 'zh_TW' };
+export const ogLocale: Record<Locale, string> = { ko: 'ko_KR', ja: 'ja_JP', es: 'es_ES', en: 'en_US', de: 'de_DE', fr: 'fr_FR', 'zh-hant': 'zh_TW', hi: 'hi_IN' };

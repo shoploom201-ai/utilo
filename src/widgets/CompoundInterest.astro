@@ -15,11 +15,11 @@ const ui = tool.ui;
     <div class="grid-2">
       <label>
         {ui.principal}
-        <input id="ci-principal" type="number" inputmode="decimal" min="0" step="any" value="10000" />
+        <input id="ci-principal" type="number" inputmode="decimal" min="0" step="any" value={lang === 'hi' ? 100000 : 10000} />
       </label>
       <label>
         {ui.contribution}
-        <input id="ci-contribution" type="number" inputmode="decimal" min="0" step="any" value="500" />
+        <input id="ci-contribution" type="number" inputmode="decimal" min="0" step="any" value={lang === 'hi' ? 5000 : 500} />
       </label>
       <label>
         {ui.rate}

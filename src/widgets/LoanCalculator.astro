@@ -14,12 +14,12 @@ const ui = tool.ui;
   <section class="tool card" id="loan" data-lang={lang}>
     <label>
       {ui.amount}
-      <input id="loan-amount" type="number" inputmode="decimal" min="0" step="any" value="100000" />
+      <input id="loan-amount" type="number" inputmode="decimal" min="0" step="any" value={lang === 'hi' ? 1000000 : 100000} />
     </label>
     <div class="grid-2">
       <label>
         {ui.rate}
-        <input id="loan-rate" type="number" inputmode="decimal" min="0" max="100" step="0.01" value="5" />
+        <input id="loan-rate" type="number" inputmode="decimal" min="0" max="100" step="0.01" value={lang === 'hi' ? 8.5 : 5} />
       </label>
       <label>
         {ui.years}
