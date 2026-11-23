@@ -592,6 +592,37 @@ const es: Dict = {
         { q: '¿Mi banco cobra comisión por cada pago?', a: 'Algunos bancos cobran comisión por operación en el extranjero. Una tarjeta sin comisiones o la tarjeta local puede salir más barata.' },
       ],
     },
+    trekking: {
+      name: 'Mejores trekkings por país',
+      short: 'Elige un país y descubre sus rutas de trekking más recomendadas en 2026, con distancia, días, dificultad y mejores meses.',
+      metaDescription:
+        'Mejores trekkings por país en 2026: Campo Base del Everest, Tour del Mont Blanc, Camino Inca, Kumano Kodo, Milford Track, Torres del Paine y más, con distancia, duración, dificultad, mejores meses y permisos.',
+      ui: {
+        country: 'País',
+        topIn: 'Los {n} mejores trekkings en {country}',
+        distance: 'Distancia',
+        duration: 'Duración',
+        days: '{n} días',
+        dayHike: 'Ruta de un día',
+        level1: 'Fácil',
+        level2: 'Moderada',
+        level3: 'Exigente',
+        best: 'Mejores meses',
+        features: { peak: 'Vistas de montaña', glacier: 'Glaciares', lake: 'Lagos', coast: 'Costa', forest: 'Bosque', volcano: 'Volcán', desert: 'Desierto', culture: 'Cultura e historia', ridge: 'Cresta', canyon: 'Cañón' },
+        needs: { permit: 'Permiso / reserva', guide: 'Guía obligatorio', huts: 'Refugios y albergues', camping: 'Acampada' },
+        disclaimer: 'Seleccionados de listas de viaje de 2026 (revisado en {date}). Distancias y días son valores típicos de la ruta principal. Las normas de permisos cambian: consulta la web oficial del parque.',
+      },
+      howTo: [
+        'Elige un país en la lista desplegable.',
+        'Compara distancia, duración y dificultad: las rutas más recomendadas aparecen primero.',
+        'Revisa los mejores meses y si necesitas permiso, guía o reserva de refugio.',
+      ],
+      faq: [
+        { q: '¿Qué ruta es mejor para principiantes?', a: 'Empieza por las marcadas como Fáciles o de un día, como la ruta de los Cinco Lagos en Zermatt, el Nakasendo en Japón o el Caminito del Rey.' },
+        { q: '¿Necesito guía?', a: 'Algunas rutas lo exigen por ley, como el Kilimanjaro, el Camino Inca o el Toubkal. Otras se pueden hacer por libre con experiencia y buena preparación.' },
+        { q: '¿Cuándo reservar?', a: 'Los permisos y refugios de rutas populares (Milford Track, Camino Inca, Half Dome, Torres del Paine) se agotan con meses de antelación: reserva en cuanto abra la temporada.' },
+      ],
+    },
     'loan-calculator': {
       name: 'Calculadora de préstamos',
       short: 'Cuota mensual, intereses totales y cuadro de amortización de cualquier préstamo.',

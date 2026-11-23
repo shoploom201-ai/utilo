@@ -590,6 +590,37 @@ const en = {
         { q: 'Will foreign bank cards charge extra fees?', a: 'Your bank may add a foreign transaction fee to each tap. A card without foreign fees or a local transit card can work out cheaper.' },
       ],
     },
+    trekking: {
+      name: 'Best Treks by Country',
+      short: 'Pick a country to see its top trekking routes for 2026 – distance, days, difficulty and the best months to go.',
+      metaDescription:
+        'Best treks and hikes by country for 2026: Everest Base Camp, Tour du Mont Blanc, Inca Trail, Kumano Kodo, Milford Track, Torres del Paine and more, with distance, duration, difficulty, best months and permit needs.',
+      ui: {
+        country: 'Country',
+        topIn: 'Top {n} treks in {country}',
+        distance: 'Distance',
+        duration: 'Time',
+        days: '{n} days',
+        dayHike: 'Day hike',
+        level1: 'Easy',
+        level2: 'Moderate',
+        level3: 'Challenging',
+        best: 'Best months',
+        features: { peak: 'Mountain views', glacier: 'Glaciers', lake: 'Lakes', coast: 'Coast', forest: 'Forest', volcano: 'Volcano', desert: 'Desert', culture: 'Culture & history', ridge: 'Ridge walk', canyon: 'Canyon' },
+        needs: { permit: 'Permit / booking', guide: 'Guide required', huts: 'Huts & lodges', camping: 'Camping' },
+        disclaimer: 'Picked from 2026 travel lists (checked {date}). Distances and days are typical figures for the main route. Permit and booking rules change – check the park’s official site.',
+      },
+      howTo: [
+        'Choose a country from the drop-down list.',
+        'Compare distance, time and difficulty for each trek – the most-recommended routes come first.',
+        'Check the best months and whether you need a permit, guide or hut booking before you plan.',
+      ],
+      faq: [
+        { q: 'Which trek is best for beginners?', a: 'Pick routes marked Easy or short day hikes such as the Five Lakes Walk in Zermatt, the Nakasendo in Japan or Lake Agnes in Banff, then build up to multi-day treks.' },
+        { q: 'Do I need a guide?', a: 'Some routes require one by law, such as Kilimanjaro, the Inca Trail and Toubkal. Others are fine on your own if you are experienced and well prepared.' },
+        { q: 'When should I book?', a: 'Popular permits and huts – Milford Track, Inca Trail, Half Dome, Torres del Paine – often sell out months ahead, so book as soon as the season opens.' },
+      ],
+    },
     'loan-calculator': {
       name: 'Loan Calculator',
       short: 'Monthly payment, total interest and a full repayment schedule for any loan.',

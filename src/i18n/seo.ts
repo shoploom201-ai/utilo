@@ -9,6 +9,7 @@ type ToolSeo = Record<ToolId, { slug: string; title: string }>;
 
 export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
   hi: {
+    trekking: { slug: 'देशों-के-बेहतरीन-ट्रेक', title: 'देशों के बेहतरीन ट्रेक 2026 – रूट, दूरी और सबसे अच्छा समय' },
     'transit-cards': { slug: 'देशों-के-ट्रांसपोर्ट-कार्ड', title: 'देशों के ट्रांसपोर्ट कार्ड 2026 – Suica, Oyster, Octopus कैसे ख़रीदें' },
     phrasebook: { slug: 'यात्रा-वाक्य', title: 'यात्रा के ज़रूरी वाक्य – 8 भाषाओं में 30 वाक्य, आवाज़ के साथ' },
     'car-diagnosis': { slug: 'कार-ख़राबी-जाँच', title: 'कार ख़राबी जाँच – लक्षण और डैशबोर्ड वार्निंग लाइट का मतलब' },
@@ -24,6 +25,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     tuner: { slug: 'गिटार-ट्यूनर', title: 'गिटार ट्यूनर ऑनलाइन – माइक से गिटार, उकुलेले, वायलिन ट्यून करें' },
   },
   'zh-hant': {
+    trekking: { slug: '各國健行推薦', title: '各國健行路線推薦 2026｜熱門步道、距離、難度與最佳季節' },
     'transit-cards': { slug: '各國交通卡', title: '各國交通卡購買教學 2026｜Suica、T-money、八達通、Oyster' },
     phrasebook: { slug: '旅遊會話', title: '旅遊會話｜日文・韓文・英文必學 30 句（附發音與語音）' },
     'car-diagnosis': { slug: '汽車故障診斷', title: '汽車故障診斷｜症狀與儀表板警示燈意思、原因與 DIY 難度' },
@@ -40,6 +42,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     tuner: { slug: '吉他調音器', title: '吉他調音器線上｜用麥克風為吉他・烏克麗麗調音' },
   },
   fr: {
+    trekking: { slug: 'meilleurs-treks-par-pays', title: 'Meilleurs treks par pays 2026 – Itinéraires, distance et meilleure saison' },
     'transit-cards': { slug: 'cartes-de-transport-par-pays', title: 'Cartes de transport par pays 2026 – Acheter Suica, Oyster, Octopus' },
     phrasebook: { slug: 'guide-de-conversation', title: 'Guide de conversation – 30 phrases utiles en voyage avec audio' },
     'car-diagnosis': { slug: 'diagnostic-panne-voiture', title: 'Diagnostic de panne voiture – Symptômes et voyants du tableau de bord' },
@@ -58,6 +61,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     'saas-cost': { slug: 'calculateur-cout-saas', title: 'Calculateur de coûts SaaS – Abonnements logiciels et IA' },
   },
   de: {
+    trekking: { slug: 'trekking-touren-nach-land', title: 'Die besten Trekkingtouren nach Land 2026 – Routen, Distanz & beste Reisezeit' },
     'transit-cards': { slug: 'nahverkehrskarten-weltweit', title: 'Nahverkehrskarten weltweit 2026 – Suica, Oyster, Octopus kaufen' },
     phrasebook: { slug: 'reise-sprachfuehrer', title: 'Reise-Sprachführer – 30 wichtige Sätze in 8 Sprachen mit Audio' },
     'car-diagnosis': { slug: 'auto-fehlerdiagnose', title: 'Auto-Fehlerdiagnose – Symptome & Kontrollleuchten im Auto erklärt' },
@@ -76,6 +80,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     'saas-cost': { slug: 'saas-kostenrechner', title: 'SaaS-Kostenrechner – Software- & KI-Abos berechnen und sparen' },
   },
   ko: {
+    trekking: { slug: '나라별-트래킹-추천', title: '나라별 트래킹 추천 2026 - 인기 코스·거리·난이도·추천 시기 총정리' },
     'transit-cards': { slug: '나라별-교통카드', title: '나라별 교통카드 구매 방법 2026 - 스이카·이지카드·옥토퍼스·오이스터 사는 곳' },
     phrasebook: { slug: '여행-회화', title: '여행 회화 - 일본어·영어·중국어 필수 표현 30개 (한글 발음·음성)' },
     'car-diagnosis': { slug: '자동차-고장-진단', title: '자동차 고장 진단 - 증상·계기판 경고등 의미와 원인, 자가 정비 난이도' },
@@ -98,6 +103,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     'image-to-pdf': { slug: '이미지-pdf-변환', title: '이미지 PDF 변환 - JPG·PNG 사진을 PDF로 합치기 무료' },
   },
   ja: {
+    trekking: { slug: '国別-トレッキング', title: '国別おすすめトレッキング2026｜人気コース・距離・難易度・ベストシーズン' },
     'transit-cards': { slug: '海外-交通カード', title: '海外の交通カード買い方ガイド2026｜T-money・悠遊卡・オクトパス・オイスター' },
     phrasebook: { slug: '旅行-会話', title: '旅行会話フレーズ集｜韓国語・英語・中国語の必須30表現（音声付き）' },
     'car-diagnosis': { slug: '車-故障診断', title: '車の故障診断｜症状・警告灯の意味から原因とDIY難易度がわかる' },
@@ -120,6 +126,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     'image-to-pdf': { slug: '画像pdf変換', title: '画像をPDFに変換｜JPG・PNGを1つのPDFにまとめる（無料）' },
   },
   es: {
+    trekking: { slug: 'mejores-trekkings-por-pais', title: 'Mejores trekkings por país 2026: rutas, distancia y mejor época' },
     'transit-cards': { slug: 'tarjetas-de-transporte-por-pais', title: 'Tarjetas de transporte por país 2026: cómo comprar Suica, Oyster, Octopus' },
     phrasebook: { slug: 'frases-para-viajar', title: 'Frases para viajar: 30 expresiones básicas en 8 idiomas con audio' },
     'car-diagnosis': { slug: 'diagnostico-averias-coche', title: 'Diagnóstico de averías del coche: síntomas y testigos del tablero' },
@@ -142,6 +149,7 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
     'image-to-pdf': { slug: 'convertir-imagenes-a-pdf', title: 'Convertir imágenes a PDF gratis: JPG y PNG a PDF' },
   },
   en: {
+    trekking: { slug: 'best-treks-by-country', title: 'Best Treks by Country 2026 – Top Hiking Trails, Distance & Best Months' },
     'transit-cards': { slug: 'transit-card-guide', title: 'Transit Card Guide by Country 2026 – How to Buy Suica, T-money, Octopus, Oyster' },
     phrasebook: { slug: 'travel-phrasebook', title: 'Travel Phrasebook – 30 Essential Phrases in 8 Languages with Audio' },
     'car-diagnosis': { slug: 'car-problem-diagnosis', title: 'Car Problem Diagnosis – Symptoms & Dashboard Warning Lights Explained' },

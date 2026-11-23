@@ -485,6 +485,37 @@ const de = {
         { q: 'Kostet jede Zahlung mit ausländischer Karte extra?', a: 'Manche Banken berechnen Auslandsgebühren pro Zahlung. Eine gebührenfreie Karte oder die lokale Karte kann günstiger sein.' },
       ],
     },
+    trekking: {
+      name: 'Die besten Trekkingtouren nach Land',
+      short: 'Land wählen und die meistempfohlenen Trekkingrouten 2026 mit Distanz, Tagen, Schwierigkeit und bester Reisezeit sehen.',
+      metaDescription:
+        'Die besten Trekkingtouren nach Land 2026: Everest Base Camp, Tour du Mont Blanc, Inka-Pfad, Kumano Kodo, Milford Track, Torres del Paine und mehr – mit Distanz, Dauer, Schwierigkeit, bester Reisezeit und Genehmigungen.',
+      ui: {
+        country: 'Land',
+        topIn: 'Top {n} Trekkingtouren in {country}',
+        distance: 'Distanz',
+        duration: 'Dauer',
+        days: '{n} Tage',
+        dayHike: 'Tagestour',
+        level1: 'Leicht',
+        level2: 'Mittel',
+        level3: 'Anspruchsvoll',
+        best: 'Beste Monate',
+        features: { peak: 'Bergblick', glacier: 'Gletscher', lake: 'Seen', coast: 'Küste', forest: 'Wald', volcano: 'Vulkan', desert: 'Wüste', culture: 'Kultur & Geschichte', ridge: 'Gratwanderung', canyon: 'Schlucht' },
+        needs: { permit: 'Genehmigung / Buchung', guide: 'Guide Pflicht', huts: 'Hütten & Lodges', camping: 'Zelten' },
+        disclaimer: 'Ausgewählt aus Reiselisten 2026 (geprüft {date}). Distanz und Tage sind typische Werte der Hauptroute. Genehmigungsregeln ändern sich – bitte die offizielle Park-Website prüfen.',
+      },
+      howTo: [
+        'Land in der Auswahlliste wählen.',
+        'Distanz, Dauer und Schwierigkeit vergleichen – die meistempfohlenen Touren stehen oben.',
+        'Vor der Planung beste Monate und nötige Genehmigungen, Guides oder Hüttenbuchungen prüfen.',
+      ],
+      faq: [
+        { q: 'Welche Tour eignet sich für Einsteiger?', a: 'Touren mit „Leicht“ oder Tagestouren wie der 5-Seenweg in Zermatt, der Nakasendo in Japan oder der Lake Agnes in Banff – danach Mehrtagestouren.' },
+        { q: 'Brauche ich einen Guide?', a: 'Manche Routen schreiben ihn gesetzlich vor, etwa Kilimandscharo, Inka-Pfad und Toubkal. Andere sind mit Erfahrung und guter Vorbereitung auch allein machbar.' },
+        { q: 'Wann sollte ich buchen?', a: 'Genehmigungen und Hütten beliebter Touren (Milford Track, Inka-Pfad, Half Dome, Torres del Paine) sind oft Monate im Voraus ausgebucht – direkt bei Saisonstart buchen.' },
+      ],
+    },
     'loan-calculator': {
       name: 'Kreditrechner',
       short: 'Monatliche Rate, Gesamtzinsen und Tilgungsplan für jeden Kredit.',

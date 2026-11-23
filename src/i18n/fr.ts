@@ -485,6 +485,37 @@ const fr = {
         { q: 'Ma banque facture-t-elle chaque paiement ?', a: 'Certaines banques prennent des frais à l’étranger à chaque paiement. Une carte sans frais ou la carte locale peut revenir moins cher.' },
       ],
     },
+    trekking: {
+      name: 'Meilleurs treks par pays',
+      short: 'Choisissez un pays pour voir ses treks les plus recommandés en 2026 : distance, jours, difficulté et meilleure saison.',
+      metaDescription:
+        'Meilleurs treks par pays en 2026 : camp de base de l’Everest, Tour du Mont-Blanc, chemin de l’Inca, Kumano Kodo, Milford Track, Torres del Paine… avec distance, durée, difficulté, meilleure saison et permis.',
+      ui: {
+        country: 'Pays',
+        topIn: 'Les {n} meilleurs treks – {country}',
+        distance: 'Distance',
+        duration: 'Durée',
+        days: '{n} jours',
+        dayHike: 'Rando à la journée',
+        level1: 'Facile',
+        level2: 'Modéré',
+        level3: 'Difficile',
+        best: 'Meilleurs mois',
+        features: { peak: 'Vue sur les sommets', glacier: 'Glaciers', lake: 'Lacs', coast: 'Côte', forest: 'Forêt', volcano: 'Volcan', desert: 'Désert', culture: 'Culture et histoire', ridge: 'Crêtes', canyon: 'Canyon' },
+        needs: { permit: 'Permis / réservation', guide: 'Guide obligatoire', huts: 'Refuges et gîtes', camping: 'Camping' },
+        disclaimer: 'Sélection issue des listes de voyage 2026 (vérifié en {date}). Distances et jours sont des valeurs indicatives de l’itinéraire principal. Les règles de permis changent : consultez le site officiel du parc.',
+      },
+      howTo: [
+        'Choisissez un pays dans la liste déroulante.',
+        'Comparez distance, durée et difficulté : les treks les plus recommandés apparaissent en premier.',
+        'Vérifiez la meilleure saison et s’il faut un permis, un guide ou réserver les refuges.',
+      ],
+      faq: [
+        { q: 'Quel trek pour débuter ?', a: 'Commencez par les itinéraires « Facile » ou à la journée, comme le chemin des Cinq Lacs à Zermatt, le Nakasendo au Japon ou le lac Agnes à Banff.' },
+        { q: 'Faut-il un guide ?', a: 'Certains itinéraires l’imposent, comme le Kilimandjaro, le chemin de l’Inca ou le Toubkal. Les autres se font en autonomie avec de l’expérience et une bonne préparation.' },
+        { q: 'Quand réserver ?', a: 'Les permis et refuges des treks populaires (Milford Track, chemin de l’Inca, Half Dome, Torres del Paine) partent des mois à l’avance : réservez dès l’ouverture.' },
+      ],
+    },
     'loan-calculator': {
       name: 'Simulateur de prêt',
       short: 'Mensualité, coût total des intérêts et tableau d’amortissement pour tout prêt.',
