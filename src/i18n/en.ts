@@ -192,6 +192,35 @@ const en = {
         { q: 'What is included in a monthly mortgage payment?', a: 'Usually principal and interest plus escrow for property tax and home insurance, and PMI or HOA fees if they apply.' },
       ],
     },
+    'debt-payoff': {
+      name: 'Debt Payoff Calculator',
+      short: 'Pay off credit cards faster: compare the debt snowball and debt avalanche methods.',
+      metaDescription:
+        'Free debt payoff calculator: list your credit cards and loans, set a monthly payment and compare the snowball and avalanche methods. See your debt-free date, total interest and how much you save versus minimum payments.',
+      ui: {
+        debtName: 'Debt', balance: 'Balance', apr: 'APR (%)', minPay: 'Minimum payment', remove: 'Remove', add: 'Add a debt', sample: 'Card',
+        budget: 'Total monthly payment', currency: 'Currency', minTotal: 'Minimum payments add up to {min} a month.',
+        errBudget: 'Your monthly payment must be at least the total of the minimum payments ({min}).',
+        errNever: 'This payment is too low to ever clear the debt because the interest grows faster. Try a higher monthly payment.',
+        avalanche: 'Avalanche (highest rate first)', avalancheDesc: 'Pays the most expensive debt first. Saves the most interest.',
+        snowball: 'Snowball (smallest balance first)', snowballDesc: 'Clears small debts first for quick wins and motivation.',
+        debtFree: 'Debt-free', totalInterest: 'interest', leastInterest: 'Least interest', dur: '{y} yr {m} mo',
+        savings: 'Compared with paying only the minimums, you save {interest} in interest and finish {time} sooner.',
+        minOnlyNever: 'Paying only the minimums would never clear these debts.',
+        order: 'When each debt is paid off',
+        disclaimer: 'Estimate only. Assumes fixed rates, no new charges and the same payment every month.',
+      },
+      howTo: [
+        'Enter each credit card or loan with its balance, interest rate (APR) and minimum payment.',
+        'Enter how much you can pay toward all debts each month in total.',
+        'Compare the two methods and pick the one you will stick with. Keep paying the same total as each debt disappears.',
+      ],
+      faq: [
+        { q: 'Snowball or avalanche: which is better?', a: 'The avalanche method always costs the same or less interest. The snowball method gives faster early wins, which helps many people stay motivated. The best plan is the one you keep following.' },
+        { q: 'What happens when one debt is paid off?', a: 'Its payment rolls over to the next debt, so your total monthly payment stays the same and later debts disappear faster.' },
+        { q: 'Why does paying only the minimum take so long?', a: 'Minimum payments mostly cover interest, so the balance shrinks slowly. Paying even a little extra each month can cut years off.' },
+      ],
+    },
     'vat-calculator': {
       name: 'VAT Calculator',
       short: 'Add or remove VAT, GST or consumption tax for 17 countries.',

@@ -274,6 +274,22 @@ h2.sub { font-size: 1.05rem; margin: .5rem 0 0; }
 .total-row td { font-weight: 700; border-top: 2px solid var(--border); }
 .pay-table-wrap th::first-letter { text-transform: uppercase; }
 
+/* ---------- 빚 상환 계산기 ---------- */
+.debt-inputs { max-height: none; }
+.debt-inputs td { padding: .3rem .35rem; }
+.debt-inputs input { width: 100%; min-width: 5.5rem; padding: .45rem .5rem; }
+.debt-inputs td:first-child input { min-width: 7rem; }
+.row-del { font: inherit; width: 2rem; height: 2rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; }
+.row-del:disabled { opacity: .3; cursor: default; }
+.strategy-grid { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.strategy { position: relative; display: grid; gap: .2rem; padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg); }
+.strategy h3 { margin: 0; font-size: 1rem; }
+.strategy .note { margin: 0 0 .4rem; }
+.strategy .s-date { font-size: 1.6rem; }
+.strategy.best { border-color: var(--good); box-shadow: inset 0 0 0 1px var(--good); }
+.badge-pill { justify-self: start; margin-top: .4rem; padding: .15rem .6rem; border-radius: 999px; background: var(--good); color: var(--surface); font-size: .8rem; font-weight: 700; }
+.savings { margin: 0; font-weight: 600; }
+
 .schedule summary { cursor: pointer; font-weight: 600; }
 .table-wrap { max-height: 420px; overflow: auto; margin-top: .75rem; border: 1px solid var(--border); border-radius: 8px; }
 .table-wrap table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }

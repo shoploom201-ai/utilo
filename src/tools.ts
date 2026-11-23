@@ -13,6 +13,7 @@ export const tools = [
   { id: 'vat-calculator', category: 'tax' },
   { id: 'us-paycheck', category: 'finance' },
   { id: 'mortgage', category: 'finance' },
+  { id: 'debt-payoff', category: 'finance' },
   { id: 'loan-calculator', category: 'finance' },
   { id: 'compound-interest-calculator', category: 'finance' },
   { id: 'image-compressor', category: 'image' },

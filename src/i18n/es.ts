@@ -194,6 +194,35 @@ const es: Dict = {
         { q: '¿Qué incluye el pago mensual de la hipoteca?', a: 'Normalmente capital e intereses, más el impuesto a la propiedad y el seguro de vivienda (escrow), y el PMI o la cuota HOA si aplican.' },
       ],
     },
+    'debt-payoff': {
+      name: 'Calculadora para pagar deudas',
+      short: 'Paga tus tarjetas de crédito antes: compara el método bola de nieve y el método avalancha.',
+      metaDescription:
+        'Calculadora de pago de deudas gratis: añade tus tarjetas y préstamos, elige un pago mensual y compara los métodos bola de nieve y avalancha. Mira la fecha en que quedas libre de deudas, los intereses totales y cuánto ahorras frente al pago mínimo.',
+      ui: {
+        debtName: 'Deuda', balance: 'Saldo', apr: 'Tasa anual (%)', minPay: 'Pago mínimo', remove: 'Quitar', add: 'Añadir deuda', sample: 'Tarjeta',
+        budget: 'Pago mensual total', currency: 'Moneda', minTotal: 'Los pagos mínimos suman {min} al mes.',
+        errBudget: 'Tu pago mensual debe ser al menos la suma de los pagos mínimos ({min}).',
+        errNever: 'Con este pago la deuda nunca se termina porque los intereses crecen más rápido. Prueba con un pago mensual mayor.',
+        avalanche: 'Avalancha (tasa más alta primero)', avalancheDesc: 'Paga primero la deuda más cara. Ahorra más intereses.',
+        snowball: 'Bola de nieve (saldo más pequeño primero)', snowballDesc: 'Liquida primero las deudas pequeñas para lograr avances rápidos.',
+        debtFree: 'Libre de deudas', totalInterest: 'intereses', leastInterest: 'Menos intereses', dur: '{y} a {m} m',
+        savings: 'Frente a pagar solo el mínimo, ahorras {interest} en intereses y terminas {time} antes.',
+        minOnlyNever: 'Pagando solo el mínimo, estas deudas nunca se terminarían.',
+        order: 'Cuándo se liquida cada deuda',
+        disclaimer: 'Solo es una estimación. Supone tasas fijas, sin nuevos cargos y el mismo pago cada mes.',
+      },
+      howTo: [
+        'Introduce cada tarjeta o préstamo con su saldo, su tasa de interés anual y su pago mínimo.',
+        'Indica cuánto puedes pagar en total cada mes entre todas las deudas.',
+        'Compara los dos métodos y elige el que vayas a mantener. Sigue pagando el mismo total aunque se vayan liquidando deudas.',
+      ],
+      faq: [
+        { q: '¿Bola de nieve o avalancha: cuál es mejor?', a: 'El método avalancha siempre cuesta lo mismo o menos en intereses. La bola de nieve da logros rápidos al principio, lo que ayuda a mantener la motivación. El mejor plan es el que sigues hasta el final.' },
+        { q: '¿Qué pasa cuando termino de pagar una deuda?', a: 'Ese pago pasa a la siguiente deuda, así que el total mensual es el mismo y las demás deudas bajan más rápido.' },
+        { q: '¿Por qué tarda tanto pagar solo el mínimo?', a: 'El pago mínimo cubre sobre todo intereses, así que el saldo baja muy despacio. Pagar un poco más cada mes puede ahorrarte años.' },
+      ],
+    },
     'vat-calculator': {
       name: 'Calculadora de IVA',
       short: 'Suma o quita el IVA, GST o impuesto al consumo en 17 países.',

@@ -9,6 +9,7 @@ type ToolSeo = Record<ToolId, { slug: string; title: string }>;
 
 export const toolSeo: Record<Locale, ToolSeo> = {
   ko: {
+    'debt-payoff': { slug: '빚-상환-계산기', title: '빚 상환 계산기 - 신용카드 빚 눈덩이 vs 고금리 우선 상환 비교' },
     mortgage: { slug: '미국-모기지-계산기', title: '미국 모기지 계산기 - 월 납입금·재산세·PMI 포함 주택담보대출 계산' },
     'us-paycheck': { slug: '미국-연봉-실수령액-계산기', title: '미국 연봉 실수령액 계산기 2026 - 주별 세금·월급 자동 계산' },
     metronome: { slug: '메트로놈', title: '메트로놈 온라인 무료 - BPM 박자기 (탭 템포·박자·셋잇단)' },
@@ -23,6 +24,7 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: '이미지-pdf-변환', title: '이미지 PDF 변환 - JPG·PNG 사진을 PDF로 합치기 무료' },
   },
   ja: {
+    'debt-payoff': { slug: '借金返済シミュレーション', title: '借金返済シミュレーション｜スノーボール方式とアバランチ方式を比較' },
     mortgage: { slug: 'アメリカ-住宅ローン計算', title: 'アメリカの住宅ローン計算（モーゲージ）｜固定資産税・保険・PMI込みの月々返済' },
     'us-paycheck': { slug: 'アメリカ-給与-手取り計算', title: 'アメリカの給与 手取り計算 2026｜州税・連邦税を自動計算' },
     metronome: { slug: 'メトロノーム', title: 'メトロノーム（無料・オンライン）｜BPM・拍子・タップテンポ対応' },
@@ -37,6 +39,7 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: '画像pdf変換', title: '画像をPDFに変換｜JPG・PNGを1つのPDFにまとめる（無料）' },
   },
   es: {
+    'debt-payoff': { slug: 'calculadora-pago-deudas', title: 'Calculadora para pagar deudas: bola de nieve vs avalancha' },
     mortgage: { slug: 'calculadora-hipoteca-usa', title: 'Calculadora de hipoteca en EE. UU.: pago mensual con impuestos, seguro y PMI' },
     'us-paycheck': { slug: 'calculadora-salario-neto-usa', title: 'Calculadora de salario neto en EE. UU. 2026: sueldo después de impuestos' },
     metronome: { slug: 'metronomo-online', title: 'Metrónomo online gratis: BPM, compás y tap tempo' },
@@ -51,6 +54,7 @@ export const toolSeo: Record<Locale, ToolSeo> = {
     'image-to-pdf': { slug: 'convertir-imagenes-a-pdf', title: 'Convertir imágenes a PDF gratis: JPG y PNG a PDF' },
   },
   en: {
+    'debt-payoff': { slug: 'debt-payoff-calculator', title: 'Debt Payoff Calculator – Snowball vs Avalanche Credit Card Payoff' },
     mortgage: { slug: 'mortgage-calculator', title: 'Mortgage Calculator with Taxes, Insurance & PMI – Monthly Payment' },
     'us-paycheck': { slug: 'paycheck-calculator', title: 'Paycheck Calculator 2026 – Take-Home Pay After Taxes, All 50 States' },
     metronome: { slug: 'metronome', title: 'Online Metronome – Free BPM Metronome with Tap Tempo' },

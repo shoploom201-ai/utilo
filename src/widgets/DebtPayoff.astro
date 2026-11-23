@@ -1,0 +1,197 @@
+---
+// 빚 상환 계산기: 여러 빚을 넣고 눈덩이 vs 눈사태 방식 비교. 계산은 src/lib/debt.ts
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, type Locale } from '../i18n';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['debt-payoff'];
+const ui = tool.ui;
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card paycheck debts" id="debt" data-lang={lang} data-labels={JSON.stringify(ui)}>
+  <div class="table-wrap debt-inputs">
+    <table>
+      <thead><tr><th>{ui.debtName}</th><th>{ui.balance}</th><th>{ui.apr}</th><th>{ui.minPay}</th><th><span class="sr-only">{ui.remove}</span></th></tr></thead>
+      <tbody id="d-rows"></tbody>
+    </table>
+  </div>
+  <div class="timer-actions"><button type="button" class="btn ghost" id="d-add">＋ {ui.add}</button></div>
+  <div class="grid-2">
+    <label>{ui.budget}<input id="d-budget" type="number" inputmode="decimal" min="0" step="10" value="600" /></label>
+    <label>{ui.currency}
+      <select id="d-cur">
+        <option value="USD">USD $</option><option value="CAD">CAD $</option><option value="GBP">GBP £</option><option value="AUD">AUD $</option>
+        <option value="EUR">EUR €</option><option value="MXN">MXN $</option><option value="KRW">KRW ₩</option><option value="JPY">JPY ¥</option>
+      </select>
+    </label>
+  </div>
+  <p class="note" id="d-min-note"></p>
+
+  <p class="ime-warn" id="d-error" role="alert" hidden></p>
+  <div class="strategy-grid" id="d-results" aria-live="polite">
+    <article class="strategy" data-s="avalanche">
+      <h3>{ui.avalanche}</h3><p class="note">{ui.avalancheDesc}</p>
+      <span class="stat-label">{ui.debtFree}</span><strong class="s-date">—</strong>
+      <span class="stat-sub"><span class="s-dur"></span> · {ui.totalInterest} <b class="s-int"></b></span>
+      <span class="badge-pill" hidden>{ui.leastInterest}</span>
+    </article>
+    <article class="strategy" data-s="snowball">
+      <h3>{ui.snowball}</h3><p class="note">{ui.snowballDesc}</p>
+      <span class="stat-label">{ui.debtFree}</span><strong class="s-date">—</strong>
+      <span class="stat-sub"><span class="s-dur"></span> · {ui.totalInterest} <b class="s-int"></b></span>
+      <span class="badge-pill" hidden>{ui.leastInterest}</span>
+    </article>
+  </div>
+  <p class="pay-hero savings" id="d-savings"></p>
+
+  <h2 class="sub">{ui.order}</h2>
+  <div class="table-wrap pay-table-wrap">
+    <table>
+      <thead><tr><th>{ui.debtName}</th><th>{ui.avalanche}</th><th>{ui.snowball}</th></tr></thead>
+      <tbody id="d-order"></tbody>
+    </table>
+  </div>
+  <p class="note">{ui.disclaimer}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script>
+  import { simulate, minimumOnly, type Debt, type PayoffResult } from '../lib/debt';
+
+  const root = document.getElementById('debt') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const lang = root.dataset.lang ?? 'en';
+  const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+  const KEY = 'kitwise-debts';
+  const rowsEl = $<HTMLElement>('#d-rows');
+  const budgetEl = $<HTMLInputElement>('#d-budget');
+  const curEl = $<HTMLSelectElement>('#d-cur');
+
+  let debts: Debt[] = [
+    { name: `${L.sample} A`, balance: 3500, apr: 28.99, min: 90 },
+    { name: `${L.sample} B`, balance: 900, apr: 21.99, min: 30 },
+    { name: `${L.sample} C`, balance: 8000, apr: 12.5, min: 160 },
+  ];
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+    if (s?.debts?.length) {
+      debts = s.debts;
+      budgetEl.value = String(s.budget);
+      curEl.value = s.cur;
+    }
+  } catch {
+    /* 저장 불가 환경 */
+  }
+
+  function renderRows() {
+    rowsEl.replaceChildren(
+      ...debts.map((dbt, i) => {
+        const tr = document.createElement('tr');
+        const cell = (key: keyof Debt, type: string, step = 'any') => {
+          const td = document.createElement('td');
+          const inp = Object.assign(document.createElement('input'), { type, value: String(dbt[key]), step, min: '0' });
+          inp.setAttribute('aria-label', L[{ name: 'debtName', balance: 'balance', apr: 'apr', min: 'minPay' }[key]]);
+          inp.dataset.i = String(i);
+          inp.dataset.k = key;
+          if (type === 'number') inp.inputMode = 'decimal';
+          td.append(inp);
+          return td;
+        };
+        const del = document.createElement('td');
+        const btn = Object.assign(document.createElement('button'), { type: 'button', textContent: '✕', title: L.remove, className: 'row-del' });
+        btn.setAttribute('aria-label', L.remove);
+        btn.dataset.del = String(i);
+        btn.disabled = debts.length <= 1;
+        del.append(btn);
+        tr.append(cell('name', 'text'), cell('balance', 'number', '10'), cell('apr', 'number', '0.01'), cell('min', 'number', '1'), del);
+        return tr;
+      }),
+    );
+  }
+
+  const fmtDur = (m: number) => L.dur.replace('{y}', String(Math.floor(m / 12))).replace('{m}', String(m % 12));
+  const dateAfter = (m: number) => {
+    const dt = new Date();
+    dt.setMonth(dt.getMonth() + m);
+    return new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'short' }).format(dt);
+  };
+
+  function calc() {
+    const money = new Intl.NumberFormat(lang, { style: 'currency', currency: curEl.value, maximumFractionDigits: 0 });
+    const budget = Math.max(0, Number(budgetEl.value) || 0);
+    const valid = debts.filter((x) => x.balance > 0);
+    const minSum = valid.reduce((s, x) => s + Math.min(x.min, x.balance), 0);
+    $<HTMLElement>('#d-min-note').textContent = L.minTotal.replace('{min}', money.format(minSum));
+    const res: Record<string, PayoffResult> = { avalanche: simulate(valid, budget, 'avalanche'), snowball: simulate(valid, budget, 'snowball') };
+    const err = $<HTMLElement>('#d-error');
+    const bad = res.avalanche.ok ? null : res.avalanche.reason;
+    err.hidden = !bad;
+    err.textContent = bad === 'budget-below-minimums' ? L.errBudget.replace('{min}', money.format(minSum)) : bad ? L.errNever : '';
+    $<HTMLElement>('#d-results').hidden = !!bad;
+    $<HTMLElement>('#d-savings').hidden = !!bad;
+
+    if (!bad) {
+      const best = res.avalanche.totalInterest <= res.snowball.totalInterest + 0.5 ? 'avalanche' : 'snowball';
+      root.querySelectorAll<HTMLElement>('.strategy').forEach((card) => {
+        const r = res[card.dataset.s!];
+        card.querySelector('.s-date')!.textContent = dateAfter(r.months);
+        card.querySelector('.s-dur')!.textContent = fmtDur(r.months);
+        card.querySelector('.s-int')!.textContent = money.format(r.totalInterest);
+        (card.querySelector('.badge-pill') as HTMLElement).hidden = card.dataset.s !== best;
+        card.classList.toggle('best', card.dataset.s === best);
+      });
+      const mo = minimumOnly(valid);
+      const a = res.avalanche;
+      $<HTMLElement>('#d-savings').textContent = mo.ok
+        ? L.savings.replace('{interest}', money.format(Math.max(0, mo.totalInterest - a.totalInterest))).replace('{time}', fmtDur(Math.max(0, mo.months - a.months)))
+        : L.minOnlyNever;
+      const when = (r: PayoffResult, name: string) => {
+        const o = r.order.find((x) => x.name === name);
+        return o ? `${dateAfter(o.month)} (${fmtDur(o.month)})` : '—';
+      };
+      const names = [...new Set(valid.map((x) => x.name))];
+      $<HTMLElement>('#d-order').replaceChildren(
+        ...names.map((n) => {
+          const tr = document.createElement('tr');
+          [n, when(res.avalanche, n), when(res.snowball, n)].forEach((txt) => tr.append(Object.assign(document.createElement('td'), { textContent: txt })));
+          return tr;
+        }),
+      );
+    }
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ debts, budget: budgetEl.value, cur: curEl.value }));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  }
+
+  rowsEl.addEventListener('input', (e) => {
+    const inp = e.target as HTMLInputElement;
+    const i = Number(inp.dataset.i), k = inp.dataset.k as keyof Debt;
+    if (!debts[i] || !k) return;
+    (debts[i] as unknown as Record<string, string | number>)[k] = k === 'name' ? inp.value : Math.max(0, Number(inp.value) || 0);
+    calc();
+  });
+  rowsEl.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-del]');
+    if (!b || debts.length <= 1) return;
+    debts.splice(Number(b.dataset.del), 1);
+    renderRows();
+    calc();
+  });
+  $<HTMLButtonElement>('#d-add').addEventListener('click', () => {
+    if (debts.length >= 12) return;
+    debts.push({ name: `${L.sample} ${String.fromCharCode(65 + debts.length)}`, balance: 1000, apr: 20, min: 35 });
+    renderRows();
+    calc();
+  });
+  budgetEl.addEventListener('input', calc);
+  curEl.addEventListener('change', calc);
+  renderRows();
+  calc();
+</script>
