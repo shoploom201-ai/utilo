@@ -1,13 +1,26 @@
 // 언어별 검색 최적화 설정.
 // slug  : 주소에 들어갈 그 나라 검색어 (예: /ko/부가세-계산기/). 색인된 뒤에는 바꾸지 말 것 — 바꾸면 public/_redirects 에 이동 규칙 추가.
 // title : 검색 결과에 보이는 제목. 그 언어 사람들이 실제로 치는 검색어를 맨 앞에 두고, 클릭하고 싶게 만드는 설명을 뒤에.
-// 새 도구를 추가하면 4개 언어 모두 여기에 넣어야 합니다 (빠지면 npm run check 에서 오류).
+// 새 도구를 추가하면 그 도구를 제공할 언어에 넣습니다. 여기와 사전(xx.ts)에 둘 다 있어야 그 언어 페이지가 만들어집니다.
 import type { Locale } from './index';
 import type { ToolId } from '../tools';
 
 type ToolSeo = Record<ToolId, { slug: string; title: string }>;
 
 export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
+  de: {
+    'vat-calculator': { slug: 'mwst-rechner', title: 'MwSt-Rechner – Mehrwertsteuer berechnen & herausrechnen (19 % / 7 %)' },
+    'loan-calculator': { slug: 'kreditrechner', title: 'Kreditrechner – Monatliche Rate, Zinsen & Tilgungsplan berechnen' },
+    'compound-interest-calculator': { slug: 'zinseszinsrechner', title: 'Zinseszinsrechner mit Sparrate – Endkapital & Sparplan berechnen' },
+    'image-compressor': { slug: 'bild-komprimieren', title: 'Bild komprimieren – Bildgröße verkleinern & in WebP umwandeln' },
+    'image-to-pdf': { slug: 'bild-in-pdf-umwandeln', title: 'Bild in PDF umwandeln – JPG & PNG zu einer PDF zusammenfügen' },
+    'focus-timer': { slug: 'pomodoro-timer', title: 'Pomodoro Timer online – Lerntimer mit Regen & weißem Rauschen' },
+    sudoku: { slug: 'sudoku', title: 'Sudoku online kostenlos – Tagesrätsel von leicht bis schwer' },
+    metronome: { slug: 'metronom', title: 'Metronom online kostenlos – BPM, Taktart & Tap Tempo' },
+    tuner: { slug: 'stimmgeraet', title: 'Stimmgerät online – Gitarre, Bass, Ukulele & Geige stimmen' },
+    'typing-practice': { slug: 'tipptrainer', title: 'Tipptrainer online – Schreibgeschwindigkeit testen (kostenlos)' },
+    'saas-cost': { slug: 'saas-kostenrechner', title: 'SaaS-Kostenrechner – Software- & KI-Abos berechnen und sparen' },
+  },
   ko: {
     'saas-cost': { slug: 'saas-구독-비용-계산기', title: 'AI·SaaS 구독 비용 계산기 - 소프트웨어 구독료 절약·연간 결제 비교' },
     'self-employed-tax': { slug: '미국-프리랜서-세금-계산기', title: '미국 프리랜서 세금 계산기 2026 - 1099 자영업세·분기 예정 납부액' },
@@ -83,6 +96,12 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
  * "그 언어를 배우는 사람"이 자기 말로 검색하는 문구를 노립니다 (예: 일본인 → 韓国語 リスニング).
  */
 export const radioSeo: Record<Locale, Partial<Record<Locale, { slug: string; title: string }>>> = {
+  de: {
+    en: { slug: 'englisch-lernen-radio', title: 'Englisch lernen mit Radio – Live-Sender aus USA, UK & Australien' },
+    es: { slug: 'spanisch-lernen-radio', title: 'Spanisch lernen mit Radio – Live-Sender aus Spanien & Lateinamerika' },
+    ja: { slug: 'japanisch-lernen-radio', title: 'Japanisch lernen mit Radio – japanische Sender live hören' },
+    ko: { slug: 'koreanisch-lernen-radio', title: 'Koreanisch lernen mit Radio – koreanische Sender live hören' },
+  },
   ko: {
     ja: { slug: '일본어-라디오', title: '일본어 듣기 공부 - 일본 라디오 실시간 무료 듣기' },
     es: { slug: '스페인어-라디오', title: '스페인어 듣기 공부 - 스페인·중남미 라디오 실시간 듣기' },
@@ -111,4 +130,4 @@ export const radioTargets = (lang: Locale) =>
 export const radioPath = (lang: Locale, target: Locale) => `/${lang}/${radioSeo[lang][target]!.slug}/`;
 
 /** 검색엔진에 알려 줄 각 언어의 지역 표기 (og:locale) */
-export const ogLocale: Record<Locale, string> = { ko: 'ko_KR', ja: 'ja_JP', es: 'es_ES', en: 'en_US' };
+export const ogLocale: Record<Locale, string> = { ko: 'ko_KR', ja: 'ja_JP', es: 'es_ES', en: 'en_US', de: 'de_DE' };

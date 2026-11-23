@@ -63,7 +63,8 @@ const texts = Object.fromEntries(modes.map((m) => [m, typingTexts[m]]));
   import { RomajiMatcher } from '../lib/romaji';
 
   type JaItem = { text: string; kana: string };
-  type Mode = 'ko' | 'en' | 'es' | 'ja';
+  type Mode = 'ko' | 'en' | 'es' | 'ja' | 'de';
+  const ACCENT_MODES: string[] = ['es', 'de'];
   const root = document.getElementById('typing') as HTMLElement;
   const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
   const TEXTS = JSON.parse(root.dataset.texts ?? '{}') as Record<string, (string | JaItem)[]>;
@@ -72,7 +73,7 @@ const texts = Object.fromEntries(modes.map((m) => [m, typingTexts[m]]));
   const textEl = $<HTMLElement>('#t-text');
   const kanaEl = $<HTMLElement>('#t-kana');
   const romajiEl = $<HTMLElement>('#t-romaji');
-  const UNIT: Record<Mode, string> = { ko: '타/분', en: 'WPM', es: 'PPM', ja: '打/分' };
+  const UNIT: Record<Mode, string> = { ko: '타/분', en: 'WPM', es: 'PPM', ja: '打/分', de: 'WPM' };
   const LOG_KEY = 'kitwise-typing-log';
   const BEST_KEY = 'kitwise-typing-best';
 
@@ -122,7 +123,7 @@ const texts = Object.fromEntries(modes.map((m) => [m, typingTexts[m]]));
   const same = (a: string | undefined, b: string | undefined) => {
     if (a === undefined || b === undefined) return false;
     const n = (x: string) => (x === '’' ? "'" : x);
-    return mode === 'es' && accentsEl.checked ? strip(n(a)) === strip(n(b)) : n(a) === n(b);
+    return ACCENT_MODES.includes(mode) && accentsEl.checked ? strip(n(a)) === strip(n(b)) : n(a) === n(b);
   };
 
   function renderStats() {
@@ -158,7 +159,7 @@ const texts = Object.fromEntries(modes.map((m) => [m, typingTexts[m]]));
     const isJa = mode === 'ja';
     kanaEl.hidden = romajiEl.hidden = !isJa;
     $<HTMLElement>('#t-ime').hidden = true;
-    $<HTMLElement>('#t-accents-wrap').hidden = mode !== 'es';
+    $<HTMLElement>('#t-accents-wrap').hidden = !ACCENT_MODES.includes(mode);
     if (isJa) {
       const it = item as JaItem;
       target = it.kana;

@@ -12,13 +12,14 @@ const SOLFEGE: Partial<Record<Locale, string[]>> = {
   ko: ['도', '도♯', '레', '레♯', '미', '파', '파♯', '솔', '솔♯', '라', '라♯', '시'],
   ja: ['ド', 'ド♯', 'レ', 'レ♯', 'ミ', 'ファ', 'ファ♯', 'ソ', 'ソ♯', 'ラ', 'ラ♯', 'シ'],
   es: ['Do', 'Do♯', 'Re', 'Re♯', 'Mi', 'Fa', 'Fa♯', 'Sol', 'Sol♯', 'La', 'La♯', 'Si'],
+  de: ['C', 'Cis', 'D', 'Dis', 'E', 'F', 'Fis', 'G', 'Gis', 'A', 'Ais', 'H'],
 };
 ---
 
 <h1>{tool.name}</h1>
 <p class="lead">{tool.short}</p>
 
-<section class="card tuner" id="tuner" data-labels={JSON.stringify(ui)} data-solfege={JSON.stringify(SOLFEGE[lang] ?? null)} data-solfege-first={lang === 'es' ? '1' : '0'}>
+<section class="card tuner" id="tuner" data-labels={JSON.stringify(ui)} data-solfege={JSON.stringify(SOLFEGE[lang] ?? null)} data-solfege-first={['es', 'de'].includes(lang) ? '1' : '0'}>
   <div class="grid-2">
     <label>{ui.instrument}
       <select id="tu-inst">
