@@ -103,6 +103,45 @@ button.btn:disabled { opacity: .6; cursor: progress; }
 .row-actions button { font: inherit; width: 2.25rem; height: 2.25rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; }
 .row-actions button:disabled { opacity: .35; cursor: default; }
 
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- 라디오 ---------- */
+.radio { display: grid; gap: 1rem; }
+.radio-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+.radio-stats > div { background: var(--bg); border-radius: var(--radius); padding: .75rem; display: grid; gap: .15rem; }
+.radio-stats strong { font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+.stat-label, .stat-sub { color: var(--muted); font-size: .82rem; }
+.goal-bar { height: 6px; border-radius: 999px; background: var(--border); overflow: hidden; }
+.goal-bar span { display: block; height: 100%; width: 0; background: var(--good); transition: width .4s; }
+.now-playing { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: .75rem; padding: .75rem; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); }
+.play-btn { flex: none; width: 3rem; height: 3rem; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-text); font-size: 1.1rem; cursor: pointer; }
+.play-btn:disabled { opacity: .4; cursor: default; }
+.np-text { flex: 1; min-width: 0; display: grid; }
+.np-text strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.volume input { width: 90px; margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+.chip { font: inherit; font-size: .88rem; padding: .35rem .8rem; border-radius: 999px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; }
+.chip[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.station-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.station { display: flex; align-items: center; gap: .5rem; border: 1px solid var(--border); border-radius: var(--radius); padding: .25rem .5rem .25rem .25rem; }
+.station.active { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.station.broken { opacity: .5; }
+.station-play { flex: 1; min-width: 0; display: flex; align-items: center; gap: .75rem; padding: .5rem; border: 0; background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; border-radius: 8px; }
+.station-play:hover { background: var(--bg); }
+.station-play img, .station-icon { flex: none; width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: var(--bg); display: grid; place-items: center; }
+.station-text { min-width: 0; display: grid; }
+.station-text strong { overflow-wrap: anywhere; }
+.station-text .note { font-size: .82rem; }
+.badge { font-weight: 600; }
+.badge-news { color: var(--accent); }
+.badge-talk { color: var(--good); }
+.fav-btn { flex: none; width: 2.5rem; height: 2.5rem; border: 0; background: none; font-size: 1.3rem; color: #e3a008; cursor: pointer; border-radius: 8px; }
+.fav-btn:hover { background: var(--bg); }
+@media (max-width: 480px) {
+  .radio-stats strong { font-size: 1.1rem; }
+  .volume { display: none; }
+}
+
 .schedule summary { cursor: pointer; font-weight: 600; }
 .table-wrap { max-height: 420px; overflow: auto; margin-top: .75rem; border: 1px solid var(--border); border-radius: 8px; }
 .table-wrap table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }

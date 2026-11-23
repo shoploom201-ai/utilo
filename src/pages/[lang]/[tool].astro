@@ -1,29 +1,36 @@
 ---
-// 모든 도구 페이지를 언어별 주소로 만듭니다. 예: /ko/부가세-계산기/, /ja/消費税計算/, /es/calculadora-iva/
+// 도구 페이지와 외국어 라디오 페이지를 언어별 주소로 만듭니다.
+// 예: /ko/부가세-계산기/, /ja/消費税計算/, /ja/韓国語-ラジオ/, /es/radio-coreana/
 import Base from '../../layouts/Base.astro';
 import VatCalculator from '../../widgets/VatCalculator.astro';
 import LoanCalculator from '../../widgets/LoanCalculator.astro';
 import CompoundInterest from '../../widgets/CompoundInterest.astro';
 import ImageCompressor from '../../widgets/ImageCompressor.astro';
 import ImageToPdf from '../../widgets/ImageToPdf.astro';
+import RadioPlayer from '../../widgets/RadioPlayer.astro';
+import radio from '../../data/radio.json';
 import { locales, t, type Locale } from '../../i18n';
-import { toolSeo } from '../../i18n/seo';
+import { toolSeo, radioSeo, radioTargets, radioPath } from '../../i18n/seo';
 import { tools, toolPath, toolPaths, type ToolId } from '../../tools';
 import { SITE } from '../../site';
 
+type PageProps = { kind: 'tool'; id: ToolId } | { kind: 'radio'; target: Locale };
+
 export function getStaticPaths() {
-  return locales.flatMap((lang) =>
-    tools.map((tool) => ({ params: { lang, tool: toolSeo[lang][tool.id].slug }, props: { id: tool.id } })),
+  const toolPages = locales.flatMap((lang) =>
+    tools.map((tool) => ({ params: { lang, tool: toolSeo[lang][tool.id].slug }, props: { kind: 'tool', id: tool.id } })),
   );
+  const radioPages = locales.flatMap((lang) =>
+    radioTargets(lang).map(({ target, slug }) => ({ params: { lang, tool: slug }, props: { kind: 'radio', target } })),
+  );
+  return [...toolPages, ...radioPages];
 }
 
 const lang = Astro.params.lang as Locale;
-const { id } = Astro.props as { id: ToolId };
+const page = Astro.props as PageProps;
 const d = t(lang);
-const info = d.tools[id];
-const seo = toolSeo[lang][id];
-const category = tools.find((tool) => tool.id === id)!.category;
 const site = Astro.site ?? new URL('https://example.com');
+const home = new URL(`/${lang}/`, site).href;
 
 const widgets = {
   'vat-calculator': VatCalculator,
@@ -32,18 +39,52 @@ const widgets = {
   'image-compressor': ImageCompressor,
   'image-to-pdf': ImageToPdf,
 } satisfies Record<ToolId, unknown>;
-const Widget = widgets[id];
 
-const pageUrl = new URL(toolPath(lang, id), site).href;
+let title: string;
+let description: string;
+let paths: Partial<Record<Locale, string>>;
+let name: string;
+let pagePath: string;
+let category: string;
+
+if (page.kind === 'tool') {
+  const info = d.tools[page.id];
+  title = toolSeo[lang][page.id].title;
+  description = info.metaDescription;
+  paths = toolPaths(page.id);
+  name = info.name;
+  pagePath = toolPath(lang, page.id);
+  category = tools.find((tool) => tool.id === page.id)!.category === 'image' ? 'MultimediaApplication' : 'FinanceApplication';
+} else {
+  const target = page.target;
+  const langName = new Intl.DisplayNames([lang], { type: 'language' }).of(target) ?? target;
+  const stations = (radio.targets as Record<string, { country: string }[]>)[target] ?? [];
+  const regionName = new Intl.DisplayNames([lang], { type: 'region' });
+  const countries = new Intl.ListFormat(lang, { type: 'conjunction' }).format(
+    [...new Set(stations.map((s) => s.country))].map((c) => regionName.of(c) ?? c),
+  );
+  title = radioSeo[lang][target]!.title;
+  description = d.radio.metaDescription
+    .replaceAll('{target}', langName)
+    .replaceAll('{countries}', countries)
+    .replaceAll('{count}', String(stations.length));
+  // 같은 언어를 배우는 다른 나라 사람용 페이지끼리 hreflang 으로 연결
+  paths = Object.fromEntries(locales.filter((l) => radioSeo[l][target]).map((l) => [l, radioPath(l, target)]));
+  name = d.radio.name.replaceAll('{target}', langName);
+  pagePath = radioPath(lang, target);
+  category = 'EducationalApplication';
+}
+
+const pageUrl = new URL(pagePath, site).href;
 const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: info.name,
+    name,
     url: pageUrl,
-    description: info.metaDescription,
+    description,
     inLanguage: lang,
-    applicationCategory: category === 'image' ? 'MultimediaApplication' : 'FinanceApplication',
+    applicationCategory: category,
     operatingSystem: 'Any',
     isAccessibleForFree: true,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -52,20 +93,22 @@ const jsonLd = [
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: SITE.name, item: new URL(`/${lang}/`, site).href },
-      { '@type': 'ListItem', position: 2, name: info.name, item: pageUrl },
+      { '@type': 'ListItem', position: 1, name: SITE.name, item: home },
+      { '@type': 'ListItem', position: 2, name, item: pageUrl },
     ],
   },
 ];
 
 // 같은 분야 도구를 먼저 보여 주는 내부 링크 (검색엔진이 다른 페이지를 찾고 방문자가 더 머물게 함)
+const currentCategory = page.kind === 'tool' ? tools.find((tool) => tool.id === page.id)!.category : '';
 const related = tools
-  .filter((tool) => tool.id !== id)
-  .sort((a, b) => Number(b.category === category) - Number(a.category === category));
+  .filter((tool) => page.kind !== 'tool' || tool.id !== page.id)
+  .sort((a, b) => Number(b.category === currentCategory) - Number(a.category === currentCategory));
+const Widget = page.kind === 'tool' ? widgets[page.id] : null;
 ---
 
-<Base lang={lang} title={seo.title} description={info.metaDescription} paths={toolPaths(id)} jsonLd={jsonLd}>
-  <Widget lang={lang} />
+<Base lang={lang} title={title} description={description} paths={paths} jsonLd={jsonLd}>
+  {page.kind === 'radio' ? <RadioPlayer lang={lang} target={page.target} /> : Widget && <Widget lang={lang} />}
   <section>
     <h2>{d.common.related}</h2>
     <ul class="tool-grid">

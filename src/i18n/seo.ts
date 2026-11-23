@@ -38,5 +38,37 @@ export const toolSeo: Record<Locale, ToolSeo> = {
   },
 };
 
+/**
+ * 외국어 듣기 라디오 페이지: [화면 언어][배울 언어].
+ * "그 언어를 배우는 사람"이 자기 말로 검색하는 문구를 노립니다 (예: 일본인 → 韓国語 リスニング).
+ */
+export const radioSeo: Record<Locale, Partial<Record<Locale, { slug: string; title: string }>>> = {
+  ko: {
+    ja: { slug: '일본어-라디오', title: '일본어 듣기 공부 - 일본 라디오 실시간 무료 듣기' },
+    es: { slug: '스페인어-라디오', title: '스페인어 듣기 공부 - 스페인·중남미 라디오 실시간 듣기' },
+    en: { slug: '영어-라디오', title: '영어 듣기 공부 - 미국·영국·호주 라디오 실시간 무료 듣기' },
+  },
+  ja: {
+    ko: { slug: '韓国語-ラジオ', title: '韓国語リスニング｜韓国のラジオを無料で聴いて学ぶ' },
+    es: { slug: 'スペイン語-ラジオ', title: 'スペイン語リスニング｜スペイン・中南米のラジオを無料で聴く' },
+    en: { slug: '英語-ラジオ', title: '英語リスニング｜アメリカ・イギリスのラジオを無料で聴く' },
+  },
+  es: {
+    ko: { slug: 'radio-coreana', title: 'Radio coreana en vivo: aprende coreano escuchando' },
+    ja: { slug: 'radio-japonesa', title: 'Radio japonesa en vivo: aprende japonés escuchando' },
+    en: { slug: 'radio-en-ingles', title: 'Radio en inglés en vivo: mejora tu comprensión auditiva' },
+  },
+  en: {
+    ko: { slug: 'korean-radio', title: 'Korean Radio Live – Learn Korean by Listening' },
+    ja: { slug: 'japanese-radio', title: 'Japanese Radio Live – Learn Japanese by Listening' },
+    es: { slug: 'spanish-radio', title: 'Spanish Radio Live – Learn Spanish by Listening (Spain & Latin America)' },
+  },
+};
+
+/** 화면 언어(lang)에서 배울 수 있는 언어 목록과 주소 */
+export const radioTargets = (lang: Locale) =>
+  (Object.keys(radioSeo[lang]) as Locale[]).map((target) => ({ target, ...radioSeo[lang][target]! }));
+export const radioPath = (lang: Locale, target: Locale) => `/${lang}/${radioSeo[lang][target]!.slug}/`;
+
 /** 검색엔진에 알려 줄 각 언어의 지역 표기 (og:locale) */
 export const ogLocale: Record<Locale, string> = { ko: 'ko_KR', ja: 'ja_JP', es: 'es_ES', en: 'en_US' };

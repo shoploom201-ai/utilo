@@ -10,7 +10,7 @@ interface Props {
   title: string;
   description: string;
   /** 각 언어별 이 페이지의 주소. 예: { ko: "/ko/부가세-계산기/", en: "/en/vat-calculator/", ... } */
-  paths: Record<Locale, string>;
+  paths: Partial<Record<Locale, string>>;
   /** 구조화 데이터(JSON-LD). 검색엔진이 페이지 종류를 이해하도록 돕습니다. */
   jsonLd?: object[];
   isHome?: boolean;
@@ -19,7 +19,10 @@ interface Props {
 const { lang, title, description, paths, jsonLd = [], isHome = false } = Astro.props;
 const d = t(lang);
 const site = Astro.site ?? new URL('https://example.com');
-const urlFor = (l: Locale) => new URL(paths[l], site).href;
+// 이 페이지가 있는 언어만 (예: 일본어 화면에는 "일본어 라디오" 페이지가 없음)
+const available = locales.filter((l) => paths[l]);
+const urlFor = (l: Locale) => new URL(paths[l] ?? `/${l}/`, site).href;
+const xDefault = paths[defaultLocale] ? defaultLocale : lang;
 const fullTitle = isHome ? `${SITE.name} — ${title}` : `${title} | ${SITE.name}`;
 ---
 
@@ -31,12 +34,12 @@ const fullTitle = isHome ? `${SITE.name} — ${title}` : `${title} | ${SITE.name
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={urlFor(lang)} />
-    {locales.map((l) => <link rel="alternate" hreflang={l} href={urlFor(l)} />)}
-    <link rel="alternate" hreflang="x-default" href={urlFor(defaultLocale)} />
+    {available.map((l) => <link rel="alternate" hreflang={l} href={urlFor(l)} />)}
+    <link rel="alternate" hreflang="x-default" href={urlFor(xDefault)} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:locale" content={ogLocale[lang]} />
-    {locales.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
+    {available.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={urlFor(lang)} />
@@ -56,7 +59,7 @@ const fullTitle = isHome ? `${SITE.name} — ${title}` : `${title} | ${SITE.name
             {
               locales.map((l) => (
                 <li>
-                  <a href={paths[l]} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>
+                  <a href={paths[l] ?? `/${l}/`} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>
                     {t(l).langName}
                   </a>
                 </li>

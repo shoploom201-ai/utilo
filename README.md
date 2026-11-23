@@ -23,6 +23,12 @@ Astro 정적 사이트. 언어: en / ko / ja / es. 모든 도구는 브라우저
 5. `src/pages/[lang]/[tool].astro` 의 `widgets` 목록에 연결
 6. `npm run check` 와 `npm run build` 통과 + 브라우저에서 실제 동작 확인 후 배포
 
+## 외국어 듣기 라디오
+- 페이지: 화면 언어 × 배울 언어 (예: `/ja/韓国語-ラジオ/` = 일본인을 위한 한국어 라디오). 주소·제목은 `src/i18n/seo.ts` 의 `radioSeo`
+- 방송 목록: `node scripts/fetch-radio.mjs` 로 갱신 → `src/data/radio.json` 커밋. **한 달에 한 번** 실행 권장
+- 방송사가 외부 재생을 막아 둔 곳은 스크립트의 `UNPLAYABLE` 목록에 추가 (브라우저에서 직접 재생해 보고 판단)
+- 듣기 기록·즐겨찾기는 방문자 브라우저(localStorage)에만 저장
+
 ## 새 언어 추가
 `src/i18n/xx.ts` 를 만들고(`Dict` 타입) `src/i18n/index.ts` 의 `dictionaries` 에 등록, `src/i18n/seo.ts` 에 그 언어의 slug·title·og:locale 추가.
 

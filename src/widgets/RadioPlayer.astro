@@ -1,0 +1,337 @@
+---
+// 외국어 듣기용 현지 라디오. lang = 화면 언어(배우는 사람), target = 배울 언어.
+import radio from '../data/radio.json';
+import { t, type Locale } from '../i18n';
+import { radioTargets, radioPath } from '../i18n/seo';
+
+interface Props {
+  lang: Locale;
+  target: Locale;
+}
+const { lang, target } = Astro.props;
+const d = t(lang);
+const r = d.radio;
+const ui = r.ui;
+
+type Station = (typeof radio.targets)['ko'][number];
+const stations: Station[] = (radio.targets as Record<string, Station[]>)[target] ?? [];
+
+const langName = new Intl.DisplayNames([lang], { type: 'language' }).of(target) ?? target;
+const regionName = new Intl.DisplayNames([lang], { type: 'region' });
+const countryCodes = [...new Set(stations.map((s) => s.country))];
+const countries = new Intl.ListFormat(lang, { style: 'long', type: 'conjunction' }).format(
+  countryCodes.map((c) => regionName.of(c) ?? c),
+);
+const fill = (s: string) =>
+  s.replaceAll('{target}', langName).replaceAll('{countries}', countries).replaceAll('{count}', String(stations.length));
+
+// 학습에 좋은 순서: 뉴스 → 토크 → 음악
+const order = { news: 0, talk: 1, music: 2 } as const;
+const sorted = [...stations].sort((a, b) => order[a.type as keyof typeof order] - order[b.type as keyof typeof order]);
+const typeLabel = { news: ui.news, talk: ui.talk, music: ui.music } as Record<string, string>;
+const levelLabel = { news: ui.levelNews, talk: ui.levelTalk, music: ui.levelMusic } as Record<string, string>;
+const GOAL_MIN = 15;
+const others = radioTargets(lang).filter((o) => o.target !== target);
+const otherName = (l: Locale) => new Intl.DisplayNames([lang], { type: 'language' }).of(l) ?? l;
+const clientData = sorted.map((s) => ({ id: s.id, name: s.name, url: s.url, hls: s.hls }));
+---
+
+<h1>{fill(r.h1)}</h1>
+<p class="lead">{fill(r.lead)}</p>
+
+<section class="card radio" id="radio" data-target={target} data-goal={GOAL_MIN} data-labels={JSON.stringify(ui)} data-stations={JSON.stringify(clientData)}>
+  <div class="radio-stats" aria-live="polite">
+    <div>
+      <span class="stat-label">{ui.today}</span>
+      <strong><span id="r-today">0</span> {ui.min}</strong>
+      <div class="goal-bar" aria-hidden="true"><span id="r-goal-fill"></span></div>
+      <span class="stat-sub">{ui.goal.replace('{n}', String(GOAL_MIN))}</span>
+    </div>
+    <div>
+      <span class="stat-label">{ui.streak}</span>
+      <strong><span id="r-streak">0</span> {ui.days}</strong>
+    </div>
+    <div>
+      <span class="stat-label">{ui.week}</span>
+      <strong><span id="r-week">0</span> {ui.min}</strong>
+    </div>
+  </div>
+
+  <div class="now-playing">
+    <button type="button" class="play-btn" id="r-toggle" aria-label={ui.play} disabled>▶</button>
+    <div class="np-text">
+      <strong id="r-now">{ui.choose}</strong>
+      <span id="r-status" class="note"></span>
+    </div>
+    <label class="volume">
+      <span class="sr-only">{ui.volume}</span>
+      <input id="r-volume" type="range" min="0" max="1" step="0.05" value="0.8" aria-label={ui.volume} />
+    </label>
+  </div>
+
+  <div class="chips" role="group">
+    <button type="button" class="chip" data-filter="all" aria-pressed="true">{ui.all}</button>
+    <button type="button" class="chip" data-filter="fav" aria-pressed="false">★ {ui.favorites}</button>
+    <button type="button" class="chip" data-filter="news" aria-pressed="false">{ui.news}</button>
+    <button type="button" class="chip" data-filter="talk" aria-pressed="false">{ui.talk}</button>
+    <button type="button" class="chip" data-filter="music" aria-pressed="false">{ui.music}</button>
+    {
+      countryCodes.length > 1 &&
+        countryCodes.map((c) => (
+          <button type="button" class="chip" data-filter={`cc:${c}`} aria-pressed="false">
+            {regionName.of(c)}
+          </button>
+        ))
+    }
+  </div>
+
+  <ul class="station-list" id="r-list">
+    {
+      sorted.map((s) => (
+        <li class="station" data-id={s.id} data-type={s.type} data-cc={s.country}>
+          <button type="button" class="station-play" data-play={s.id}>
+            {s.favicon ? (
+              <img src={s.favicon} alt="" loading="lazy" referrerpolicy="no-referrer" width="40" height="40" />
+            ) : (
+              <span class="station-icon" aria-hidden="true">📻</span>
+            )}
+            <span class="station-text">
+              <strong>{s.name}</strong>
+              <span class="note">
+                {regionName.of(s.country)} · <span class={`badge badge-${s.type}`}>{typeLabel[s.type]}</span> · {levelLabel[s.type]}
+              </span>
+            </span>
+          </button>
+          <button type="button" class="fav-btn" data-fav={s.id} aria-pressed="false" aria-label={ui.addFav} title={ui.addFav}>☆</button>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="note">{ui.note}</p>
+</section>
+
+<section class="prose">
+  <h2>{fill(r.guideTitle)}</h2>
+  <ol>{r.guide.map((g) => <li>{fill(g)}</li>)}</ol>
+</section>
+
+<section class="faq">
+  <h2>{d.common.faq}</h2>
+  {
+    r.faq.map((item) => (
+      <details>
+        <summary>{fill(item.q)}</summary>
+        <p>{fill(item.a)}</p>
+      </details>
+    ))
+  }
+</section>
+
+{
+  others.length > 0 && (
+    <section>
+      <h2>{ui.otherLanguages}</h2>
+      <ul class="tool-grid">
+        {others.map((o) => (
+          <li>
+            <a class="card" href={radioPath(lang, o.target)}>
+              <strong>{r.name.replaceAll('{target}', otherName(o.target))}</strong>
+              <span>{o.title}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<script>
+  type Station = { id: string; name: string; url: string; hls: boolean };
+  type HlsLike = { loadSource(u: string): void; attachMedia(m: HTMLMediaElement): void; destroy(): void; on(e: string, cb: (e: string, d: { fatal: boolean }) => void): void };
+
+  const root = document.getElementById('radio') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const stations = JSON.parse(root.dataset.stations ?? '[]') as Station[];
+  const target = root.dataset.target ?? 'xx';
+  const goalSec = Number(root.dataset.goal ?? 15) * 60;
+  const LOG_KEY = `kitwise-radio-log:${target}`;
+  const FAV_KEY = `kitwise-radio-fav:${target}`;
+
+  const $ = <T extends Element>(sel: string) => root.querySelector(sel) as T;
+  const toggleBtn = $<HTMLButtonElement>('#r-toggle');
+  const nowEl = $<HTMLElement>('#r-now');
+  const statusEl = $<HTMLElement>('#r-status');
+  const volumeEl = $<HTMLInputElement>('#r-volume');
+  const audio = new Audio();
+  audio.preload = 'none';
+  audio.volume = Number(volumeEl.value);
+
+  // ---------- 저장(이 기기에만). 사생활 보호 모드 등에서 저장이 막혀도 동작은 계속 ----------
+  const load = <T,>(key: string, fallback: T): T => {
+    try {
+      const v = localStorage.getItem(key);
+      return v ? (JSON.parse(v) as T) : fallback;
+    } catch {
+      return fallback;
+    }
+  };
+  const save = (key: string, value: unknown) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  };
+
+  // ---------- 듣기 기록: { "2026-11-23": 초 } ----------
+  const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  let log = load<Record<string, number>>(LOG_KEY, {});
+
+  function renderStats() {
+    const today = log[dayKey()] ?? 0;
+    $<HTMLElement>('#r-today').textContent = String(Math.floor(today / 60));
+    $<HTMLElement>('#r-goal-fill').style.width = `${Math.min(100, (today / goalSec) * 100)}%`;
+    let week = 0;
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      week += log[dayKey(d)] ?? 0;
+    }
+    $<HTMLElement>('#r-week').textContent = String(Math.floor(week / 60));
+    // 연속 학습: 1분 이상 들은 날이 끊기지 않고 이어진 일수 (오늘 아직 안 들었으면 어제부터 셈)
+    let streak = 0;
+    const d = new Date();
+    if ((log[dayKey(d)] ?? 0) < 60) d.setDate(d.getDate() - 1);
+    while ((log[dayKey(d)] ?? 0) >= 60) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    }
+    $<HTMLElement>('#r-streak').textContent = String(streak);
+  }
+
+  let unsaved = 0;
+  setInterval(() => {
+    if (audio.paused || audio.readyState < 3) return;
+    const k = dayKey();
+    log[k] = (log[k] ?? 0) + 1;
+    if (++unsaved >= 5) {
+      save(LOG_KEY, log);
+      unsaved = 0;
+      renderStats();
+    }
+  }, 1000);
+  addEventListener('pagehide', () => save(LOG_KEY, log));
+
+  // ---------- 즐겨찾기 ----------
+  let favs = new Set(load<string[]>(FAV_KEY, []));
+  function renderFavs() {
+    root.querySelectorAll<HTMLButtonElement>('[data-fav]').forEach((b) => {
+      const on = favs.has(b.dataset.fav!);
+      b.textContent = on ? '★' : '☆';
+      b.setAttribute('aria-pressed', String(on));
+      b.title = b.ariaLabel = on ? L.removeFav : L.addFav;
+    });
+  }
+
+  // ---------- 필터 ----------
+  let filter = 'all';
+  function applyFilter() {
+    root.querySelectorAll<HTMLElement>('.station').forEach((li) => {
+      const show =
+        filter === 'all' ||
+        (filter === 'fav' && favs.has(li.dataset.id!)) ||
+        li.dataset.type === filter ||
+        filter === `cc:${li.dataset.cc}`;
+      li.hidden = !show;
+    });
+    root.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
+  }
+
+  // ---------- 재생 ----------
+  let hls: HlsLike | null = null;
+  let current: Station | null = null;
+
+  function setPlaying(on: boolean) {
+    toggleBtn.textContent = on ? '❚❚' : '▶';
+    toggleBtn.ariaLabel = on ? L.pause : L.play;
+    root.querySelectorAll('.station').forEach((li) => li.classList.toggle('active', on && li.getAttribute('data-id') === current?.id));
+  }
+
+  function fail() {
+    statusEl.textContent = L.error;
+    setPlaying(false);
+    root.querySelector(`.station[data-id="${current?.id}"]`)?.classList.add('broken');
+  }
+
+  async function play(s: Station) {
+    hls?.destroy();
+    hls = null;
+    current = s;
+    nowEl.textContent = s.name;
+    statusEl.textContent = L.loading;
+    toggleBtn.disabled = false;
+    try {
+      if (s.hls && !audio.canPlayType('application/vnd.apple.mpegurl')) {
+        // HLS 방송은 필요할 때만 재생 모듈을 불러옴 (페이지를 가볍게 유지)
+        const { default: Hls } = await import('hls.js');
+        const h = new Hls() as unknown as HlsLike;
+        h.on('hlsError', (_e, data) => {
+          if (data.fatal) fail();
+        });
+        h.loadSource(s.url);
+        h.attachMedia(audio);
+        hls = h;
+      } else {
+        audio.src = s.url;
+      }
+      await audio.play();
+    } catch {
+      fail();
+      return;
+    }
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({ title: s.name, artist: 'Kitwise Radio' });
+      navigator.mediaSession.setActionHandler('play', () => audio.play());
+      navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+    }
+  }
+
+  audio.addEventListener('playing', () => {
+    statusEl.textContent = '';
+    setPlaying(true);
+  });
+  audio.addEventListener('pause', () => setPlaying(false));
+  audio.addEventListener('error', () => {
+    if (current && !hls) fail();
+  });
+
+  root.addEventListener('click', (e) => {
+    const el = (e.target as HTMLElement).closest<HTMLElement>('[data-play],[data-fav],[data-filter]');
+    if (!el) return;
+    if (el.dataset.play) {
+      const s = stations.find((x) => x.id === el.dataset.play);
+      if (s) play(s);
+    } else if (el.dataset.fav) {
+      const id = el.dataset.fav;
+      favs.has(id) ? favs.delete(id) : favs.add(id);
+      save(FAV_KEY, [...favs]);
+      renderFavs();
+      if (filter === 'fav') applyFilter();
+    } else if (el.dataset.filter) {
+      filter = el.dataset.filter;
+      applyFilter();
+    }
+  });
+
+  toggleBtn.addEventListener('click', () => {
+    if (!current) return;
+    if (audio.paused) {
+      if (hls || audio.src) audio.play().catch(fail);
+      else play(current);
+    } else audio.pause();
+  });
+  volumeEl.addEventListener('input', () => (audio.volume = Number(volumeEl.value)));
+
+  renderStats();
+  renderFavs();
+</script>

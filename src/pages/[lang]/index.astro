@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import { localeStaticPaths, t, type Locale } from '../../i18n';
 import { tools, categories, toolPath, samePaths } from '../../tools';
 import { SITE } from '../../site';
+import { radioTargets, radioPath } from '../../i18n/seo';
 
 export const getStaticPaths = localeStaticPaths;
 const lang = Astro.params.lang as Locale;
@@ -23,6 +24,21 @@ const jsonLd = [
 <Base lang={lang} title={d.home.title} description={d.tagline} paths={samePaths('/')} jsonLd={jsonLd} isHome>
   <h1>{d.home.title}</h1>
   <p class="lead">{d.home.intro}</p>
+  <section>
+    <h2>📻 {d.radio.category}</h2>
+    <ul class="tool-grid">
+      {
+        radioTargets(lang).map(({ target, title }) => (
+          <li>
+            <a class="card" href={radioPath(lang, target)}>
+              <strong>{d.radio.name.replaceAll('{target}', new Intl.DisplayNames([lang], { type: 'language' }).of(target) ?? target)}</strong>
+              <span>{title}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
   {
     categories.map((cat) => (
       <section>
