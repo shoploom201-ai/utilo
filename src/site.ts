@@ -13,7 +13,7 @@ export const SITE = {
    * 모바일 하단 고정 광고는 AdSense > 광고 > 자동 광고 > "앵커 광고"만 켜면 됩니다 (코드 수정 불필요).
    */
   adsense: {
-    client: '',
+    client: 'ca-pub-1048719836225594',
     slots: { afterTool: '', inContent: '', beforeRelated: '' },
   },
 };

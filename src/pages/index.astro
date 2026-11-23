@@ -18,6 +18,13 @@ const site = Astro.site ?? new URL('https://example.com');
     {locales.map((l) => <link rel="alternate" hreflang={l} href={new URL(`/${l}/`, site).href} />)}
     <link rel="alternate" hreflang="x-default" href={new URL('/', site).href} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/* AdSense 사이트 확인: 구글은 루트 주소(/)를 기준으로 확인함 */}
+    {SITE.adsense.client && <meta name="google-adsense-account" content={SITE.adsense.client} />}
+    {
+      SITE.adsense.client && (
+        <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsense.client}`} crossorigin="anonymous" />
+      )
+    }
   </head>
   <body>
     <main class="wrap">

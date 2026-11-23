@@ -51,6 +51,9 @@ const fullTitle = isHome ? `${SITE.name} — ${title}` : `${title} | ${SITE.name
     {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}
     {
       /* AdSense: src/site.ts 에 게시자 ID를 넣으면 자동으로 들어갑니다 (자동 광고·앵커 광고도 이 한 줄로 동작) */
+      SITE.adsense.client && <meta name="google-adsense-account" content={SITE.adsense.client} />
+    }
+    {
       SITE.adsense.client && (
         <script
           async
