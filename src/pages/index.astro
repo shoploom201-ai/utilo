@@ -20,6 +20,8 @@ const site = Astro.site ?? new URL('https://example.com');
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {/* AdSense 사이트 확인: 구글은 루트 주소(/)를 기준으로 확인함 */}
     {SITE.adsense.client && <meta name="google-adsense-account" content={SITE.adsense.client} />}
+    {/* 네이버 서치어드바이저 소유 확인 */}
+    <meta name="naver-site-verification" content="28e1cf104bce853081edd44c15ee80e1bc46c231" />
     {
       SITE.adsense.client && (
         <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsense.client}`} crossorigin="anonymous" />
