@@ -6,4 +6,6 @@ export default defineConfig({
   site: 'https://utilo-5mq.pages.dev',
   trailingSlash: 'always',
   integrations: [sitemap()],
+  // hls.js(라디오 HLS 재생, 약 570KB)는 버튼을 누를 때만 따로 받는 파일이라 크기 경고 기준을 올림
+  vite: { build: { chunkSizeWarningLimit: 700 } },
 });

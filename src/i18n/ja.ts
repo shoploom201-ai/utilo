@@ -3,11 +3,11 @@ import type { Dict } from './en';
 const ja: Dict = {
   langName: '日本語',
   defaultCountry: 'JP',
-  tagline: 'ブラウザだけで使える無料の税金計算ツールと画像ツール',
+  tagline: 'インストール不要、ブラウザですぐ使える無料ツール：税金・給与計算、ポモドーロタイマー、タイピング練習、数独、メトロノーム、外国語学習用ラジオ。',
   nav: { home: 'ホーム', language: '言語' },
   footer: { about: 'このサイトについて', privacy: 'プライバシーポリシー', contact: 'お問い合わせ', note: 'すべてのツールは無料です。' },
   home: {
-    title: '無料のオンライン税金計算ツールと画像ツール',
+    title: '無料オンラインツール集：計算ツール・勉強タイマー・数独・外国語ラジオ',
     intro: '登録もアップロードも不要。すべての処理はお使いの端末の中で行われます。',
     categories: { music: '音楽練習', puzzle: 'パズル・脳トレ', study: '集中・勉強', tax: '税金計算', finance: 'ローン・金融計算', image: '画像ツール' },
   },

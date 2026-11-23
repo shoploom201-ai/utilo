@@ -3,11 +3,11 @@ import type { Dict } from './en';
 const es: Dict = {
   langName: 'Español',
   defaultCountry: 'ES',
-  tagline: 'Calculadoras de impuestos y herramientas de imagen gratuitas que funcionan en tu navegador.',
+  tagline: 'Herramientas gratis que funcionan en tu navegador: calculadoras de impuestos y salario, temporizador Pomodoro, test de mecanografía, sudoku, metrónomo y radio en vivo para aprender idiomas.',
   nav: { home: 'Inicio', language: 'Idioma' },
   footer: { about: 'Acerca de', privacy: 'Política de privacidad', contact: 'Contacto', note: 'Todas las herramientas son gratuitas.' },
   home: {
-    title: 'Calculadoras de impuestos y herramientas de imagen gratis',
+    title: 'Herramientas online gratis: calculadoras, temporizador, sudoku y radio para aprender idiomas',
     intro: 'Herramientas rápidas y privadas para el día a día. Sin registro ni subidas: todo se procesa en tu dispositivo.',
     categories: { music: 'Práctica musical', puzzle: 'Puzzles y juegos mentales', study: 'Concentración y estudio', tax: 'Calculadoras de impuestos', finance: 'Calculadoras financieras', image: 'Herramientas de imagen' },
   },

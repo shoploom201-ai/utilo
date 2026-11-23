@@ -200,7 +200,8 @@ const texts = Object.fromEntries(modes.map((m) => [m, typingTexts[m]]));
     for (let i = 0; i < spans.length; i++) {
       const el = spans[i] as HTMLElement;
       if (i < v.length - (composing ? 1 : 0)) el.className = same(v[i], target[i]) ? 'ok' : 'bad';
-      else if (i === v.length - 1 && composing) el.className = 'typing';
+      // 'typing' 은 상자 전체 스타일(display:grid)과 이름이 겹쳐 글자가 줄바꿈됐으므로 'composing' 사용
+      else if (i === v.length - 1 && composing) el.className = 'composing';
       else el.className = i === v.length ? 'cur' : '';
     }
   }

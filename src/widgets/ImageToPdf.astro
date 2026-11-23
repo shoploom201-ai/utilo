@@ -46,7 +46,8 @@ const ui = tool.ui;
   <ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
 
 <script>
-  import { PDFDocument } from 'pdf-lib';
+  // pdf-lib(약 420KB)는 "PDF 만들기"를 누를 때만 내려받음 → 페이지가 빨리 열림
+  const loadPdfLib = () => import('pdf-lib');
 
   const root = document.getElementById('pdf') as HTMLElement;
   const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
@@ -145,6 +146,7 @@ const ui = tool.ui;
     createBtn.disabled = true;
     status.textContent = L.creating;
     try {
+      const { PDFDocument } = await loadPdfLib();
       const doc = await PDFDocument.create();
       const margin = Number(marginEl.value);
       for (const item of items) {

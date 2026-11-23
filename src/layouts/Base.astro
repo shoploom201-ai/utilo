@@ -14,9 +14,11 @@ interface Props {
   /** 구조화 데이터(JSON-LD). 검색엔진이 페이지 종류를 이해하도록 돕습니다. */
   jsonLd?: object[];
   isHome?: boolean;
+  /** x-default 를 다른 주소로 (각 언어 홈은 루트 언어 선택 페이지 "/" 를 가리켜야 서로 일치함) */
+  xDefaultPath?: string;
 }
 
-const { lang, title, description, paths, jsonLd = [], isHome = false } = Astro.props;
+const { lang, title, description, paths, jsonLd = [], isHome = false, xDefaultPath } = Astro.props;
 const d = t(lang);
 const site = Astro.site ?? new URL('https://example.com');
 // 이 페이지가 있는 언어만 (예: 일본어 화면에는 "일본어 라디오" 페이지가 없음)
@@ -35,7 +37,7 @@ const fullTitle = isHome ? `${SITE.name} — ${title}` : `${title} | ${SITE.name
     <meta name="description" content={description} />
     <link rel="canonical" href={urlFor(lang)} />
     {available.map((l) => <link rel="alternate" hreflang={l} href={urlFor(l)} />)}
-    <link rel="alternate" hreflang="x-default" href={urlFor(xDefault)} />
+    <link rel="alternate" hreflang="x-default" href={xDefaultPath ? new URL(xDefaultPath, site).href : urlFor(xDefault)} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:locale" content={ogLocale[lang]} />

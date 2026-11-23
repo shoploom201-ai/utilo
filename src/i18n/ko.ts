@@ -3,11 +3,11 @@ import type { Dict } from './en';
 const ko: Dict = {
   langName: '한국어',
   defaultCountry: 'KR',
-  tagline: '브라우저에서 바로 쓰는 무료 세금 계산기와 이미지 도구',
+  tagline: '설치 없이 브라우저에서 바로 쓰는 무료 도구: 세금·급여 계산기, 뽀모도로 타이머, 타자 연습, 스도쿠, 메트로놈, 외국어 공부용 라디오.',
   nav: { home: '홈', language: '언어' },
   footer: { about: '소개', privacy: '개인정보처리방침', contact: '문의', note: '모든 도구는 무료입니다.' },
   home: {
-    title: '무료 온라인 세금 계산기와 이미지 도구',
+    title: '무료 온라인 도구 모음: 계산기·공부 타이머·스도쿠·외국어 라디오',
     intro: '가입도 업로드도 필요 없는 빠르고 안전한 도구입니다. 모든 처리는 내 기기 안에서 이루어집니다.',
     categories: { music: '음악 연습', puzzle: '퍼즐·두뇌 게임', study: '집중·공부', tax: '세금 계산기', finance: '금융 계산기', image: '이미지 도구' },
   },

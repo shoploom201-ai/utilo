@@ -1,11 +1,11 @@
 const en = {
   langName: 'English',
   defaultCountry: 'GB',
-  tagline: 'Free tax calculators and image tools that run right in your browser.',
+  tagline: 'Free tools that run right in your browser: tax and paycheck calculators, focus timer, typing test, sudoku, metronome and live radio for language learners.',
   nav: { home: 'Home', language: 'Language' },
   footer: { about: 'About', privacy: 'Privacy Policy', contact: 'Contact', note: 'All tools are free to use.' },
   home: {
-    title: 'Free online tax calculators and image tools',
+    title: 'Free online tools: calculators, study timer, sudoku & language radio',
     intro: 'Quick, private tools for everyday work. No sign-up and no uploads — everything runs on your device.',
     categories: { music: 'Music practice', puzzle: 'Puzzles & brain games', study: 'Focus & study', tax: 'Tax calculators', finance: 'Finance calculators', image: 'Image tools' },
   },

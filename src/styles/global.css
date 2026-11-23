@@ -169,7 +169,7 @@ h2.sub { font-size: 1.05rem; margin: .5rem 0 0; }
 .check { display: flex; gap: .5rem; align-items: center; font-weight: 400; }
 
 /* ---------- 타자 연습 ---------- */
-.typing { display: grid; gap: 1rem; }
+.card.typing { display: grid; gap: 1rem; }
 .typing-stats { grid-template-columns: repeat(4, 1fr); }
 .typing-stats small { font-size: .75rem; font-weight: 600; color: var(--muted); }
 .target { padding: 1.25rem; border-radius: var(--radius); background: var(--bg); display: grid; gap: .5rem; }
@@ -178,7 +178,7 @@ h2.sub { font-size: 1.05rem; margin: .5rem 0 0; }
 .t-text .ok { color: var(--good); }
 .t-text .bad { color: var(--bad); background: color-mix(in srgb, var(--bad) 15%, transparent); border-bottom-color: var(--bad); }
 .t-text .cur { border-bottom-color: var(--accent); }
-.t-text .typing { color: var(--accent); }
+.t-text .composing { color: var(--accent); }
 .t-kana { font-size: 1.15rem; color: var(--muted); }
 .t-kana .ok, .t-romaji .ok { color: var(--good); }
 .t-romaji { font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 1.1rem; color: var(--muted); letter-spacing: .03em; overflow-wrap: anywhere; }
