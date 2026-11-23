@@ -1,5 +1,6 @@
 ---
 import { t, type Locale } from '../i18n';
+import AdSlot from './AdSlot.astro';
 
 interface Props {
   lang: Locale;
@@ -10,10 +11,14 @@ const { lang, howTo, faq } = Astro.props;
 const d = t(lang);
 ---
 
+<!-- ① 도구 바로 아래 (도구 버튼과 간격을 둠) -->
+<AdSlot lang={lang} position="afterTool" />
 <section>
   <h2>{d.common.howTo}</h2>
   <ol>{howTo.map((step) => <li>{step}</li>)}</ol>
 </section>
+<!-- ② 사용법과 자주 묻는 질문 사이 -->
+<AdSlot lang={lang} position="inContent" />
 <section class="faq">
   <h2>{d.common.faq}</h2>
   {

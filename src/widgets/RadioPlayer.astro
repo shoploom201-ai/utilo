@@ -3,6 +3,7 @@
 import radio from '../data/radio.json';
 import { t, type Locale } from '../i18n';
 import { radioTargets, radioPath } from '../i18n/seo';
+import AdSlot from '../components/AdSlot.astro';
 
 interface Props {
   lang: Locale;
@@ -110,10 +111,16 @@ const clientData = sorted.map((s) => ({ id: s.id, name: s.name, url: s.url, hls:
   <p class="note">{ui.note}</p>
 </section>
 
+<!-- ① 방송 목록 아래 -->
+<AdSlot lang={lang} position="afterTool" />
+
 <section class="prose">
   <h2>{fill(r.guideTitle)}</h2>
   <ol>{r.guide.map((g) => <li>{fill(g)}</li>)}</ol>
 </section>
+
+<!-- ② 공부법과 자주 묻는 질문 사이 -->
+<AdSlot lang={lang} position="inContent" />
 
 <section class="faq">
   <h2>{d.common.faq}</h2>

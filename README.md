@@ -36,5 +36,13 @@ Astro 정적 사이트. 언어: en / ko / ja / es. 모든 도구는 브라우저
 - `astro.config.mjs` 의 `site` = 실제 주소 (개인 도메인을 연결하면 바꿀 것)
 - `src/data/vat-rates.ts` 세율은 분기마다 공식 자료로 재확인
 
-## AdSense
-승인 후 `src/layouts/Base.astro` 의 `<head>` 주석 자리에 광고 스크립트를 넣고, `public/ads.txt` 를 추가합니다.
+## AdSense (광고 자리는 이미 만들어져 있음)
+승인 후 `src/site.ts` 의 `adsense` 만 채우면 됩니다. 비어 있으면 광고 코드가 전혀 나오지 않습니다.
+1. `client` = 게시자 ID (`ca-pub-…`)
+2. AdSense에서 "디스플레이 광고" 단위 3개를 만들고 각 ID를 `slots` 에 입력
+   - `afterTool` ① 도구 아래 / `inContent` ② 사용법과 FAQ 사이·홈 중간 / `beforeRelated` ③ "다른 도구" 위
+3. AdSense 자동 광고에서 **앵커 광고(모바일 하단)** 만 켜기 — 나머지 자동 배치는 끄기 (도구 버튼 옆 광고 방지)
+4. AdSense > 개인정보 보호 및 메시지에서 **EU·영국용 동의(GDPR) 메시지** 켜기 (스페인 방문자 때문에 필요)
+- `/ads.txt` 는 게시자 ID로 자동 생성됩니다
+- 광고는 도구 화면 안·버튼 옆, 개인정보·문의·404 페이지에는 넣지 않습니다 (실수 클릭 = 계정 정지 위험)
+- 광고 컴포넌트 속성 이름은 `position` (※ `slot` 은 Astro 예약어라 쓰면 광고가 사라짐)

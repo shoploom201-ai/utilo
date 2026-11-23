@@ -18,6 +18,7 @@ import { locales, t, type Locale } from '../../i18n';
 import { toolSeo, radioSeo, radioTargets, radioPath } from '../../i18n/seo';
 import { tools, toolPath, toolPaths, type ToolId } from '../../tools';
 import { SITE } from '../../site';
+import AdSlot from '../../components/AdSlot.astro';
 
 type PageProps = { kind: 'tool'; id: ToolId } | { kind: 'radio'; target: Locale };
 
@@ -120,6 +121,8 @@ const Widget = page.kind === 'tool' ? widgets[page.id] : null;
 
 <Base lang={lang} title={title} description={description} paths={paths} jsonLd={jsonLd}>
   {page.kind === 'radio' ? <RadioPlayer lang={lang} target={page.target} /> : Widget && <Widget lang={lang} />}
+  <!-- ③ "다른 도구" 목록 위 -->
+  <AdSlot lang={lang} position="beforeRelated" />
   <section>
     <h2>{d.common.related}</h2>
     <ul class="tool-grid">

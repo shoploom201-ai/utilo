@@ -251,6 +251,10 @@ h2.sub { font-size: 1.05rem; margin: .5rem 0 0; }
 .tuner.in-tune .needle { background: var(--good); }
 .tuner.quiet .tu-note strong, .tuner.quiet .needle { opacity: .35; }
 
+/* ---------- 광고 자리 (도구 버튼과 충분히 떨어지게) ---------- */
+.ad-slot { margin: 2.5rem 0; padding-top: .25rem; min-height: 100px; border-top: 1px solid var(--border); }
+.ad-label { display: block; font-size: .72rem; color: var(--muted); letter-spacing: .04em; margin-bottom: .35rem; }
+
 .schedule summary { cursor: pointer; font-weight: 600; }
 .table-wrap { max-height: 420px; overflow: auto; margin-top: .75rem; border: 1px solid var(--border); border-radius: 8px; }
 .table-wrap table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }
