@@ -8,6 +8,17 @@ import type { ToolId } from '../tools';
 type ToolSeo = Record<ToolId, { slug: string; title: string }>;
 
 export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
+  'zh-hant': {
+    'vat-calculator': { slug: '營業稅計算', title: '營業稅計算機｜5% 含稅未稅換算・稅額計算' },
+    'loan-calculator': { slug: '貸款計算機', title: '貸款計算機｜房貸・信貸每月還款與利息試算' },
+    'compound-interest-calculator': { slug: '複利計算機', title: '複利計算機｜定期定額・儲蓄複利試算' },
+    'image-compressor': { slug: '圖片壓縮', title: '圖片壓縮線上免費｜縮小照片容量・轉 WebP' },
+    'image-to-pdf': { slug: '圖片轉pdf', title: '圖片轉 PDF 免費｜JPG・PNG 合併成一個 PDF' },
+    'focus-timer': { slug: '番茄鐘', title: '番茄鐘線上計時器｜讀書專注＋白噪音（免費）' },
+    sudoku: { slug: '數獨', title: '數獨線上玩｜每日數獨免費挑戰（簡單～困難）' },
+    metronome: { slug: '節拍器', title: '線上節拍器（免費）｜BPM・拍號・Tap 測速' },
+    tuner: { slug: '吉他調音器', title: '吉他調音器線上｜用麥克風為吉他・烏克麗麗調音' },
+  },
   fr: {
     'vat-calculator': { slug: 'calcul-tva', title: 'Calcul TVA en ligne – HT en TTC et TTC en HT (20 %, 10 %, 5,5 %)' },
     'loan-calculator': { slug: 'simulateur-pret', title: 'Simulateur de prêt – Mensualité, intérêts et tableau d’amortissement' },
@@ -109,6 +120,12 @@ export const toolSeo: Record<Locale, Partial<ToolSeo>> = {
  * "그 언어를 배우는 사람"이 자기 말로 검색하는 문구를 노립니다 (예: 일본인 → 韓国語 リスニング).
  */
 export const radioSeo: Record<Locale, Partial<Record<Locale, { slug: string; title: string }>>> = {
+  'zh-hant': {
+    en: { slug: '英文廣播', title: '英文廣播線上聽｜聽美國・英國電台練英文聽力' },
+    ja: { slug: '日文廣播', title: '日文廣播線上聽｜聽日本電台練日文聽力' },
+    ko: { slug: '韓文廣播', title: '韓文廣播線上聽｜聽韓國電台練韓文聽力' },
+    es: { slug: '西班牙文廣播', title: '西班牙文廣播線上聽｜練西班牙文聽力' },
+  },
   fr: {
     en: { slug: 'radio-anglaise', title: 'Apprendre l’anglais avec la radio – Radios anglaises et américaines en direct' },
     es: { slug: 'radio-espagnole', title: 'Apprendre l’espagnol avec la radio – Radios d’Espagne et d’Amérique latine' },
@@ -149,4 +166,4 @@ export const radioTargets = (lang: Locale) =>
 export const radioPath = (lang: Locale, target: Locale) => `/${lang}/${radioSeo[lang][target]!.slug}/`;
 
 /** 검색엔진에 알려 줄 각 언어의 지역 표기 (og:locale) */
-export const ogLocale: Record<Locale, string> = { ko: 'ko_KR', ja: 'ja_JP', es: 'es_ES', en: 'en_US', de: 'de_DE', fr: 'fr_FR' };
+export const ogLocale: Record<Locale, string> = { ko: 'ko_KR', ja: 'ja_JP', es: 'es_ES', en: 'en_US', de: 'de_DE', fr: 'fr_FR', 'zh-hant': 'zh_TW' };

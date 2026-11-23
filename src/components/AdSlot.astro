@@ -13,7 +13,7 @@ const { lang, position } = Astro.props;
 const client = SITE.adsense.client;
 const slotId = SITE.adsense.slots[position];
 // 구글이 허용하는 광고 표시 문구
-const LABEL: Partial<Record<Locale, string>> = { ko: '광고', ja: '広告', es: 'Publicidad', en: 'Advertisement', de: 'Anzeige', fr: 'Publicité' };
+const LABEL: Partial<Record<Locale, string>> = { ko: '광고', ja: '広告', es: 'Publicidad', en: 'Advertisement', de: 'Anzeige', fr: 'Publicité', 'zh-hant': '廣告' };
 ---
 
 {
