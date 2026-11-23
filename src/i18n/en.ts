@@ -7,7 +7,7 @@ const en = {
   home: {
     title: 'Free online tools: calculators, study timer, sudoku & language radio',
     intro: 'Quick, private tools for everyday work. No sign-up and no uploads — everything runs on your device.',
-    categories: { car: 'Car & driving', business: 'Business', music: 'Music practice', puzzle: 'Puzzles & brain games', study: 'Focus & study', tax: 'Tax calculators', finance: 'Finance calculators', image: 'Image tools' },
+    categories: { travel: 'Travel', car: 'Car & driving', business: 'Business', music: 'Music practice', puzzle: 'Puzzles & brain games', study: 'Focus & study', tax: 'Tax calculators', finance: 'Finance calculators', image: 'Image tools' },
   },
   common: {
     privacyNote: 'Runs entirely in your browser. Your numbers and files never leave your device.',
@@ -527,6 +527,36 @@ const en = {
         { q: 'Can I keep driving with the check engine light on?', a: 'If it is steady and the car drives normally, yes for a short time – but get it checked soon. If it flashes, slow down and stop: a severe misfire can damage the catalytic converter.' },
         { q: 'What do the colours of warning lights mean?', a: 'Red means a serious problem – stop safely. Amber or yellow means check soon. Green and blue lights only show that a function is on.' },
         { q: 'How can I find the exact cause?', a: 'An OBD-II code reader plugged in under the dashboard shows the fault code. Many parts shops read codes for free.' },
+      ],
+    },
+    phrasebook: {
+      name: 'Travel Phrasebook',
+      short: '30 essential travel phrases in 8 languages, with polite and casual forms, pronunciation and audio.',
+      metaDescription:
+        'Free travel phrasebook: 30 essential phrases for airports, hotels, restaurants, shopping and emergencies in Korean, Japanese, Chinese, Spanish, French, German and Hindi, with polite and casual forms, pronunciation and audio.',
+      ui: {
+        target: 'Language to speak',
+        politeness: 'Style',
+        formal: 'Polite',
+        casual: 'Casual',
+        search: 'What do you want to say?',
+        searchPh: 'e.g. station, bill, hospital…',
+        noResult: 'No matching phrase. Try a shorter word.',
+        noSpeech: 'Your browser cannot play audio for phrases.',
+        listen: 'Listen',
+        slow: 'Slow',
+        pronNote: 'Pronunciation guides are approximate – listen to the audio for the real sound. Audio uses the voices built into your device.',
+        situations: { basic: 'Basics', transport: 'Getting around', hotel: 'Hotel', food: 'Restaurant', shop: 'Shopping', emergency: 'Emergencies' },
+      },
+      howTo: [
+        'Choose the language you want to speak and the style: polite for strangers and staff, casual for friends.',
+        'Find a phrase by situation or type a word in your own language.',
+        'Press Listen to hear it, or Slow to practise, then show the phrase on your screen if needed.',
+      ],
+      faq: [
+        { q: 'Should I use polite or casual phrases?', a: 'Use polite forms with staff, officials and people you don’t know. Casual forms are for friends and people your age who use them with you.' },
+        { q: 'Why does the audio sound different on my phone?', a: 'Audio uses the text-to-speech voices installed on your device, so they vary by phone and browser. Install extra voices in your system settings for better quality.' },
+        { q: 'Can I use it offline?', a: 'Once the page has loaded you can browse and show the phrases without a connection. Some devices need a connection for audio.' },
       ],
     },
     'loan-calculator': {

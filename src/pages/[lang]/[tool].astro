@@ -21,6 +21,7 @@ import SaasCost from '../../widgets/SaasCost.astro';
 import JpTakehome from '../../widgets/JpTakehome.astro';
 import ImportCost from '../../widgets/ImportCost.astro';
 import CarDiagnosis from '../../widgets/CarDiagnosis.astro';
+import Phrasebook from '../../widgets/Phrasebook.astro';
 import radio from '../../data/radio.json';
 import { locales, t, type Locale } from '../../i18n';
 import { toolSeo, radioSeo, radioTargets, radioPath } from '../../i18n/seo';
@@ -60,6 +61,7 @@ const widgets = {
   'jp-takehome': JpTakehome,
   'import-cost': ImportCost,
   'car-diagnosis': CarDiagnosis,
+  phrasebook: Phrasebook,
   'vat-calculator': VatCalculator,
   'loan-calculator': LoanCalculator,
   'compound-interest-calculator': CompoundInterest,
@@ -81,7 +83,7 @@ if (page.kind === 'tool') {
   paths = toolPaths(page.id);
   name = info.name;
   pagePath = toolPath(lang, page.id);
-  const appCategory = { business: 'BusinessApplication', music: 'MultimediaApplication', puzzle: 'GameApplication', study: 'EducationalApplication', image: 'MultimediaApplication', tax: 'FinanceApplication', finance: 'FinanceApplication', car: 'UtilitiesApplication' };
+  const appCategory = { business: 'BusinessApplication', music: 'MultimediaApplication', puzzle: 'GameApplication', study: 'EducationalApplication', image: 'MultimediaApplication', tax: 'FinanceApplication', finance: 'FinanceApplication', car: 'UtilitiesApplication', travel: 'TravelApplication' };
   category = appCategory[tools.find((tool) => tool.id === page.id)!.category];
 } else {
   const target = page.target;

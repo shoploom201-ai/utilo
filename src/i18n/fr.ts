@@ -10,7 +10,7 @@ const fr = {
   home: {
     title: 'Outils gratuits en ligne : calculatrices, minuteur, sudoku et radio',
     intro: 'Des outils rapides pour le quotidien, sans inscription ni envoi de fichiers. Tout fonctionne sur votre appareil.',
-    categories: { car: 'Auto', business: 'Entreprise', music: 'Pratique musicale', puzzle: 'Jeux de réflexion', study: 'Concentration et études', tax: 'Calcul de taxes', finance: 'Calculatrices financières', image: 'Outils image' },
+    categories: { travel: 'Voyage', car: 'Auto', business: 'Entreprise', music: 'Pratique musicale', puzzle: 'Jeux de réflexion', study: 'Concentration et études', tax: 'Calcul de taxes', finance: 'Calculatrices financières', image: 'Outils image' },
   },
   common: {
     privacyNote: 'Fonctionne entièrement dans votre navigateur. Vos chiffres et fichiers ne quittent jamais votre appareil.',
@@ -422,6 +422,36 @@ const fr = {
         { q: 'Puis-je rouler avec le voyant moteur allumé ?', a: 'S’il est fixe et que la voiture roule normalement, brièvement oui, mais faites vérifier vite. S’il clignote, ralentissez et arrêtez-vous : des ratés graves abîment le catalyseur.' },
         { q: 'Que signifient les couleurs des voyants ?', a: 'Rouge : problème grave, arrêtez-vous en sécurité. Orange : à vérifier bientôt. Vert et bleu indiquent seulement qu’une fonction est active.' },
         { q: 'Comment trouver la cause exacte ?', a: 'Une valise OBD-II branchée sous le tableau de bord affiche le code défaut. Des adaptateurs Bluetooth bon marché fonctionnent avec le smartphone.' },
+      ],
+    },
+    phrasebook: {
+      name: 'Guide de conversation de voyage',
+      short: '30 phrases essentielles en 8 langues, en version polie ou familière, avec prononciation et audio.',
+      metaDescription:
+        'Guide de conversation gratuit : 30 phrases essentielles pour l’aéroport, l’hôtel, le restaurant, les achats et les urgences en anglais, japonais, coréen, chinois, espagnol, allemand et hindi, polies ou familières, avec prononciation et audio.',
+      ui: {
+        target: 'Langue à parler',
+        politeness: 'Registre',
+        formal: 'Poli (vous)',
+        casual: 'Familier (tu)',
+        search: 'Que voulez-vous dire ?',
+        searchPh: 'ex. gare, addition, hôpital…',
+        noResult: 'Aucune phrase trouvée. Essayez un mot plus court.',
+        noSpeech: 'Votre navigateur ne peut pas lire l’audio.',
+        listen: 'Écouter',
+        slow: 'Lent',
+        pronNote: 'La prononciation indiquée est approximative : écoutez l’audio. Il utilise les voix de votre appareil.',
+        situations: { basic: 'Les bases', transport: 'Transports', hotel: 'Hôtel', food: 'Restaurant', shop: 'Achats', emergency: 'Urgences' },
+      },
+      howTo: [
+        'Choisissez la langue et le registre : poli avec les inconnus et le personnel, familier avec les amis.',
+        'Cherchez par situation ou tapez un mot en français.',
+        'Appuyez sur Écouter, ou Lent pour vous entraîner, et montrez l’écran si besoin.',
+      ],
+      faq: [
+        { q: 'Poli ou familier ?', a: 'Avec le personnel, l’administration et les inconnus, restez poli. Le registre familier convient aux amis et aux personnes de votre âge.' },
+        { q: 'Pourquoi l’audio change-t-il selon mon téléphone ?', a: 'Il utilise les voix de synthèse installées sur votre appareil, qui varient selon le téléphone et le navigateur.' },
+        { q: 'Puis-je l’utiliser hors connexion ?', a: 'Une fois la page chargée, les phrases restent visibles sans internet. L’audio peut nécessiter une connexion sur certains appareils.' },
       ],
     },
     'loan-calculator': {

@@ -10,7 +10,7 @@ const de = {
   home: {
     title: 'Kostenlose Online-Tools: Rechner, Lerntimer, Sudoku & Radio',
     intro: 'Schnelle Tools für den Alltag – ohne Anmeldung und ohne Upload. Alles läuft auf Ihrem Gerät.',
-    categories: { car: 'Auto', business: 'Business', music: 'Musik üben', puzzle: 'Rätsel & Denkspiele', study: 'Lernen & Konzentration', tax: 'Steuerrechner', finance: 'Finanzrechner', image: 'Bild-Tools' },
+    categories: { travel: 'Reisen', car: 'Auto', business: 'Business', music: 'Musik üben', puzzle: 'Rätsel & Denkspiele', study: 'Lernen & Konzentration', tax: 'Steuerrechner', finance: 'Finanzrechner', image: 'Bild-Tools' },
   },
   common: {
     privacyNote: 'Läuft komplett in Ihrem Browser. Ihre Zahlen und Dateien verlassen Ihr Gerät nicht.',
@@ -422,6 +422,36 @@ const de = {
         { q: 'Darf ich mit leuchtender Motorkontrollleuchte weiterfahren?', a: 'Leuchtet sie dauerhaft und das Auto fährt normal, kurzfristig ja – aber bald prüfen lassen. Blinkt sie, langsamer fahren und anhalten: starke Aussetzer können den Katalysator beschädigen.' },
         { q: 'Was bedeuten die Farben der Kontrollleuchten?', a: 'Rot bedeutet ein ernstes Problem – sicher anhalten. Gelb bedeutet bald prüfen. Grün und Blau zeigen nur, dass eine Funktion eingeschaltet ist.' },
         { q: 'Wie finde ich die genaue Ursache?', a: 'Ein OBD-II-Diagnosegerät an der Buchse unter dem Armaturenbrett zeigt den Fehlercode. Günstige Bluetooth-Adapter funktionieren mit dem Smartphone.' },
+      ],
+    },
+    phrasebook: {
+      name: 'Reise-Sprachführer',
+      short: '30 wichtige Reisesätze in 8 Sprachen – höflich und locker, mit Aussprache und Audio.',
+      metaDescription:
+        'Kostenloser Reise-Sprachführer: 30 wichtige Sätze für Flughafen, Hotel, Restaurant, Einkaufen und Notfälle auf Englisch, Japanisch, Koreanisch, Chinesisch, Spanisch, Französisch und Hindi – höflich und locker, mit Aussprache und Audio.',
+      ui: {
+        target: 'Sprache zum Sprechen',
+        politeness: 'Anrede',
+        formal: 'Höflich (Sie)',
+        casual: 'Locker (du)',
+        search: 'Was möchten Sie sagen?',
+        searchPh: 'z. B. Bahnhof, Rechnung, Krankenhaus …',
+        noResult: 'Kein passender Satz. Versuchen Sie ein kürzeres Wort.',
+        noSpeech: 'Ihr Browser kann kein Audio abspielen.',
+        listen: 'Anhören',
+        slow: 'Langsam',
+        pronNote: 'Die Aussprachehilfen sind ungefähr – hören Sie sich das Audio an. Es nutzt die Stimmen Ihres Geräts.',
+        situations: { basic: 'Grundlagen', transport: 'Unterwegs', hotel: 'Hotel', food: 'Restaurant', shop: 'Einkaufen', emergency: 'Notfall' },
+      },
+      howTo: [
+        'Wählen Sie die Sprache und die Anrede: höflich bei Fremden und Personal, locker bei Freunden.',
+        'Suchen Sie nach Situation oder geben Sie ein Wort auf Deutsch ein.',
+        'Mit „Anhören“ hören Sie den Satz, mit „Langsam“ üben Sie – oder zeigen Sie einfach den Bildschirm.',
+      ],
+      faq: [
+        { q: 'Höflich oder locker?', a: 'Gegenüber Personal, Behörden und Fremden ist die höfliche Form sicher. Die lockere Form passt zu Freunden und Gleichaltrigen.' },
+        { q: 'Warum klingt das Audio auf meinem Handy anders?', a: 'Es werden die Sprachausgabe-Stimmen Ihres Geräts verwendet; sie unterscheiden sich je nach Handy und Browser.' },
+        { q: 'Funktioniert es offline?', a: 'Ist die Seite einmal geladen, sehen Sie die Sätze auch ohne Internet. Für Audio brauchen manche Geräte eine Verbindung.' },
       ],
     },
     'loan-calculator': {

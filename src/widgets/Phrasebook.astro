@@ -1,0 +1,167 @@
+---
+// 여행 회화집: 내 언어로 문장을 찾으면 상대 언어 문장 + 발음 + 음성 (브라우저 내장 음성 합성, 무료)
+// 문장 데이터는 src/data/phrases.ts. 첫 화면은 기본 상대 언어로 미리 그려 둠 (검색엔진 색인용)
+import ToolInfo from '../components/ToolInfo.astro';
+import { locales, t, type Locale } from '../i18n';
+import { PHRASES, SITUATIONS, DEFAULT_TARGET, SPEECH_LANG, pick } from '../data/phrases';
+
+const { lang } = Astro.props as { lang: Locale };
+const d = t(lang);
+const tool = d.tools['phrasebook']!;
+const ui = tool.ui;
+const target = DEFAULT_TARGET[lang];
+const names = new Intl.DisplayNames([lang], { type: 'language' });
+const targets = locales.filter((l) => l !== lang).map((l) => ({ code: l, name: names.of(l === 'zh-hant' ? 'zh-Hant' : l) ?? l }));
+const pron = (i: number, tg: Locale) => {
+  const p = PHRASES[i];
+  return lang === 'ko' ? pick(p.hg[tg], false) : pick(p.ro[tg as 'ja'], false);
+};
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card phrase" id="pb" data-lang={lang} data-labels={JSON.stringify(ui)} data-phrases={JSON.stringify(PHRASES)} data-speech={JSON.stringify(SPEECH_LANG)}>
+  <div class="grid-2">
+    <label>{ui.target}
+      <select id="pb-target">{targets.map((x) => <option value={x.code} selected={x.code === target}>{x.name}</option>)}</select>
+    </label>
+    <fieldset class="polite">
+      <legend>{ui.politeness}</legend>
+      <label><input type="radio" name="pb-pol" value="formal" checked /> {ui.formal}</label>
+      <label><input type="radio" name="pb-pol" value="casual" /> {ui.casual}</label>
+    </fieldset>
+  </div>
+  <label>{ui.search}
+    <input id="pb-search" type="search" placeholder={ui.searchPh} autocomplete="off" />
+  </label>
+  <p class="note" id="pb-nospeech" hidden>{ui.noSpeech}</p>
+
+  <div id="pb-list">
+    {
+      SITUATIONS.map((s) => (
+        <section class="sit" data-sit={s}>
+          <h2>{ui.situations[s]}</h2>
+          <ul class="phrases">
+            {PHRASES.map((p, i) =>
+              p.sit !== s ? null : (
+                <li class="ph" data-i={i}>
+                  <span class="mean">{pick(p.t[lang], false)}</span>
+                  <strong class="tgt" lang={target}>{pick(p.t[target], false)}</strong>
+                  <span class="pron">{pron(i, target)}</span>
+                  <span class="acts">
+                    <button type="button" class="btn ghost small" data-say="1" aria-label={ui.listen}>🔊 {ui.listen}</button>
+                    <button type="button" class="btn ghost small" data-say="0.6" aria-label={ui.slow}>🐢 {ui.slow}</button>
+                  </span>
+                </li>
+              ),
+            )}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+  <p class="note center" id="pb-empty" hidden>{ui.noResult}</p>
+  <p class="note">{ui.pronNote}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<style>
+  .phrase { display: grid; gap: 1rem; }
+  .polite { border: 0; padding: 0; margin: 0; display: flex; gap: 1rem; align-items: end; flex-wrap: wrap; }
+  .polite legend { font-weight: 600; margin-bottom: .3rem; }
+  .sit h2 { font-size: 1.1rem; margin: 1rem 0 .5rem; }
+  .phrases { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+  .ph { display: grid; gap: .2rem; padding: .75rem .9rem; border: 1px solid var(--border, #ddd); border-radius: 10px; }
+  .mean { color: var(--muted); font-size: .9rem; }
+  .tgt { font-size: 1.2rem; line-height: 1.4; }
+  .pron { font-size: .95rem; color: var(--accent); }
+  .pron:empty { display: none; }
+  .acts { display: flex; gap: .4rem; margin-top: .2rem; }
+  .btn.small { padding: .25rem .6rem; font-size: .85rem; }
+</style>
+
+<script>
+  import { pick, type Phrase } from '../data/phrases';
+  import type { Locale } from '../i18n';
+
+  const root = document.getElementById('pb') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const P = JSON.parse(root.dataset.phrases ?? '[]') as Phrase[];
+  const SPEECH = JSON.parse(root.dataset.speech ?? '{}') as Record<string, string>;
+  const lang = root.dataset.lang as Locale;
+  const targetEl = root.querySelector('#pb-target') as HTMLSelectElement;
+  const searchEl = root.querySelector('#pb-search') as HTMLInputElement;
+  const KEY = 'kitwise-phrasebook';
+  const canSpeak = 'speechSynthesis' in window;
+  if (!canSpeak) (root.querySelector('#pb-nospeech') as HTMLElement).hidden = false;
+
+  const casual = () => (root.querySelector('input[name="pb-pol"]:checked') as HTMLInputElement).value === 'casual';
+
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+    if (s?.target && [...targetEl.options].some((o) => o.value === s.target)) targetEl.value = s.target;
+    if (s?.casual) (root.querySelector('input[name="pb-pol"][value="casual"]') as HTMLInputElement).checked = true;
+  } catch {
+    /* 저장 불가 환경 */
+  }
+
+  function render() {
+    const tg = targetEl.value as Locale;
+    const c = casual();
+    root.querySelectorAll<HTMLElement>('.ph').forEach((li) => {
+      const p = P[Number(li.dataset.i)];
+      (li.querySelector('.mean') as HTMLElement).textContent = pick(p.t[lang], c);
+      const tgt = li.querySelector('.tgt') as HTMLElement;
+      tgt.textContent = pick(p.t[tg], c);
+      tgt.lang = tg;
+      (li.querySelector('.pron') as HTMLElement).textContent = lang === 'ko' ? pick(p.hg[tg], c) : pick(p.ro[tg as 'ja'], c);
+      li.querySelectorAll<HTMLElement>('[data-say]').forEach((b) => (b.hidden = !canSpeak));
+    });
+    filter();
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ target: tg, casual: c }));
+    } catch {
+      /* 저장 불가 환경 */
+    }
+  }
+
+  // 검색: 내 언어·상대 언어 문장 어디에든 들어 있으면 보여 줌 (띄어쓰기·문장부호 무시)
+  const norm = (s: string) => s.toLowerCase().normalize('NFKC').replace(/[\s.,!?¿¡'’"、。，？！]/g, '');
+  function filter() {
+    const q = norm(searchEl.value);
+    let shown = 0;
+    root.querySelectorAll<HTMLElement>('.ph').forEach((li) => {
+      const ok = !q || norm(li.textContent ?? '').includes(q);
+      li.hidden = !ok;
+      if (ok) shown++;
+    });
+    root.querySelectorAll<HTMLElement>('.sit').forEach((s) => (s.hidden = !s.querySelector('.ph:not([hidden])')));
+    (root.querySelector('#pb-empty') as HTMLElement).hidden = shown > 0;
+  }
+
+  function say(text: string, rate: number) {
+    if (!canSpeak) return;
+    const u = new SpeechSynthesisUtterance(text);
+    const code = SPEECH[targetEl.value];
+    u.lang = code;
+    const voice = speechSynthesis.getVoices().find((v) => v.lang.replace('_', '-').toLowerCase().startsWith(code.slice(0, 2).toLowerCase()) && (code !== 'zh-TW' || /TW|HK|Hant/i.test(v.lang + v.name)));
+    if (voice) u.voice = voice;
+    u.rate = rate;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
+
+  root.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-say]');
+    if (!b) return;
+    const li = b.closest('.ph') as HTMLElement;
+    say((li.querySelector('.tgt') as HTMLElement).textContent ?? '', Number(b.dataset.say));
+  });
+  targetEl.addEventListener('change', render);
+  root.querySelectorAll('input[name="pb-pol"]').forEach((r) => r.addEventListener('change', render));
+  searchEl.addEventListener('input', filter);
+  if (canSpeak) speechSynthesis.getVoices();
+  render();
+</script>

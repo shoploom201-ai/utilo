@@ -2,7 +2,7 @@
 import { locales, t, type Locale } from './i18n';
 import { toolSeo } from './i18n/seo';
 
-export type Category = 'study' | 'puzzle' | 'music' | 'business' | 'tax' | 'finance' | 'image' | 'car';
+export type Category = 'study' | 'puzzle' | 'music' | 'business' | 'tax' | 'finance' | 'image' | 'car' | 'travel';
 
 export const tools = [
   { id: 'metronome', category: 'music' },
@@ -23,10 +23,11 @@ export const tools = [
   { id: 'image-compressor', category: 'image' },
   { id: 'image-to-pdf', category: 'image' },
   { id: 'car-diagnosis', category: 'car' },
+  { id: 'phrasebook', category: 'travel' },
 ] as const satisfies readonly { id: string; category: Category }[];
 
 export type ToolId = (typeof tools)[number]['id'];
-export const categories: Category[] = ['study', 'puzzle', 'music', 'tax', 'finance', 'business', 'car', 'image'];
+export const categories: Category[] = ['study', 'puzzle', 'music', 'tax', 'finance', 'business', 'travel', 'car', 'image'];
 
 /** 이 언어에 페이지가 있는가 (문구와 주소가 둘 다 있어야 함) */
 export const hasTool = (lang: Locale, id: ToolId) => Boolean(t(lang).tools[id] && toolSeo[lang][id]);

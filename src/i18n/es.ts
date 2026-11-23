@@ -9,7 +9,7 @@ const es: Dict = {
   home: {
     title: 'Herramientas online gratis: calculadoras, temporizador, sudoku y radio para aprender idiomas',
     intro: 'Herramientas rápidas y privadas para el día a día. Sin registro ni subidas: todo se procesa en tu dispositivo.',
-    categories: { car: 'Coche y conducción', business: 'Negocios', music: 'Práctica musical', puzzle: 'Puzzles y juegos mentales', study: 'Concentración y estudio', tax: 'Calculadoras de impuestos', finance: 'Calculadoras financieras', image: 'Herramientas de imagen' },
+    categories: { travel: 'Viajes', car: 'Coche y conducción', business: 'Negocios', music: 'Práctica musical', puzzle: 'Puzzles y juegos mentales', study: 'Concentración y estudio', tax: 'Calculadoras de impuestos', finance: 'Calculadoras financieras', image: 'Herramientas de imagen' },
   },
   common: {
     privacyNote: 'Todo funciona dentro de tu navegador. Tus cifras y archivos nunca salen de tu dispositivo.',
@@ -529,6 +529,36 @@ const es: Dict = {
         { q: '¿Puedo seguir conduciendo con el testigo de motor encendido?', a: 'Si está fijo y el coche va bien, un tiempo corto sí, pero hazlo revisar pronto. Si parpadea, reduce y detente: un fallo grave puede dañar el catalizador.' },
         { q: '¿Qué significan los colores de los testigos?', a: 'Rojo: problema serio, detente con seguridad. Ámbar o amarillo: revisar pronto. Verde y azul solo indican que una función está activa.' },
         { q: '¿Cómo encuentro la causa exacta?', a: 'Un lector OBD-II conectado bajo el tablero muestra el código de avería. Hay lectores Bluetooth baratos que funcionan con el móvil.' },
+      ],
+    },
+    phrasebook: {
+      name: 'Frases para viajar',
+      short: '30 frases esenciales para viajar en 8 idiomas, con forma formal e informal, pronunciación y audio.',
+      metaDescription:
+        'Guía de frases para viajar gratis: 30 frases básicas para aeropuerto, hotel, restaurante, compras y emergencias en inglés, japonés, coreano, chino, francés, alemán e hindi, con forma formal e informal, pronunciación y audio.',
+      ui: {
+        target: 'Idioma que quieres hablar',
+        politeness: 'Registro',
+        formal: 'Formal',
+        casual: 'Informal',
+        search: '¿Qué quieres decir?',
+        searchPh: 'p. ej. estación, cuenta, hospital…',
+        noResult: 'No hay frases que coincidan. Prueba con una palabra más corta.',
+        noSpeech: 'Tu navegador no puede reproducir el audio.',
+        listen: 'Escuchar',
+        slow: 'Lento',
+        pronNote: 'La pronunciación es aproximada: escucha el audio para oír el sonido real. El audio usa las voces de tu dispositivo.',
+        situations: { basic: 'Básico', transport: 'Transporte', hotel: 'Hotel', food: 'Restaurante', shop: 'Compras', emergency: 'Emergencias' },
+      },
+      howTo: [
+        'Elige el idioma que quieres hablar y el registro: formal con desconocidos y personal, informal con amigos.',
+        'Busca por situación o escribe una palabra en español.',
+        'Pulsa Escuchar para oír la frase o Lento para practicar, y muestra la pantalla si hace falta.',
+      ],
+      faq: [
+        { q: '¿Uso la forma formal o informal?', a: 'Con personal, funcionarios y desconocidos usa la formal. La informal es para amigos y gente de tu edad que te trate así.' },
+        { q: '¿Por qué el audio suena distinto en mi móvil?', a: 'Se usan las voces de síntesis instaladas en tu dispositivo, que cambian según el móvil y el navegador.' },
+        { q: '¿Funciona sin conexión?', a: 'Una vez cargada la página puedes ver las frases sin internet. En algunos dispositivos el audio necesita conexión.' },
       ],
     },
     'loan-calculator': {
