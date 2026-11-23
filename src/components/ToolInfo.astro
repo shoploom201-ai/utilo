@@ -1,0 +1,27 @@
+---
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+  howTo: string[];
+  faq: { q: string; a: string }[];
+}
+const { lang, howTo, faq } = Astro.props;
+const d = t(lang);
+---
+
+<section>
+  <h2>{d.common.howTo}</h2>
+  <ol>{howTo.map((step) => <li>{step}</li>)}</ol>
+</section>
+<section class="faq">
+  <h2>{d.common.faq}</h2>
+  {
+    faq.map((item) => (
+      <details>
+        <summary>{item.q}</summary>
+        <p>{item.a}</p>
+      </details>
+    ))
+  }
+</section>

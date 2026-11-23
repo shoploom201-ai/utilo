@@ -1,0 +1,74 @@
+---
+import '../styles/global.css';
+import { locales, defaultLocale, t, type Locale } from '../i18n';
+import { SITE } from '../site';
+
+interface Props {
+  lang: Locale;
+  title: string;
+  description: string;
+  /** 언어 코드 뒤의 경로. 예: "/vat-calculator/" (홈은 "/") */
+  path: string;
+}
+
+const { lang, title, description, path } = Astro.props;
+const d = t(lang);
+const site = Astro.site ?? new URL('https://example.com');
+const urlFor = (l: Locale) => new URL(`/${l}${path}`, site).href;
+const fullTitle = path === '/' ? `${SITE.name} — ${title}` : `${title} | ${SITE.name}`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={urlFor(lang)} />
+    {locales.map((l) => <link rel="alternate" hreflang={l} href={urlFor(l)} />)}
+    <link rel="alternate" hreflang="x-default" href={urlFor(defaultLocale)} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={urlFor(lang)} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <!-- AdSense 승인 후 여기에 광고 스크립트(<script async src="https://pagead2...">)를 붙여 넣으세요. -->
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href={`/${lang}/`}>{SITE.name}</a>
+        <details class="lang-menu">
+          <summary aria-label={d.nav.language}>{d.langName}</summary>
+          <ul>
+            {
+              locales.map((l) => (
+                <li>
+                  <a href={`/${l}${path}`} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>
+                    {t(l).langName}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </details>
+      </div>
+    </header>
+    <main class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <nav>
+          <a href={`/${lang}/about/`}>{d.footer.about}</a>
+          <a href={`/${lang}/privacy/`}>{d.footer.privacy}</a>
+          <a href={`/${lang}/contact/`}>{d.footer.contact}</a>
+        </nav>
+        <p>© {new Date().getFullYear()} {SITE.name}. {d.footer.note}</p>
+      </div>
+    </footer>
+  </body>
+</html>

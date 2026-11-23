@@ -1,0 +1,117 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolInfo from '../../components/ToolInfo.astro';
+import { localeStaticPaths, t, type Locale } from '../../i18n';
+import { vatRates, VAT_REVIEWED } from '../../data/vat-rates';
+
+export const getStaticPaths = localeStaticPaths;
+const lang = Astro.params.lang as Locale;
+const d = t(lang);
+const tool = d.tools['vat-calculator'];
+const ui = tool.ui;
+
+// 국가 이름은 각 언어로 자동 번역(Intl.DisplayNames)하고 그 언어의 가나다/ABC 순으로 정렬
+const regionNames = new Intl.DisplayNames([lang], { type: 'region' });
+const countries = vatRates
+  .map((c) => ({ ...c, name: regionNames.of(c.code) ?? c.code }))
+  .sort((a, b) => a.name.localeCompare(b.name, lang));
+---
+
+<Base lang={lang} title={tool.name} description={tool.metaDescription} path="/vat-calculator/">
+  <h1>{tool.name}</h1>
+  <p class="lead">{tool.short}</p>
+
+  <section
+    class="tool card"
+    id="vat"
+    data-lang={lang}
+    data-rates={JSON.stringify(vatRates)}
+    data-standard={ui.standard}
+    data-reduced={ui.reduced}
+  >
+    <div class="grid-2">
+      <label>
+        {ui.country}
+        <select id="vat-country">
+          {countries.map((c) => <option value={c.code} selected={c.code === d.defaultCountry}>{c.name}</option>)}
+        </select>
+      </label>
+      <label>
+        {ui.rate}
+        <select id="vat-rate"></select>
+      </label>
+    </div>
+    <label>
+      {ui.amount}
+      <input id="vat-amount" type="number" inputmode="decimal" min="0" step="any" value="100" />
+    </label>
+    <fieldset>
+      <legend>{ui.mode}</legend>
+      <div class="radio-row">
+        <label><input type="radio" name="vat-mode" value="add" checked /> {ui.add}</label>
+        <label><input type="radio" name="vat-mode" value="remove" /> {ui.remove}</label>
+      </div>
+    </fieldset>
+    <dl class="results" aria-live="polite">
+      <div><dt>{ui.net}</dt><dd id="vat-net">—</dd></div>
+      <div><dt>{ui.tax}</dt><dd id="vat-tax">—</dd></div>
+      <div class="total"><dt>{ui.gross}</dt><dd id="vat-gross">—</dd></div>
+    </dl>
+    <p class="privacy-note">{d.common.privacyNote}</p>
+  </section>
+
+  <p class="note">{d.common.lastReviewed}: {VAT_REVIEWED}. {ui.disclaimer}</p>
+
+  <ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+</Base>
+
+<script>
+  import type { VatCountry } from '../../data/vat-rates';
+
+  const root = document.getElementById('vat') as HTMLElement;
+  const rates = JSON.parse(root.dataset.rates ?? '[]') as VatCountry[];
+  const lang = root.dataset.lang ?? 'en';
+  const countryEl = root.querySelector<HTMLSelectElement>('#vat-country')!;
+  const rateEl = root.querySelector<HTMLSelectElement>('#vat-rate')!;
+  const amountEl = root.querySelector<HTMLInputElement>('#vat-amount')!;
+  const out = {
+    net: root.querySelector('#vat-net')!,
+    tax: root.querySelector('#vat-tax')!,
+    gross: root.querySelector('#vat-gross')!,
+  };
+
+  const current = () => rates.find((r) => r.code === countryEl.value) ?? rates[0];
+
+  function fillRates() {
+    const c = current();
+    rateEl.replaceChildren(
+      new Option(`${root.dataset.standard} ${c.standard}%`, String(c.standard)),
+      ...c.reduced.map((r) => new Option(`${root.dataset.reduced} ${r}%`, String(r))),
+    );
+  }
+
+  function calc() {
+    const c = current();
+    const amount = parseFloat(amountEl.value);
+    const rate = parseFloat(rateEl.value) / 100;
+    if (!Number.isFinite(amount) || amount < 0 || !Number.isFinite(rate)) {
+      out.net.textContent = out.tax.textContent = out.gross.textContent = '—';
+      return;
+    }
+    const mode = root.querySelector<HTMLInputElement>('input[name="vat-mode"]:checked')?.value;
+    const net = mode === 'remove' ? amount / (1 + rate) : amount;
+    const gross = mode === 'remove' ? amount : amount * (1 + rate);
+    const fmt = new Intl.NumberFormat(lang, { style: 'currency', currency: c.currency });
+    out.net.textContent = fmt.format(net);
+    out.tax.textContent = fmt.format(gross - net);
+    out.gross.textContent = fmt.format(gross);
+  }
+
+  countryEl.addEventListener('change', () => {
+    fillRates();
+    calc();
+  });
+  root.addEventListener('input', calc);
+  fillRates();
+  calc();
+</script>

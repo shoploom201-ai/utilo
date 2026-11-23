@@ -1,0 +1,24 @@
+---
+// 소개·개인정보처리방침·문의 페이지 (AdSense 심사에 필요)
+import Base from '../../layouts/Base.astro';
+import { locales, t, fill, type Locale } from '../../i18n';
+
+type PageKey = 'about' | 'privacy' | 'contact';
+
+// getStaticPaths 는 따로 분리 실행되므로 필요한 값은 함수 안에 둡니다.
+export function getStaticPaths() {
+  const pageKeys: PageKey[] = ['about', 'privacy', 'contact'];
+  return locales.flatMap((lang) => pageKeys.map((page) => ({ params: { lang, page } })));
+}
+
+const lang = Astro.params.lang as Locale;
+const page = Astro.params.page as PageKey;
+const content = t(lang).pages[page];
+---
+
+<Base lang={lang} title={content.title} description={fill(content.body[0] ?? content.title)} path={`/${page}/`}>
+  <article class="prose">
+    <h1>{content.title}</h1>
+    {content.body.map((p) => <p>{fill(p)}</p>)}
+  </article>
+</Base>

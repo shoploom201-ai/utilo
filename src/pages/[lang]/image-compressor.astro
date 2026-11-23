@@ -1,0 +1,154 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolInfo from '../../components/ToolInfo.astro';
+import { localeStaticPaths, t, type Locale } from '../../i18n';
+
+export const getStaticPaths = localeStaticPaths;
+const lang = Astro.params.lang as Locale;
+const d = t(lang);
+const tool = d.tools['image-compressor'];
+const ui = tool.ui;
+---
+
+<Base lang={lang} title={tool.name} description={tool.metaDescription} path="/image-compressor/">
+  <h1>{tool.name}</h1>
+  <p class="lead">{tool.short}</p>
+
+  <section class="tool card" id="img" data-labels={JSON.stringify(ui)}>
+    <label class="dropzone" id="img-drop">
+      <span>{ui.choose}</span>
+      <input id="img-files" type="file" accept="image/*" multiple />
+    </label>
+    <div class="grid-2">
+      <label>
+        {ui.format}
+        <select id="img-format">
+          <option value="image/webp">WebP</option>
+          <option value="image/jpeg">JPEG</option>
+          <option value="image/png">PNG</option>
+        </select>
+      </label>
+      <label>
+        {ui.maxWidth}
+        <input id="img-width" type="number" inputmode="numeric" min="1" step="1" placeholder={ui.keepSize} />
+      </label>
+    </div>
+    <label>
+      {ui.quality}: <output id="img-quality-out">80</output>%
+      <input id="img-quality" type="range" min="10" max="100" value="80" />
+    </label>
+    <p class="note" id="img-png-note" hidden>{ui.pngNote}</p>
+    <ul class="file-list" id="img-results" aria-live="polite"></ul>
+    <p class="privacy-note">{d.common.privacyNote}</p>
+  </section>
+
+  <ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+</Base>
+
+<script>
+  const root = document.getElementById('img') as HTMLElement;
+  const L = JSON.parse(root.dataset.labels ?? '{}') as Record<string, string>;
+  const filesEl = root.querySelector<HTMLInputElement>('#img-files')!;
+  const drop = root.querySelector<HTMLElement>('#img-drop')!;
+  const formatEl = root.querySelector<HTMLSelectElement>('#img-format')!;
+  const widthEl = root.querySelector<HTMLInputElement>('#img-width')!;
+  const qualityEl = root.querySelector<HTMLInputElement>('#img-quality')!;
+  const qualityOut = root.querySelector<HTMLOutputElement>('#img-quality-out')!;
+  const pngNote = root.querySelector<HTMLElement>('#img-png-note')!;
+  const list = root.querySelector<HTMLUListElement>('#img-results')!;
+
+  let files: File[] = [];
+  let urls: string[] = [];
+  let runId = 0;
+
+  const extOf = (mime: string) => ({ 'image/webp': 'webp', 'image/jpeg': 'jpg', 'image/png': 'png' })[mime] ?? 'img';
+  const size = (b: number) => (b < 1024 * 1024 ? `${(b / 1024).toFixed(1)} KB` : `${(b / 1024 / 1024).toFixed(2)} MB`);
+
+  async function convert(file: File): Promise<Blob> {
+    const bitmap = await createImageBitmap(file);
+    const maxW = parseInt(widthEl.value, 10);
+    const scale = Number.isFinite(maxW) && maxW > 0 && maxW < bitmap.width ? maxW / bitmap.width : 1;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const ctx = canvas.getContext('2d')!;
+    if (formatEl.value === 'image/jpeg') {
+      ctx.fillStyle = '#ffffff'; // JPEG는 투명 배경이 없으므로 흰색으로 채움
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    return new Promise((resolve, reject) =>
+      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('encode failed'))), formatEl.value, Number(qualityEl.value) / 100),
+    );
+  }
+
+  async function processAll() {
+    const id = ++runId;
+    urls.forEach((u) => URL.revokeObjectURL(u));
+    urls = [];
+    list.replaceChildren();
+    for (const file of files) {
+      const li = document.createElement('li');
+      li.className = 'file-item';
+      list.append(li);
+      try {
+        const blob = await convert(file);
+        if (id !== runId) return; // 설정이 바뀌어 새로 처리 중이면 중단
+        const url = URL.createObjectURL(blob);
+        urls.push(url);
+        const diff = Math.round((1 - blob.size / file.size) * 100);
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = '';
+        const info = document.createElement('div');
+        const name = document.createElement('div');
+        name.className = 'name';
+        name.textContent = file.name;
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const change = document.createElement('span');
+        change.className = diff >= 0 ? 'good' : 'bad';
+        change.textContent = diff >= 0 ? ` (−${diff}% ${L.smaller})` : ` (+${-diff}% ${L.larger})`;
+        meta.append(`${L.original} ${size(file.size)} → ${L.result} ${size(blob.size)}`, change);
+        info.append(name, meta);
+        const a = document.createElement('a');
+        a.className = 'btn';
+        a.href = url;
+        a.download = `${file.name.replace(/\.[^.]+$/, '')}.${extOf(blob.type)}`;
+        a.textContent = L.download;
+        li.append(img, info, a);
+      } catch {
+        if (id !== runId) return;
+        const msg = document.createElement('div');
+        msg.className = 'meta bad';
+        msg.textContent = `${file.name}: ${L.error}`;
+        li.append(msg);
+      }
+    }
+  }
+
+  function setFiles(list: FileList | null) {
+    files = Array.from(list ?? []).filter((f) => f.type.startsWith('image/'));
+    processAll();
+  }
+
+  filesEl.addEventListener('change', () => setFiles(filesEl.files));
+  drop.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    drop.classList.add('over');
+  });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', (e) => {
+    e.preventDefault();
+    drop.classList.remove('over');
+    setFiles(e.dataTransfer?.files ?? null);
+  });
+  formatEl.addEventListener('change', () => {
+    pngNote.hidden = formatEl.value !== 'image/png';
+    processAll();
+  });
+  widthEl.addEventListener('change', processAll);
+  qualityEl.addEventListener('input', () => (qualityOut.textContent = qualityEl.value));
+  qualityEl.addEventListener('change', processAll);
+</script>

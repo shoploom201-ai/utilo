@@ -1,0 +1,131 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolInfo from '../../components/ToolInfo.astro';
+import { localeStaticPaths, t, type Locale } from '../../i18n';
+
+export const getStaticPaths = localeStaticPaths;
+const lang = Astro.params.lang as Locale;
+const d = t(lang);
+const tool = d.tools['loan-calculator'];
+const ui = tool.ui;
+---
+
+<Base lang={lang} title={tool.name} description={tool.metaDescription} path="/loan-calculator/">
+  <h1>{tool.name}</h1>
+  <p class="lead">{tool.short}</p>
+
+  <section class="tool card" id="loan" data-lang={lang}>
+    <label>
+      {ui.amount}
+      <input id="loan-amount" type="number" inputmode="decimal" min="0" step="any" value="100000" />
+    </label>
+    <div class="grid-2">
+      <label>
+        {ui.rate}
+        <input id="loan-rate" type="number" inputmode="decimal" min="0" max="100" step="0.01" value="5" />
+      </label>
+      <label>
+        {ui.years}
+        <input id="loan-years" type="number" inputmode="numeric" min="1" max="50" step="1" value="20" />
+      </label>
+    </div>
+    <fieldset>
+      <legend>{ui.method}</legend>
+      <div class="radio-row">
+        <label><input type="radio" name="loan-method" value="annuity" checked /> {ui.annuity}</label>
+        <label><input type="radio" name="loan-method" value="principal" /> {ui.equalPrincipal}</label>
+        <label><input type="radio" name="loan-method" value="bullet" /> {ui.bullet}</label>
+      </div>
+    </fieldset>
+    <dl class="results" aria-live="polite">
+      <div class="total"><dt>{ui.payment}</dt><dd id="loan-payment">—</dd></div>
+      <div><dt>{ui.totalInterest}</dt><dd id="loan-interest">—</dd></div>
+      <div><dt>{ui.totalPaid}</dt><dd id="loan-total">—</dd></div>
+    </dl>
+    <details class="schedule">
+      <summary>{ui.schedule}</summary>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>{ui.month}</th><th>{ui.principal}</th><th>{ui.interest}</th><th>{ui.balance}</th></tr>
+          </thead>
+          <tbody id="loan-rows"></tbody>
+        </table>
+      </div>
+    </details>
+    <p class="privacy-note">{d.common.privacyNote}</p>
+  </section>
+
+  <p class="note">{ui.disclaimer}</p>
+
+  <ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+</Base>
+
+<script>
+  const root = document.getElementById('loan') as HTMLElement;
+  const lang = root.dataset.lang ?? 'en';
+  const num = (id: string) => parseFloat(root.querySelector<HTMLInputElement>(id)!.value);
+  const fmt = new Intl.NumberFormat(lang, { maximumFractionDigits: 0 });
+  const out = {
+    payment: root.querySelector('#loan-payment')!,
+    interest: root.querySelector('#loan-interest')!,
+    total: root.querySelector('#loan-total')!,
+    rows: root.querySelector<HTMLTableSectionElement>('#loan-rows')!,
+  };
+
+  type Row = { principal: number; interest: number; balance: number };
+
+  function schedule(P: number, annualRate: number, months: number, method: string): Row[] {
+    const r = annualRate / 100 / 12;
+    const rows: Row[] = [];
+    let balance = P;
+    const annuity = r === 0 ? P / months : (P * r) / (1 - Math.pow(1 + r, -months));
+    for (let m = 1; m <= months; m++) {
+      const interest = balance * r;
+      let principal: number;
+      if (method === 'principal') principal = P / months;
+      else if (method === 'bullet') principal = m === months ? balance : 0;
+      else principal = m === months ? balance : annuity - interest;
+      balance = Math.max(0, balance - principal);
+      rows.push({ principal, interest, balance });
+    }
+    return rows;
+  }
+
+  function calc() {
+    const P = num('#loan-amount');
+    const rate = num('#loan-rate');
+    const years = num('#loan-years');
+    const method = root.querySelector<HTMLInputElement>('input[name="loan-method"]:checked')?.value ?? 'annuity';
+    if (!(P > 0) || !(rate >= 0) || !(years >= 1) || years > 50) {
+      out.payment.textContent = out.interest.textContent = out.total.textContent = '—';
+      out.rows.replaceChildren();
+      return;
+    }
+    const rows = schedule(P, rate, Math.round(years * 12), method);
+    const pay = (row: Row) => row.principal + row.interest;
+    const totalInterest = rows.reduce((s, row) => s + row.interest, 0);
+    const first = pay(rows[0]);
+    // 원금균등은 첫 달 → 마지막 달 금액, 만기일시는 매달 내는 이자를 보여 줌
+    out.payment.textContent =
+      method === 'principal'
+        ? `${fmt.format(first)} → ${fmt.format(pay(rows[rows.length - 1]))}`
+        : fmt.format(first);
+    out.interest.textContent = fmt.format(totalInterest);
+    out.total.textContent = fmt.format(P + totalInterest);
+    out.rows.replaceChildren(
+      ...rows.map((row, i) => {
+        const tr = document.createElement('tr');
+        for (const v of [String(i + 1), fmt.format(row.principal), fmt.format(row.interest), fmt.format(row.balance)]) {
+          const td = document.createElement('td');
+          td.textContent = v;
+          tr.append(td);
+        }
+        return tr;
+      }),
+    );
+  }
+
+  root.addEventListener('input', calc);
+  calc();
+</script>

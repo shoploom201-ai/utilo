@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import { localeStaticPaths, t, type Locale } from '../../i18n';
+import { tools, categories } from '../../tools';
+
+export const getStaticPaths = localeStaticPaths;
+const lang = Astro.params.lang as Locale;
+const d = t(lang);
+---
+
+<Base lang={lang} title={d.home.title} description={d.tagline} path="/">
+  <h1>{d.home.title}</h1>
+  <p class="lead">{d.home.intro}</p>
+  {
+    categories.map((cat) => (
+      <section>
+        <h2>{d.home.categories[cat]}</h2>
+        <ul class="tool-grid">
+          {tools
+            .filter((tool) => tool.category === cat)
+            .map((tool) => (
+              <li>
+                <a class="card" href={`/${lang}/${tool.slug}/`}>
+                  <strong>{d.tools[tool.slug].name}</strong>
+                  <span>{d.tools[tool.slug].short}</span>
+                </a>
+              </li>
+            ))}
+        </ul>
+      </section>
+    ))
+  }
+</Base>

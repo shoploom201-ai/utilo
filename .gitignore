@@ -1,0 +1,12 @@
+# 빌드 결과물과 설치 폴더는 Cloudflare가 직접 만들므로 올리지 않음
+node_modules/
+dist/
+.astro/
+
+# 비밀값·로컬 설정
+.env
+.env.*
+.wrangler/
+.DS_Store
+Thumbs.db
+*.log
