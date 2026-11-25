@@ -1,0 +1,148 @@
+---
+// 도시별 셀프 빨래방 페이지. 예: /ko/셀프빨래방/도쿄/, /en/laundromats/tokyo/, /ja/海外コインランドリー/ソウル/
+// 데이터: src/data/laundromats.ts · 문구: 각 언어 사전의 tools.laundromat.ui
+import Base from '../../../layouts/Base.astro';
+import AdSlot from '../../../components/AdSlot.astro';
+import { locales, t, type Locale } from '../../../i18n';
+import { toolSeo } from '../../../i18n/seo';
+import { hasTool, toolPath } from '../../../tools';
+import { CITIES, LAUNDRY_REVIEWED, citySlug, type City } from '../../../data/laundromats';
+import { cityInfo, cityPath, cityPaths, mapEmbed, mapLink } from '../../../lib/laundry';
+import { SITE } from '../../../site';
+
+export function getStaticPaths() {
+  return locales
+    .filter((lang) => hasTool(lang, 'laundromat'))
+    .flatMap((lang) =>
+      CITIES.map((city) => ({ params: { lang, tool: toolSeo[lang].laundromat!.slug, city: citySlug(city, lang) }, props: { city } })),
+    );
+}
+
+const lang = Astro.params.lang as Locale;
+const { city } = Astro.props as { city: City };
+const tool = t(lang).tools.laundromat!;
+const ui = tool.ui;
+const info = cityInfo(city, lang);
+const c = info.country;
+const name = city.name[lang];
+const fill = (s: string) => s.replaceAll('{city}', name);
+const site = Astro.site ?? new URL('https://example.com');
+const url = new URL(cityPath(lang, city), site).href;
+const hub = toolPath(lang, 'laundromat');
+
+const title = fill(ui.cityTitle);
+const description = fill(ui.cityMeta).replace('{wash}', info.wash).replace('{pay}', info.pay).replace('{hours}', info.hours);
+const extra = info.dry ? ` ${ui.dry}: ${info.dry}.` : info.total ? ` ${ui.total}: ${info.total}.` : '';
+const faq = [
+  { q: fill(ui.faqCostQ), a: ui.faqCostA.replace('{wash}', info.wash).replace('{extra}', extra) },
+  { q: fill(ui.faqPayQ), a: ui.faqPayA.replace('{pay}', info.pay) },
+  { q: fill(ui.faqHoursQ), a: ui.faqHoursA.replace('{hours}', info.hours) },
+];
+// 같은 나라 도시를 먼저, 그다음 같은 지역
+const others = CITIES.filter((o) => o.id !== city.id).sort(
+  (a, b) => Number(b.country === city.country) - Number(a.country === city.country) || Number(b.region === city.region) - Number(a.region === city.region),
+);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: SITE.name, item: new URL(`/${lang}/`, site).href },
+      { '@type': 'ListItem', position: 2, name: tool.name, item: new URL(hub, site).href },
+      { '@type': 'ListItem', position: 3, name, item: url },
+    ],
+  },
+];
+---
+
+<Base lang={lang} title={title} description={description} paths={cityPaths(city)} jsonLd={jsonLd}>
+  <nav class="crumbs"><a href={hub}>← {ui.allCities}</a></nav>
+  <h1>{fill(ui.cityH1)}</h1>
+  <p class="lead">{fill(ui.cityLead)}</p>
+
+  <section class="card ldc">
+    <h2>{ui.summary}</h2>
+    {c.rare && <p class="ldc-rare">⚠️ {ui.rare}</p>}
+    <dl class="ldc-facts">
+      <div><dt>🧺 {ui.wash}</dt><dd>{info.wash}</dd></div>
+      {info.dry && <div><dt>🌀 {ui.dry}</dt><dd>{info.dry}</dd></div>}
+      {info.total && <div><dt>➕ {ui.total}</dt><dd>{info.total}</dd></div>}
+      {info.dropOff && <div><dt>👕 {ui.dropOff}</dt><dd>{info.dropOff}</dd></div>}
+      <div><dt>🕒 {ui.hours}</dt><dd>{info.hours}</dd></div>
+      <div><dt>💳 {ui.pay}</dt><dd class="ldc-chips">{c.pay.map((p) => <span>{ui.payV[p]}</span>)}</dd></div>
+      <div><dt>🧴 {ui.detergent}</dt><dd>{info.detergent}</dd></div>
+      {c.chains.length > 0 && <div><dt>🏪 {ui.chains}</dt><dd>{c.chains.join(', ')}</dd></div>}
+      <div><dt>🔎 {ui.sign}</dt><dd lang={city.country === 'JP' ? 'ja' : city.country === 'KR' ? 'ko' : undefined}><strong>{c.term}</strong></dd></div>
+    </dl>
+    <p class="note">{ui.disclaimer.replace('{date}', LAUNDRY_REVIEWED)}</p>
+  </section>
+
+  <section>
+    <h2>{fill(ui.map)}</h2>
+    <div class="ldc-map">
+      <iframe src={mapEmbed(city, lang)} title={fill(ui.map)} loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+    </div>
+    <p class="ldc-maplink"><a href={mapLink(city)} target="_blank" rel="noopener">📍 {ui.openMaps} ↗</a></p>
+    <p class="note">{ui.mapNote}</p>
+  </section>
+
+  <AdSlot lang={lang} position="afterTool" />
+
+  <section>
+    <h2>{ui.tips}</h2>
+    <ul class="ldc-tips">
+      <li>{city.tip[lang]}</li>
+      <li>{c.tip[lang]}</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>{ui.howToTitle}</h2>
+    <ol>{tool.howTo.map((s) => <li>{s}</li>)}</ol>
+  </section>
+
+  <AdSlot lang={lang} position="inContent" />
+
+  <section class="faq">
+    <h2>{t(lang).common.faq}</h2>
+    {faq.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+  </section>
+
+  <AdSlot lang={lang} position="beforeRelated" />
+
+  <section>
+    <h2>{ui.otherCities}</h2>
+    <ul class="ldc-others">
+      {others.map((o) => <li><a href={cityPath(lang, o)}>{o.name[lang]}</a></li>)}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .crumbs { font-size: .9rem; margin-bottom: 1rem; }
+  .crumbs a { color: var(--muted); text-decoration: none; }
+  .ldc { display: grid; gap: .8rem; }
+  .ldc h2 { margin: 0; font-size: 1.15rem; }
+  .ldc-rare { margin: 0; padding: .7rem .9rem; border-radius: 10px; background: color-mix(in srgb, #eda100 18%, transparent); }
+  .ldc-facts { margin: 0; display: grid; gap: 0; }
+  .ldc-facts div { display: grid; grid-template-columns: minmax(130px, 38%) 1fr; gap: .8rem; padding: .65rem 0; border-bottom: 1px solid var(--border); }
+  .ldc-facts div:last-child { border-bottom: 0; }
+  .ldc-facts dt { color: var(--muted); }
+  .ldc-facts dd { margin: 0; font-weight: 600; }
+  .ldc-chips { display: flex; flex-wrap: wrap; gap: .35rem; }
+  .ldc-chips span { font-size: .85rem; font-weight: 600; padding: .15rem .6rem; border-radius: 999px; background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .ldc-map { position: relative; aspect-ratio: 4 / 3; max-height: 480px; width: 100%; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+  .ldc-map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .ldc-maplink { margin: .6rem 0 .2rem; font-weight: 600; }
+  .ldc-tips { display: grid; gap: .6rem; padding-left: 1.2rem; line-height: 1.7; }
+  .ldc-others { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: .45rem; }
+  .ldc-others a { display: inline-block; padding: .35rem .75rem; border: 1px solid var(--border); border-radius: 999px; text-decoration: none; color: var(--text); background: var(--surface); font-size: .92rem; }
+  .ldc-others a:hover { border-color: var(--accent); color: var(--accent); }
+  @media (max-width: 520px) { .ldc-facts div { grid-template-columns: 1fr; gap: .2rem; } }
+</style>

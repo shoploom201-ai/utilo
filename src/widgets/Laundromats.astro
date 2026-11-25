@@ -1,0 +1,106 @@
+---
+// 셀프 빨래방 허브: 도시를 입력하고 엔터 → 그 도시 페이지로 이동 (목록에 없으면 구글 지도 검색).
+// 데이터는 src/data/laundromats.ts, 도시 페이지는 src/pages/[lang]/[tool]/[city].astro
+import ToolInfo from '../components/ToolInfo.astro';
+import { t, locales, type Locale } from '../i18n';
+import { CITIES, LAUNDRY_REVIEWED, type Region } from '../data/laundromats';
+import { cityInfo, cityPath } from '../lib/laundry';
+
+const { lang } = Astro.props as { lang: Locale };
+const tool = t(lang).tools.laundromat!;
+const ui = tool.ui;
+const regions: Region[] = ['asia', 'europe', 'americas'];
+const flag = (code: string) => String.fromCodePoint(...[...code].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+// 어느 언어로 쳐도 찾을 수 있게: 모든 언어의 도시 이름 → 이 언어의 도시 페이지
+const index = Object.fromEntries(
+  CITIES.flatMap((c) => [...new Set(locales.map((l) => c.name[l].toLowerCase()))].map((name) => [name, cityPath(lang, c)])),
+);
+---
+
+<h1>{tool.name}</h1>
+<p class="lead">{tool.short}</p>
+
+<section class="card laundry" id="ld">
+  <form id="ld-form" class="ld-search" role="search">
+    <label for="ld-q">{ui.search}</label>
+    <div class="ld-row">
+      <input id="ld-q" type="search" list="ld-cities" placeholder={ui.searchPh} autocomplete="off" enterkeyhint="search" />
+      <button type="submit">{ui.go}</button>
+    </div>
+    <datalist id="ld-cities">{CITIES.map((c) => <option value={c.name[lang]} />)}</datalist>
+    <p class="note" id="ld-msg" hidden></p>
+  </form>
+
+  {
+    regions.map((r) => (
+      <section class="ld-region" data-region={r}>
+        <h2>{ui.regions[r]}</h2>
+        <ul class="ld-grid">
+          {CITIES.filter((c) => c.region === r).map((c) => {
+            const info = cityInfo(c, lang);
+            return (
+              <li data-names={locales.map((l) => c.name[l]).join(' ').toLowerCase()}>
+                <a class="ld-city" href={cityPath(lang, c)}>
+                  <strong><span aria-hidden="true">{flag(c.country)}</span> {c.name[lang]}</strong>
+                  <span>{ui.washFrom.replace('{price}', info.wash)}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    ))
+  }
+  <p class="note">{ui.disclaimer.replace('{date}', LAUNDRY_REVIEWED)}</p>
+</section>
+
+<ToolInfo lang={lang} howTo={tool.howTo} faq={tool.faq} />
+
+<script is:inline type="application/json" id="ld-index" set:html={JSON.stringify({ index, noCity: ui.noCity, hl: lang })} />
+
+<style>
+  .laundry { display: grid; gap: 1.1rem; }
+  .ld-search { display: grid; gap: .4rem; }
+  .ld-row { display: flex; gap: .5rem; }
+  .ld-row input { flex: 1; min-width: 0; font-size: 1.05rem; }
+  .ld-row button { font: inherit; font-weight: 600; padding: .6rem 1.1rem; border: 0; border-radius: 8px; background: var(--accent); color: var(--accent-text); cursor: pointer; }
+  .ld-region h2 { font-size: 1.1rem; margin: .4rem 0 .6rem; }
+  .ld-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .ld-city { display: grid; gap: .2rem; padding: .75rem .9rem; border: 1px solid var(--border); border-radius: 10px; text-decoration: none; color: var(--text); background: var(--bg); }
+  .ld-city:hover { border-color: var(--accent); }
+  .ld-city span { color: var(--muted); font-size: .85rem; }
+</style>
+
+<script>
+  const data = JSON.parse(document.getElementById('ld-index')!.textContent!) as { index: Record<string, string>; noCity: string; hl: string };
+  const form = document.getElementById('ld-form') as HTMLFormElement;
+  const input = document.getElementById('ld-q') as HTMLInputElement;
+  const msg = document.getElementById('ld-msg') as HTMLElement;
+  const items = [...document.querySelectorAll<HTMLElement>('#ld li[data-names]')];
+  const norm = (s: string) => s.trim().toLowerCase().normalize('NFC');
+
+  // 입력하는 동안 도시 카드 걸러 보기
+  input.addEventListener('input', () => {
+    const q = norm(input.value);
+    msg.hidden = true;
+    items.forEach((li) => (li.hidden = !!q && !li.dataset.names!.includes(q)));
+    document.querySelectorAll<HTMLElement>('#ld .ld-region').forEach((r) => (r.hidden = !r.querySelector('li:not([hidden])')));
+  });
+
+  // 엔터: 가이드가 있으면 도시 페이지로, 없으면 구글 지도에서 "laundromat <도시>" 검색
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = norm(input.value);
+    if (!q) return;
+    const exact = data.index[q];
+    const partial = Object.entries(data.index).filter(([name]) => name.startsWith(q));
+    const target = exact ?? (new Set(partial.map(([, p]) => p)).size === 1 ? partial[0][1] : undefined);
+    if (target) {
+      location.href = target;
+      return;
+    }
+    msg.textContent = data.noCity.replace('{q}', input.value.trim());
+    msg.hidden = false;
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('laundromat ' + input.value.trim())}&hl=${data.hl}`, '_blank', 'noopener');
+  });
+</script>

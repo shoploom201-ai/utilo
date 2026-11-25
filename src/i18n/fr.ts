@@ -454,6 +454,94 @@ const fr = {
         { q: 'Puis-je l’utiliser hors connexion ?', a: 'Une fois la page chargée, les phrases restent visibles sans internet. L’audio peut nécessiter une connexion sur certains appareils.' },
       ],
     },
+    laundromat: {
+      "name": "Laveries libre-service à l’étranger",
+      "short": "Prix, horaires et moyens de paiement des laveries dans 26 villes de voyage, avec une carte des laveries proches.",
+      "metaDescription": "Guide des laveries libre-service dans 26 villes : Tokyo, Séoul, Bangkok, Londres, Barcelone, New York et plus. Prix typiques du lavage et du séchage, horaires, paiement et carte des laveries proches.",
+      "ui": {
+        "search": "Quelle ville ?",
+        "searchPh": "ex. Tokyo, Londres, New York…",
+        "go": "Rechercher",
+        "noCity": "Pas encore de guide pour « {q} » : nous ouvrons les laveries dans Google Maps.",
+        "regions": {
+          "asia": "Asie",
+          "europe": "Europe",
+          "americas": "Amériques et Océanie"
+        },
+        "washFrom": "Lavage {price}",
+        "cityH1": "Laveries libre-service à {city}",
+        "cityLead": "Prix habituels, horaires et paiement dans les laveries de {city}, avec une carte des laveries à proximité.",
+        "cityTitle": "Laverie à {city} 2026 – Prix, horaires et paiement",
+        "cityMeta": "Laveries libre-service à {city} : un lavage coûte environ {wash}. Paiement : {pay}. {hours}. Carte des laveries proches et conseils locaux.",
+        "summary": "En un coup d’œil",
+        "wash": "Lavage (une machine)",
+        "dry": "Séchoir",
+        "dryPer": "{price} les {n} min",
+        "dryCycle": "{price} le cycle",
+        "total": "Lavage + séchage",
+        "dropOff": "Service lavage-pliage",
+        "perKg": "{price} le kg",
+        "hours": "Horaires",
+        "hoursV": {
+          "h24": "Beaucoup sont ouvertes 24 h/24",
+          "late": "En général du petit matin à tard le soir",
+          "day": "En général de la journée au début de soirée"
+        },
+        "pay": "Paiement",
+        "payV": {
+          "coins": "Pièces",
+          "notes": "Billets",
+          "card": "Carte / sans contact",
+          "ic": "Carte de transport",
+          "qr": "QR / paiement mobile",
+          "app": "Appli de laverie"
+        },
+        "detergent": "Lessive",
+        "detV": {
+          "auto": "Souvent ajoutée automatiquement",
+          "buy": "À acheter sur place ou à apporter",
+          "mixed": "Selon la laverie"
+        },
+        "chains": "Chaînes courantes",
+        "sign": "Repérez cette enseigne",
+        "rare": "Les laveries libre-service sont rares ici : la plupart des voyageurs passent par des blanchisseries qui facturent au kilo.",
+        "map": "Les laveries de {city} sur la carte",
+        "openMaps": "Ouvrir dans Google Maps",
+        "mapNote": "Les résultats viennent de Google Maps. Vérifiez les horaires du jour sur chaque fiche.",
+        "tips": "Conseils sur place",
+        "howToTitle": "Comment utiliser une laverie libre-service",
+        "faqCostQ": "Combien coûte une laverie à {city} ?",
+        "faqCostA": "Un lavage standard coûte environ {wash}.{extra} Le prix dépend de la laverie et de la taille du tambour : regardez l’affiche de la machine avant de payer.",
+        "faqPayQ": "Comment paie-t-on dans les laveries de {city} ?",
+        "faqPayA": "Moyens de paiement courants : {pay}. Gardez un peu de monnaie au cas où le terminal de carte serait en panne.",
+        "faqHoursQ": "Les laveries de {city} ferment-elles tard ?",
+        "faqHoursA": "{hours}. Utilisez la carte ci-dessus pour voir celles qui sont ouvertes maintenant.",
+        "otherCities": "Autres villes",
+        "allCities": "Toutes les villes",
+        "disclaimer": "Prix habituels tirés des tarifs de laveries, d’enquêtes de consommateurs et de guides de voyage (vérifiés en {date}). Ils varient selon la laverie et la machine : regardez toujours l’affiche de la machine."
+      },
+      "howTo": [
+        "Triez le linge et vérifiez la capacité du tambour (kg) : une machine standard prend environ une semaine de vêtements de voyage.",
+        "Vérifiez si la lessive est ajoutée automatiquement avant de mettre la vôtre.",
+        "Payez à la machine ou à la centrale de paiement, choisissez la température et lancez.",
+        "Passez le linge au séchoir tout de suite : d’autres attendent peut-être. Le séchage prend en général 30 à 40 minutes.",
+        "Sortez tout et nettoyez le filtre à peluches si une affiche le demande."
+      ],
+      "faq": [
+        {
+          "q": "Combien de temps faut-il prévoir à la laverie ?",
+          "a": "Environ 1 h à 1 h 30 : 30–40 minutes de lavage et 30–40 minutes de séchage. Les lave-linge séchants au Japon et en Corée font les deux d’un coup."
+        },
+        {
+          "q": "Faut-il apporter de la lessive ?",
+          "a": "Au Japon, en Corée, à Singapour, en Malaisie et en Espagne, elle est souvent ajoutée automatiquement. Au Royaume-Uni, en Allemagne et aux États-Unis, on l’achète souvent sur place ou on l’apporte."
+        },
+        {
+          "q": "Ma ville n’est pas dans la liste.",
+          "a": "Tapez la ville dans la recherche et appuyez sur Entrée : nous ouvrirons les laveries de cette ville dans Google Maps."
+        }
+      ]
+    },
     'transit-cards': {
       name: 'Cartes de transport par pays',
       short: 'Comment acheter la carte de transport dans 18 pays : où la trouver, son prix et quand la carte bancaire suffit.',

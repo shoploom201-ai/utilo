@@ -454,6 +454,94 @@ const de = {
         { q: 'Funktioniert es offline?', a: 'Ist die Seite einmal geladen, sehen Sie die Sätze auch ohne Internet. Für Audio brauchen manche Geräte eine Verbindung.' },
       ],
     },
+    laundromat: {
+      "name": "Waschsalons weltweit",
+      "short": "Preise, Öffnungszeiten und Bezahlarten von Waschsalons in 26 Reisestädten – mit Karte der Waschsalons in der Nähe.",
+      "metaDescription": "Waschsalon-Guide für 26 Städte: Tokio, Seoul, Bangkok, London, Paris, New York u. v. m. Typische Preise für Waschen und Trocknen, Öffnungszeiten, Bezahlung und Karte mit Waschsalons in der Nähe.",
+      "ui": {
+        "search": "Welche Stadt?",
+        "searchPh": "z. B. Tokio, Paris, New York…",
+        "go": "Suchen",
+        "noCity": "Für „{q}“ gibt es noch keinen Guide – wir öffnen Waschsalons in Google Maps.",
+        "regions": {
+          "asia": "Asien",
+          "europe": "Europa",
+          "americas": "Amerika & Ozeanien"
+        },
+        "washFrom": "Waschen {price}",
+        "cityH1": "Waschsalons in {city}",
+        "cityLead": "Typische Preise, Öffnungszeiten und Bezahlung in Waschsalons in {city} – dazu eine Karte mit Waschsalons in der Nähe.",
+        "cityTitle": "Waschsalon {city} 2026 – Preise, Öffnungszeiten & Bezahlung",
+        "cityMeta": "Waschsalons in {city}: Eine Wäsche kostet etwa {wash}. Bezahlung: {pay}. {hours}. Karte mit Waschsalons in der Nähe und Tipps.",
+        "summary": "Auf einen Blick",
+        "wash": "Waschen (eine Ladung)",
+        "dry": "Trockner",
+        "dryPer": "{price} pro {n} Min.",
+        "dryCycle": "{price} pro Durchgang",
+        "total": "Waschen + Trocknen",
+        "dropOff": "Abgabe-Service (waschen & falten)",
+        "perKg": "{price} pro kg",
+        "hours": "Öffnungszeiten",
+        "hoursV": {
+          "h24": "Viele haben rund um die Uhr geöffnet",
+          "late": "Meist von früh morgens bis spät abends",
+          "day": "Meist tagsüber bis zum Abend"
+        },
+        "pay": "Bezahlung",
+        "payV": {
+          "coins": "Münzen",
+          "notes": "Scheine",
+          "card": "Karte / kontaktlos",
+          "ic": "Verkehrskarte",
+          "qr": "QR / Mobile Payment",
+          "app": "Waschsalon-App"
+        },
+        "detergent": "Waschmittel",
+        "detV": {
+          "auto": "Meist automatisch dosiert",
+          "buy": "Vor Ort kaufen oder mitbringen",
+          "mixed": "Je nach Laden"
+        },
+        "chains": "Bekannte Ketten",
+        "sign": "Auf dieses Schild achten",
+        "rare": "Selbstbedienungs-Waschsalons sind hier selten – die meisten Reisenden geben ihre Wäsche in Wäschereien ab, die pro Kilo abrechnen.",
+        "map": "Waschsalons in {city} auf der Karte",
+        "openMaps": "In Google Maps öffnen",
+        "mapNote": "Die Kartenergebnisse stammen von Google Maps. Die heutigen Öffnungszeiten stehen im jeweiligen Eintrag.",
+        "tips": "Tipps vor Ort",
+        "howToTitle": "So benutzt du einen Waschsalon",
+        "faqCostQ": "Was kostet ein Waschsalon in {city}?",
+        "faqCostA": "Eine Standardwäsche kostet etwa {wash}.{extra} Der Preis hängt von Laden und Trommelgröße ab – vor dem Bezahlen das Schild an der Maschine prüfen.",
+        "faqPayQ": "Wie bezahlt man in Waschsalons in {city}?",
+        "faqPayA": "Übliche Bezahlarten: {pay}. Etwas Kleingeld dabeihaben, falls das Kartenterminal streikt.",
+        "faqHoursQ": "Haben Waschsalons in {city} lange geöffnet?",
+        "faqHoursA": "{hours}. Auf der Karte oben siehst du, welche gerade offen sind.",
+        "otherCities": "Weitere Städte",
+        "allCities": "Alle Städte",
+        "disclaimer": "Typische Preise aus Preislisten, Verbraucherumfragen und Reiseführern (Stand {date}). Je nach Laden und Maschine unterschiedlich – immer das Schild an der Maschine prüfen."
+      },
+      "howTo": [
+        "Wäsche sortieren und Trommelgröße (kg) prüfen – eine Standardmaschine fasst etwa eine Woche Reisekleidung.",
+        "Prüfen, ob Waschmittel automatisch dosiert wird, bevor du eigenes einfüllst.",
+        "An der Maschine oder am zentralen Kassenautomaten zahlen, Temperatur wählen und starten.",
+        "Wäsche gleich in den Trockner legen – andere warten vielleicht. Trocknen dauert meist 30–40 Minuten.",
+        "Alles herausnehmen und das Flusensieb reinigen, wenn ein Schild darum bittet."
+      ],
+      "faq": [
+        {
+          "q": "Wie lange dauert ein Besuch im Waschsalon?",
+          "a": "Etwa 1 bis 1,5 Stunden: 30–40 Minuten waschen und 30–40 Minuten trocknen. Waschtrockner in Japan und Korea erledigen beides in einem Gang."
+        },
+        {
+          "q": "Muss ich Waschmittel mitbringen?",
+          "a": "In Japan, Korea, Singapur, Malaysia und Spanien wird es meist automatisch dosiert. In Großbritannien, Deutschland und den USA kauft man es oft vor Ort oder bringt es mit."
+        },
+        {
+          "q": "Meine Stadt fehlt. Was nun?",
+          "a": "Stadt ins Suchfeld eingeben und Enter drücken – wir öffnen die Waschsalons dieser Stadt in Google Maps."
+        }
+      ]
+    },
     'transit-cards': {
       name: 'Nahverkehrskarten weltweit',
       short: 'So kaufen Sie die Nahverkehrskarte in 18 Ländern – wo es sie gibt, was sie kostet und wann die Bankkarte reicht.',

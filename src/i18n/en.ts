@@ -559,6 +559,94 @@ const en = {
         { q: 'Can I use it offline?', a: 'Once the page has loaded you can browse and show the phrases without a connection. Some devices need a connection for audio.' },
       ],
     },
+    laundromat: {
+      "name": "Self-Service Laundromats Abroad",
+      "short": "Laundromat prices, opening hours and payment methods in 26 travel cities, with a map of laundromats nearby.",
+      "metaDescription": "Self-service laundromat guide for 26 cities: Tokyo, Seoul, Bangkok, London, Paris, New York and more. Typical wash and dryer prices, opening hours, how to pay and a map of laundromats near you.",
+      "ui": {
+        "search": "Which city?",
+        "searchPh": "e.g. Tokyo, Paris, New York…",
+        "go": "Search",
+        "noCity": "No guide for “{q}” yet – opening laundromats on Google Maps.",
+        "regions": {
+          "asia": "Asia",
+          "europe": "Europe",
+          "americas": "Americas & Oceania"
+        },
+        "washFrom": "Wash {price}",
+        "cityH1": "Self-service laundromats in {city}",
+        "cityLead": "Typical prices, opening hours and payment at laundromats in {city}, plus a map of laundromats nearby.",
+        "cityTitle": "{city} Laundromats 2026 – Prices, Hours & How to Pay",
+        "cityMeta": "Self-service laundromats in {city}: a wash costs about {wash}. Payment: {pay}. {hours}. Map of nearby laundromats and local tips.",
+        "summary": "At a glance",
+        "wash": "Wash (one load)",
+        "dry": "Dryer",
+        "dryPer": "{price} per {n} min",
+        "dryCycle": "{price} per cycle",
+        "total": "Wash + dry",
+        "dropOff": "Drop-off wash & fold",
+        "perKg": "{price} per kg",
+        "hours": "Opening hours",
+        "hoursV": {
+          "h24": "Many are open 24 hours",
+          "late": "Usually early morning to late evening",
+          "day": "Usually daytime to evening"
+        },
+        "pay": "Payment",
+        "payV": {
+          "coins": "Coins",
+          "notes": "Banknotes",
+          "card": "Card / tap",
+          "ic": "Transit card",
+          "qr": "QR / mobile pay",
+          "app": "Laundry app"
+        },
+        "detergent": "Detergent",
+        "detV": {
+          "auto": "Usually added automatically",
+          "buy": "Buy on site or bring your own",
+          "mixed": "Depends on the shop"
+        },
+        "chains": "Common chains",
+        "sign": "Look for this sign",
+        "rare": "Self-service laundromats are rare here – most travellers use laundry shops that charge by the kilo.",
+        "map": "Laundromats in {city} on the map",
+        "openMaps": "Open in Google Maps",
+        "mapNote": "Map results come from Google Maps. Check each listing for today’s opening hours.",
+        "tips": "Local tips",
+        "howToTitle": "How to use a self-service laundromat",
+        "faqCostQ": "How much does a laundromat cost in {city}?",
+        "faqCostA": "A standard wash costs about {wash}.{extra} Prices depend on the shop and drum size, so check the sign on the machine before paying.",
+        "faqPayQ": "How do you pay at laundromats in {city}?",
+        "faqPayA": "Common payment methods: {pay}. Carry some small change in case the card reader is out of order.",
+        "faqHoursQ": "Are laundromats in {city} open late?",
+        "faqHoursA": "{hours}. Use the map above to see which ones are open now.",
+        "otherCities": "Other cities",
+        "allCities": "All cities",
+        "disclaimer": "Typical prices from laundromat price lists, consumer surveys and travel guides (checked {date}). Prices vary by shop and machine size – always check the sign on the machine."
+      },
+      "howTo": [
+        "Sort your clothes and check the drum size (kg) – one standard machine fits about a week of travel clothes.",
+        "Check whether detergent is added automatically before putting in your own.",
+        "Pay at the machine or the central payment terminal, choose the temperature and start.",
+        "Move clothes to a dryer straight away – others may be waiting. Drying usually takes 30–40 minutes.",
+        "Take everything out and wipe the lint filter if there is a sign asking you to."
+      ],
+      "faq": [
+        {
+          "q": "How long does a full laundromat visit take?",
+          "a": "About 1 to 1.5 hours: 30–40 minutes to wash and 30–40 minutes to dry. Washer-dryer machines in Japan and Korea can do both in one go."
+        },
+        {
+          "q": "Do I need to bring detergent?",
+          "a": "In Japan, Korea, Singapore, Malaysia and Spain detergent is usually added automatically. In the UK, Germany and the US you often buy it on site or bring your own."
+        },
+        {
+          "q": "My city isn’t listed. What can I do?",
+          "a": "Type the city in the search box and press Enter – we will open laundromats in that city on Google Maps."
+        }
+      ]
+    },
     'transit-cards': {
       name: 'Transit Card Guide by Country',
       short: 'How to buy a transit card in 18 countries – where to get it, what it costs and when a contactless bank card is enough.',

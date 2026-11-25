@@ -561,6 +561,94 @@ const es: Dict = {
         { q: '¿Funciona sin conexión?', a: 'Una vez cargada la página puedes ver las frases sin internet. En algunos dispositivos el audio necesita conexión.' },
       ],
     },
+    laundromat: {
+      "name": "Lavanderías de autoservicio en el extranjero",
+      "short": "Precios, horarios y formas de pago de lavanderías en 26 ciudades turísticas, con mapa de lavanderías cercanas.",
+      "metaDescription": "Guía de lavanderías de autoservicio en 26 ciudades: Tokio, Seúl, Bangkok, Londres, París, Nueva York y más. Precio típico de lavado y secadora, horarios, cómo pagar y mapa de lavanderías cerca.",
+      "ui": {
+        "search": "¿Qué ciudad?",
+        "searchPh": "p. ej. Tokio, París, Nueva York…",
+        "go": "Buscar",
+        "noCity": "Aún no tenemos guía de “{q}”: abrimos lavanderías en Google Maps.",
+        "regions": {
+          "asia": "Asia",
+          "europe": "Europa",
+          "americas": "América y Oceanía"
+        },
+        "washFrom": "Lavado {price}",
+        "cityH1": "Lavanderías de autoservicio en {city}",
+        "cityLead": "Precios típicos, horarios y formas de pago en las lavanderías de {city}, con un mapa de lavanderías cercanas.",
+        "cityTitle": "Lavanderías en {city} 2026: precios, horarios y cómo pagar",
+        "cityMeta": "Lavanderías de autoservicio en {city}: un lavado cuesta unos {wash}. Pago: {pay}. {hours}. Mapa de lavanderías cercanas y consejos locales.",
+        "summary": "De un vistazo",
+        "wash": "Lavado (una carga)",
+        "dry": "Secadora",
+        "dryPer": "{price} cada {n} min",
+        "dryCycle": "{price} por ciclo",
+        "total": "Lavado + secado",
+        "dropOff": "Servicio de lavado y doblado",
+        "perKg": "{price} por kg",
+        "hours": "Horario",
+        "hoursV": {
+          "h24": "Muchas abren 24 horas",
+          "late": "Normalmente de primera hora a última de la noche",
+          "day": "Normalmente de día hasta la tarde"
+        },
+        "pay": "Pago",
+        "payV": {
+          "coins": "Monedas",
+          "notes": "Billetes",
+          "card": "Tarjeta / sin contacto",
+          "ic": "Tarjeta de transporte",
+          "qr": "QR / pago móvil",
+          "app": "App de lavandería"
+        },
+        "detergent": "Detergente",
+        "detV": {
+          "auto": "Suele añadirse automáticamente",
+          "buy": "Se compra allí o lo llevas",
+          "mixed": "Depende de la tienda"
+        },
+        "chains": "Cadenas habituales",
+        "sign": "Busca este letrero",
+        "rare": "Aquí las lavanderías de autoservicio son raras: la mayoría de viajeros usa lavanderías que cobran por kilo.",
+        "map": "Lavanderías en {city} en el mapa",
+        "openMaps": "Abrir en Google Maps",
+        "mapNote": "Los resultados del mapa vienen de Google Maps. Revisa el horario de hoy en cada ficha.",
+        "tips": "Consejos locales",
+        "howToTitle": "Cómo usar una lavandería de autoservicio",
+        "faqCostQ": "¿Cuánto cuesta una lavandería en {city}?",
+        "faqCostA": "Un lavado estándar cuesta unos {wash}.{extra} El precio depende de la tienda y del tamaño del tambor: mira el cartel de la máquina antes de pagar.",
+        "faqPayQ": "¿Cómo se paga en las lavanderías de {city}?",
+        "faqPayA": "Formas de pago habituales: {pay}. Lleva algo de cambio por si falla el lector de tarjetas.",
+        "faqHoursQ": "¿Las lavanderías de {city} abren hasta tarde?",
+        "faqHoursA": "{hours}. Usa el mapa de arriba para ver cuáles están abiertas ahora.",
+        "otherCities": "Otras ciudades",
+        "allCities": "Todas las ciudades",
+        "disclaimer": "Precios típicos de tarifas de lavanderías, estudios de consumo y guías de viaje (revisado en {date}). Varían según la tienda y la máquina: mira siempre el cartel de la máquina."
+      },
+      "howTo": [
+        "Separa la ropa y mira la capacidad del tambor (kg): una lavadora estándar admite una semana de ropa de viaje.",
+        "Comprueba si el detergente se añade solo antes de echar el tuyo.",
+        "Paga en la máquina o en el terminal central, elige la temperatura y empieza.",
+        "Pasa la ropa a la secadora enseguida, puede haber gente esperando. Secar suele llevar 30–40 minutos.",
+        "Saca todo y limpia el filtro de pelusa si un cartel lo pide."
+      ],
+      "faq": [
+        {
+          "q": "¿Cuánto tiempo se tarda en la lavandería?",
+          "a": "Entre 1 y 1,5 horas: 30–40 minutos de lavado y 30–40 de secado. Las lavadoras-secadoras de Japón y Corea hacen ambas cosas de una vez."
+        },
+        {
+          "q": "¿Tengo que llevar detergente?",
+          "a": "En Japón, Corea, Singapur, Malasia y España suele añadirse solo. En Reino Unido, Alemania y EE. UU. a menudo se compra allí o lo llevas tú."
+        },
+        {
+          "q": "Mi ciudad no está en la lista, ¿qué hago?",
+          "a": "Escribe la ciudad en el buscador y pulsa Intro: abriremos las lavanderías de esa ciudad en Google Maps."
+        }
+      ]
+    },
     'transit-cards': {
       name: 'Tarjetas de transporte por país',
       short: 'Cómo comprar la tarjeta de transporte en 18 países: dónde conseguirla, cuánto cuesta y cuándo basta con tu tarjeta bancaria.',
