@@ -5,11 +5,15 @@ import { toolsFor, categories, toolPath, samePaths } from '../../tools';
 import { SITE } from '../../site';
 import { radioTargets, radioPath } from '../../i18n/seo';
 import AdSlot from '../../components/AdSlot.astro';
+import { Image } from 'astro:assets';
+import { postsFor, postPath, blogUi } from '../../lib/blog';
 
 export const getStaticPaths = localeStaticPaths;
 const lang = Astro.params.lang as Locale;
 const d = t(lang);
 const site = Astro.site ?? new URL('https://example.com');
+const latest = (await postsFor(lang)).slice(0, 3);
+const bu = blogUi[lang];
 const jsonLd = [
   {
     '@context': 'https://schema.org',
@@ -62,5 +66,26 @@ const jsonLd = [
         </ul>
       </section>
     ))
+  }
+  {
+    latest.length > 0 && (
+      <section>
+        <h2>📝 {bu.latest}</h2>
+        <ul class="post-grid">
+          {latest.map((p) => (
+            <li>
+              <a class="post-card" href={postPath(p)}>
+                <Image src={p.data.cover} alt={p.data.coverAlt} widths={[400, 640]} sizes="(max-width: 600px) 100vw, 280px" />
+                <div class="post-card__body">
+                  <h3>{p.data.title}</h3>
+                  <p>{p.data.description}</p>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p><a href={`/${lang}/blog/`}>{bu.all} →</a></p>
+      </section>
+    )
   }
 </Base>

@@ -1,0 +1,74 @@
+---
+// 언어별 블로그 목록. 글은 src/content/blog/<주제>/<언어>.md
+import { Image } from 'astro:assets';
+import Base from '../../../layouts/Base.astro';
+import AdSlot from '../../../components/AdSlot.astro';
+import { localeStaticPaths, type Locale } from '../../../i18n';
+import { samePaths } from '../../../tools';
+import { postsFor, postPath, formatDate, readingMinutes, blogUi } from '../../../lib/blog';
+import { SITE } from '../../../site';
+
+export const getStaticPaths = localeStaticPaths;
+const lang = Astro.params.lang as Locale;
+const ui = blogUi[lang];
+const posts = await postsFor(lang);
+const site = Astro.site ?? new URL('https://example.com');
+const [first, ...rest] = posts;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: `${SITE.name} ${ui.title}`,
+    url: new URL(`/${lang}/blog/`, site).href,
+    inLanguage: lang,
+    blogPost: posts.slice(0, 20).map((p) => ({ '@type': 'BlogPosting', headline: p.data.title, url: new URL(postPath(p), site).href, datePublished: p.data.date.toISOString() })),
+  },
+];
+---
+
+<Base lang={lang} title={ui.title} description={ui.intro} paths={samePaths('/blog/')} jsonLd={jsonLd} noindex={posts.length === 0}>
+  <header class="blog-head">
+    <h1>{ui.title}</h1>
+    <p class="lead">{ui.intro}</p>
+  </header>
+
+  {posts.length === 0 && <p class="blog-empty">{ui.empty}</p>}
+
+  {
+    first && (
+      <a class="post-card post-card--feature" href={postPath(first)}>
+        <Image src={first.data.cover} alt={first.data.coverAlt} widths={[480, 860, 1200]} sizes="(max-width: 860px) 100vw, 860px" loading="eager" fetchpriority="high" />
+        <div class="post-card__body">
+          <h2>{first.data.title}</h2>
+          <p>{first.data.description}</p>
+          <span class="post-meta">
+            <time datetime={first.data.date.toISOString()}>{formatDate(first.data.date, lang)}</time> · {ui.minRead.replace('{n}', String(readingMinutes(first.body ?? '', lang)))}
+          </span>
+        </div>
+      </a>
+    )
+  }
+
+  {rest.length > 0 && <AdSlot lang={lang} position="inContent" />}
+
+  {
+    rest.length > 0 && (
+      <ul class="post-grid">
+        {rest.map((p) => (
+          <li>
+            <a class="post-card" href={postPath(p)}>
+              <Image src={p.data.cover} alt={p.data.coverAlt} widths={[400, 640]} sizes="(max-width: 600px) 100vw, 420px" />
+              <div class="post-card__body">
+                <h2>{p.data.title}</h2>
+                <p>{p.data.description}</p>
+                <span class="post-meta">
+                  <time datetime={p.data.date.toISOString()}>{formatDate(p.data.date, lang)}</time> · {ui.minRead.replace('{n}', String(readingMinutes(p.body ?? '', lang)))}
+                </span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Base>

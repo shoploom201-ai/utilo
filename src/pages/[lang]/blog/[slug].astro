@@ -1,0 +1,122 @@
+---
+// 블로그 글 한 편. 읽기 편한 본문 폭·줄 간격, 목차, 사진 캡션, 같은 주제의 다른 언어 글 연결.
+import { Image, getImage } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import AdSlot from '../../../components/AdSlot.astro';
+import type { Locale } from '../../../i18n';
+import { allPosts, langOf, postPath, translationPaths, formatDate, readingMinutes, blogUi, type Post } from '../../../lib/blog';
+import { SITE } from '../../../site';
+
+export async function getStaticPaths() {
+  const posts = await allPosts();
+  return posts.map((post) => ({ params: { lang: langOf(post), slug: post.data.slug }, props: { post, posts } }));
+}
+
+const { post, posts } = Astro.props as { post: Post; posts: Post[] };
+const lang = langOf(post);
+const ui = blogUi[lang as Locale];
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+const minutes = readingMinutes(post.body ?? '', lang);
+const site = Astro.site ?? new URL('https://example.com');
+const url = new URL(postPath(post), site).href;
+const share = await getImage({ src: post.data.cover, width: 1200, format: 'jpg' });
+const shareH = Math.round((1200 * post.data.cover.height) / post.data.cover.width);
+const more = posts.filter((p) => langOf(p) === lang && p.id !== post.id).slice(0, 4);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.data.title,
+    description: post.data.description,
+    image: new URL(share.src, site).href,
+    datePublished: post.data.date.toISOString(),
+    dateModified: (post.data.updated ?? post.data.date).toISOString(),
+    inLanguage: lang,
+    mainEntityOfPage: url,
+    author: { '@type': 'Organization', name: SITE.name, url: new URL(`/${lang}/`, site).href },
+    publisher: { '@type': 'Organization', name: SITE.name },
+    keywords: post.data.tags.join(', ') || undefined,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: SITE.name, item: new URL(`/${lang}/`, site).href },
+      { '@type': 'ListItem', position: 2, name: ui.title, item: new URL(`/${lang}/blog/`, site).href },
+      { '@type': 'ListItem', position: 3, name: post.data.title, item: url },
+    ],
+  },
+];
+---
+
+<Base
+  lang={lang}
+  title={post.data.title}
+  description={post.data.description}
+  paths={translationPaths(post, posts)}
+  jsonLd={jsonLd}
+  ogType="article"
+  image={{ src: share.src, width: 1200, height: shareH }}
+>
+  <article class="post">
+    <nav class="crumbs"><a href={`/${lang}/blog/`}>← {ui.back}</a></nav>
+    <header class="post-header">
+      {post.data.tags.length > 0 && <p class="post-tags">{post.data.tags.map((tag) => <span>{tag}</span>)}</p>}
+      <h1>{post.data.title}</h1>
+      <p class="post-lede">{post.data.description}</p>
+      <p class="post-meta">
+        <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, lang)}</time>
+        {post.data.updated && <> · {ui.updated} <time datetime={post.data.updated.toISOString()}>{formatDate(post.data.updated, lang)}</time></>}
+        {' · '}{ui.minRead.replace('{n}', String(minutes))}
+      </p>
+    </header>
+
+    <figure class="post-cover">
+      <Image src={post.data.cover} alt={post.data.coverAlt} widths={[480, 860, 1280]} sizes="(max-width: 860px) 100vw, 860px" loading="eager" fetchpriority="high" />
+      {post.data.coverCredit && <figcaption>{post.data.coverCredit}</figcaption>}
+    </figure>
+
+    {
+      toc.length >= 3 && (
+        <details class="post-toc" open>
+          <summary>{ui.toc}</summary>
+          <ol>
+            {toc.map((h) => (
+              <li><a href={`#${h.slug}`}>{h.text}</a></li>
+            ))}
+          </ol>
+        </details>
+      )
+    }
+
+    <div class="post-body">
+      <Content />
+    </div>
+  </article>
+
+  <AdSlot lang={lang} position="beforeRelated" />
+
+  {
+    more.length > 0 && (
+      <section class="post-more">
+        <h2>{ui.more}</h2>
+        <ul class="post-grid">
+          {more.map((p) => (
+            <li>
+              <a class="post-card" href={postPath(p)}>
+                <Image src={p.data.cover} alt={p.data.coverAlt} widths={[400, 640]} sizes="(max-width: 600px) 100vw, 420px" />
+                <div class="post-card__body">
+                  <h3>{p.data.title}</h3>
+                  <span class="post-meta">{formatDate(p.data.date, lang)}</span>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</Base>
