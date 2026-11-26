@@ -19,18 +19,18 @@ Aquí tienes un resumen claro de lo que entra en vigor, lo que está pendiente y
 
 | Tema | Qué pasa en 2027 |
 |---|---|
-| Escala estatal del IRPF | **Sigue congelada** (no hay Presupuestos nuevos) |
+| Escala estatal del IRPF | **Sin cambios** (siguen prorrogados los Presupuestos de 2023) |
 | Escala autonómica | Depende de tu comunidad (p. ej. Madrid anuncia una rebaja) |
 | Pagos fraccionados de profesionales | **19 %** para quienes facturan menos de 250.000 € (desde el 1 de enero) |
 | Módulos (estimación objetiva) | Límites **prorrogados** para 2026 y 2027 |
 | IVA anual voluntario para autónomos | **Nuevo** desde 2027 |
-| Verifactu | **Aplazado** a octubre de 2028 |
+| Verifactu | **Aplazado** (ligado al calendario de la factura electrónica) |
 
 ## Asalariados: la escala del IRPF sigue igual
 
-La parte estatal de la tarifa del IRPF no se ha actualizado desde 2023, porque se siguen prorrogando los Presupuestos de ese año. Con salarios que suben y tramos que no se mueven, pagas un porcentaje algo mayor aunque tu poder adquisitivo no haya mejorado. Es la llamada **progresividad en frío**.
+La parte estatal de la tarifa del IRPF no cambia en 2027: no hay Presupuestos nuevos y se siguen prorrogando los de 2023. Con salarios que suben y tramos que no se mueven, pagas un porcentaje algo mayor aunque tu poder adquisitivo no haya mejorado. Es la llamada **progresividad en frío**.
 
-Donde sí puede haber cambios es en la **parte autonómica**. Varias comunidades han anunciado rebajas propias para 2027. La Comunidad de Madrid, por ejemplo, ha incluido en sus presupuestos una rebaja de **medio punto** en el IRPF autonómico.
+Donde sí puede haber cambios es en la **parte autonómica**, que decide cada comunidad. La Comunidad de Madrid, por ejemplo, ha incluido en sus presupuestos para 2027 una rebaja de **medio punto** en el IRPF autonómico.
 
 > 💡 **Consejo** Revisa en la web de tu comunidad autónoma las **deducciones propias** (alquiler joven, nacimiento, gastos educativos). Son las que más se olvidan en la declaración.
 
@@ -38,7 +38,7 @@ Donde sí puede haber cambios es en la **parte autonómica**. Varias comunidades
 
 ### Pagos fraccionados al 19 %
 
-Los profesionales en estimación directa con una cifra de negocio inferior a **250.000 €** podrán aplicar un **19 %** en sus pagos fraccionados trimestrales desde el 1 de enero de 2027, en lugar del 20 %. Significa algo más de liquidez durante el año. El impuesto final de la declaración de la renta no cambia.
+Según el decreto, los profesionales en estimación directa con una cifra de negocio inferior a **250.000 €** podrán aplicar un **19 %** en sus pagos fraccionados trimestrales (modelo 130) desde el 1 de enero de 2027, en lugar del 20 % habitual. Significa algo más de liquidez durante el año. El impuesto final de la declaración de la renta no cambia.
 
 ### Módulos prorrogados
 
@@ -50,7 +50,7 @@ Los autónomos podrán optar por un sistema de **IVA anual**, con pagos a cuenta
 
 ### Verifactu, aplazado
 
-La obligación de usar software de facturación adaptado a **Verifactu**, prevista para 2027, se retrasa y se vincula al calendario de la factura electrónica: **octubre de 2028** para la mayoría de empresas y profesionales. Las obligaciones técnicas no desaparecen; solo cambia la fecha.
+La obligación de usar software de facturación adaptado a **Verifactu**, prevista para 2027, se retrasa y se vincula al calendario de la factura electrónica. Varias asesorías calculan que para la mayoría de empresas y profesionales quedaría en **octubre de 2028**; confirma la fecha exacta en el BOE. Las obligaciones técnicas no desaparecen; solo cambia el plazo.
 
 ## Calendario fiscal de 2027
 

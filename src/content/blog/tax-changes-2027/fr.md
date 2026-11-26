@@ -47,7 +47,7 @@ Les retraités dont les pensions dépassent environ **30 000 € par an** pour l
 
 ## Le calendrier de 2027
 
-1. **Janvier 2027** : le prélèvement à la source continue avec votre taux actuel (la grille du taux neutre est, elle, indexée si la loi est votée).
+1. **Janvier 2027** : le prélèvement à la source continue avec votre taux actuel.
 2. **Avril à juin 2027** : déclaration des revenus 2026 en ligne. Les dates limites dépendent de votre département.
 3. **Été 2027** : avis d'impôt, remboursement ou solde à payer.
 4. **Septembre 2027** : votre taux personnel est recalculé à partir de cette déclaration.

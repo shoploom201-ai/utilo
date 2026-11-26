@@ -45,11 +45,11 @@ All three are deductions, not exemptions. You still pay Social Security and Medi
 
 The return you file in early 2027 covers 2026. Expect three things:
 
-1. **New lines and schedules** for the tips, overtime and senior deductions. Employers should report qualified tips and overtime separately, so check your W-2 carefully.
-2. **Bigger refunds for some,** because many people did not change their withholding when these deductions arrived.
-3. **The usual deadline,** April 15, 2027, unless you are in a disaster area with an extension.
+1. **New lines and schedules** for the tips, overtime and senior deductions. Check your W-2 and pay stubs for the amounts of tips and overtime you received.
+2. **A possible refund** if your paycheck withholding did not account for these new deductions.
+3. **The usual deadline,** April 15, 2027, unless the IRS grants an extension for your area (for example after a disaster).
 
-> ⚠️ **Watch out** If your employer did not split out overtime pay on your W-2, keep your own pay stubs. You need them to back up the deduction.
+> ⚠️ **Watch out** Keep your own pay stubs and tip records. If the amounts are not shown separately on your W-2, you need them to back up the deduction.
 
 ## What to do before December 31
 

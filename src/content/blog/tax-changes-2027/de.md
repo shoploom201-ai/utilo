@@ -31,8 +31,6 @@ Bis zum Grundfreibetrag bleibt Ihr Einkommen steuerfrei. Er steigt 2027 um **216
 
 Die Entlastung pro Monat ist überschaubar, aber sie kommt automatisch: Ihr Arbeitgeber rechnet ab Januar mit dem neuen Tarif, Sie müssen nichts beantragen.
 
-> 💡 **Tipp** Diskutiert wird außerdem eine neue Stufe für sehr hohe Einkommen. Ob und in welcher Form sie kommt, ist noch offen. Für normale Gehälter spielt sie keine Rolle.
-
 ## Mehr Kindergeld und höhere Kinderfreibeträge
 
 Das Kindergeld soll von 259 € auf **267 € pro Kind und Monat** steigen. Die Familienkasse zahlt den neuen Betrag automatisch aus.
@@ -66,7 +64,7 @@ Nein. Grundfreibetrag und Tarif wirken über den Lohnsteuerabzug automatisch, da
 
 ### Was ist, wenn das Gesetz nicht rechtzeitig verabschiedet wird?
 
-Dann gelten zunächst die Werte von 2026 weiter. Erfahrungsgemäß werden solche Gesetze aber bis Jahresende beschlossen; Korrekturen erfolgen sonst rückwirkend über die Lohnabrechnung oder die Steuererklärung.
+Dann gelten zunächst die bisherigen Werte. Ob eine spätere Änderung rückwirkend gilt, entscheidet der Gesetzgeber; verbindlich ist erst das im Bundesgesetzblatt verkündete Gesetz.
 
 ---
 
